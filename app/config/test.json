@@ -1,0 +1,9 @@
+{
+  "keycloak": {
+    "clientId": "clientId",
+    "clientSecret": "clientSecret"
+  },
+  "server": {
+    "logLevel": "silent"
+  }
+}

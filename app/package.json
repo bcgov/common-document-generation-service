@@ -1,0 +1,113 @@
+{
+  "name": "docgen-poc",
+  "version": "0.0.1",
+  "description": "Document Generation POC",
+  "scripts": {
+    "build": "echo Nothing to build",
+    "serve": "nodemon ./bin/www",
+    "start": "node ./bin/www",
+    "lint": "node_modules/.bin/eslint . --no-fix --ignore-pattern 'node_modules' --ext .js",
+    "lint:fix": "node_modules/.bin/eslint . --fix --ignore-pattern 'node_modules' --ext .js",
+    "test": "node_modules/.bin/jest --verbose",
+    "clean": "rm -rf coverage dist",
+    "pretest": "npm run lint",
+    "purge": "rm -rf node_modules",
+    "rebuild": "npm run clean && npm run build",
+    "reinstall": "npm run purge && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loneil/docgen-poc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/loneil/docgen-poc/issues"
+  },
+  "homepage": "https://github.com/loneil/docgen-poc#readme",
+  "dependencies": {
+    "api-problem": "^6.0.1",
+    "compression": "^1.7.4",
+    "config": "^3.2.4",
+    "express": "^4.17.1",
+    "express-validator": "^6.2.0",
+    "jest": "^24.9.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "keycloak-connect": "^7.0.1",
+    "morgan": "^1.9.1",
+    "npmlog": "^4.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "nodemon": "^1.19.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "commonjs": true,
+      "es6": true,
+      "jest": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly",
+      "_": false
+    },
+    "parserOptions": {
+      "ecmaVersion": 9
+    },
+    "rules": {
+      "eol-last": [
+        "error",
+        "always"
+      ],
+      "indent": [
+        "error",
+        2
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testMatch": [
+      "**/tests/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
+    ],
+    "testURL": "http://localhost/",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/docs/*.*"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jestSonar": {
+    "reportPath": "coverage"
+  }
+}
