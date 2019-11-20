@@ -1,12 +1,13 @@
 const config = require('config');
 const router = require('express').Router();
 const path = require('path');
+const log = require('npmlog');
 
 const keycloak = require('../components/keycloak');
 
 const checksRouter = require('./v1/checks');
 const docGenRouter = require('./v1/docGen');
-console.log(keycloak);
+log.error(JSON.stringify(keycloak));
 
 /** Base v1 Responder */
 router.get('/', (_req, res) => {
