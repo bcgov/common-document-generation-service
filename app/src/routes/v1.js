@@ -6,6 +6,7 @@ const keycloak = require('../components/keycloak');
 
 const checksRouter = require('./v1/checks');
 const docGenRouter = require('./v1/docGen');
+console.log(keycloak);
 
 /** Base v1 Responder */
 router.get('/', (_req, res) => {
