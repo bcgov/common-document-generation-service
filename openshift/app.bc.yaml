@@ -1,0 +1,97 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  build: "${REPO_NAME}-app"
+  template: "${REPO_NAME}-template"
+metadata:
+  name: "${REPO_NAME}-app-bc"
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewBuild
+    name: nodejs-10
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: registry.access.redhat.com/rhoar-nodejs/nodejs-10:latest
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/rhoar-nodejs/nodejs-10:latest
+      generation:
+      importPolicy:
+        scheduled: true
+      name: latest
+      referencePolicy:
+        type: Local
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewBuild
+    name: "${REPO_NAME}-app"
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewBuild
+    name: "${REPO_NAME}-app-${JOB_NAME}"
+  spec:
+    completionDeadlineSeconds: 600
+    successfulBuildsHistoryLimit: 3
+    failedBuildsHistoryLimit: 3
+    nodeSelector:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: "${REPO_NAME}-app:latest"
+    postCommit: {}
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: app
+      git:
+        ref: "${SOURCE_REPO_REF}"
+        uri: "${SOURCE_REPO_URL}"
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: BUILD_LOGLEVEL
+          value: '2'
+        - name: NPM_CONFIG_LOGLEVEL
+          value: notice
+        from:
+          kind: ImageStreamTag
+          name: nodejs-10:latest
+      type: Source
+parameters:
+- name: REPO_NAME
+  description: Application repository name
+  displayName: Repository Name
+  required: true
+- name: JOB_NAME
+  description: Job identifier (i.e. 'pr-5' OR 'master')
+  displayName: Job Branch Name
+  required: true
+- name: SOURCE_REPO_REF
+  description: Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head')
+  displayName: Source Repository Reference
+  required: true
+- name: SOURCE_REPO_URL
+  description: Git Repository URL
+  displayName: Source Repository URL
+  required: true
