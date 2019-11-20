@@ -1,13 +1,11 @@
 const config = require('config');
 const router = require('express').Router();
 const path = require('path');
-const log = require('npmlog');
 
 const keycloak = require('../components/keycloak');
 
 const checksRouter = require('./v1/checks');
 const docGenRouter = require('./v1/docGen');
-log.error(JSON.stringify(keycloak));
 
 /** Base v1 Responder */
 router.get('/', (_req, res) => {
@@ -34,6 +32,6 @@ router.get('/api-spec.yaml', (_req, res) => {
 router.use('/checks', keycloak.protect(), checksRouter);
 
 /** Doc Gen Router */
-router.use('/docGen', keycloak.protect(`${config.get('keycloak.clientId')}:GENERATOR`), docGenRouter);
+router.use('/docGen', keycloak.protect(), docGenRouter);
 
 module.exports = router;

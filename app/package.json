@@ -27,15 +27,18 @@
   "homepage": "https://github.com/loneil/docgen-poc#readme",
   "dependencies": {
     "api-problem": "^6.0.1",
+    "bytes": "^3.1.0",
+    "carbone": "^1.2.1",
     "compression": "^1.7.4",
     "config": "^3.2.4",
     "express": "^4.17.1",
-    "express-validator": "^6.2.0",
     "jest": "^24.9.0",
     "jest-sonar-reporter": "^2.0.0",
     "keycloak-connect": "^7.0.1",
     "morgan": "^1.9.1",
-    "npmlog": "^4.1.2"
+    "npmlog": "^4.1.2",
+    "tmp": "^0.1.0",
+    "validator": "^12.0.0"
   },
   "devDependencies": {
     "eslint": "^6.6.0",
