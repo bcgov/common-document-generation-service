@@ -32,6 +32,6 @@ router.get('/api-spec.yaml', (_req, res) => {
 router.use('/checks', keycloak.protect(), checksRouter);
 
 /** Doc Gen Router */
-router.use('/docGen', keycloak.protect(), docGenRouter);
+router.use('/docGen', docGenRouter);
 
 module.exports = router;
