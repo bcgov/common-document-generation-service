@@ -11,39 +11,40 @@ const docGen = {
    *  @param {object} response The server response to write the generated file to
    */
   generateDocument: async (body, response) => {
+    tmp.setGracefulCleanup();
     let tmpFile = undefined;
-    //let errorOccurred = false;
     try {
       tmpFile = tmp.fileSync();
       if (!body.template.contentEncodingType) {
         body.template.contentEncodingType = 'base64';
       }
       await fs.promises.writeFile(tmpFile.name, Buffer.from(body.template.content, body.template.contentEncodingType));
-      // get the written file size
-      console.log('File: ', tmpFile.name);
-      console.log('Filedescriptor: ', tmpFile.fd);
+      log.debug(JSON.stringify(tmpFile));
+
+      carbone.render(tmpFile.name, body.context, function (err, result) {
+        if (err) {
+          log.error(`Error during Carbone generation. Error: ${err}`);
+          throw new Error(err);
+        }
+        // write the result
+        var readStream = new stream.PassThrough();
+        readStream.end(result);
+
+        response.set('Content-disposition', 'attachment; filename=test');
+        response.set('Content-Type', 'text/plain');
+
+        readStream.pipe(response);
+        // Doc is generated at this point, remove the input file
+        tmpFile.removeCallback();
+      });
     } catch (e) {
-      // something wrong (disk i/o?), cannot verify file size
+      // something wrong (disk i/o?), log out and REMOVE THE TEMP FILE
       log.error(`Error handling file. ${e.message}`);
-      //errorOccurred = true;
-    } finally {
-      // delete tmp file
-    }
-
-    carbone.render(tmpFile.name, body.context, function (err, result) {
-      if (err) {
-        log.error(`Error during Carbone generation. Error: ${err}`);
-        throw new Error(err);
+      if (tmpFile) {
+        tmpFile.removeCallback();
       }
-      // write the result
-      var readStream = new stream.PassThrough();
-      readStream.end(result);
-
-      response.set('Content-disposition', 'attachment; filename=test');
-      response.set('Content-Type', 'text/plain');
-
-      readStream.pipe(response);
-    });
+      throw e;
+    }
   }
 };
 
