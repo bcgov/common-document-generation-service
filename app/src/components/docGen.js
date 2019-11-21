@@ -12,7 +12,7 @@ const docGen = {
    */
   generateDocument: async (body, response) => {
     let tmpFile = undefined;
-    let errorOccurred = false;
+    //let errorOccurred = false;
     try {
       tmpFile = tmp.fileSync();
       if (!body.template.contentEncodingType) {
@@ -25,7 +25,7 @@ const docGen = {
     } catch (e) {
       // something wrong (disk i/o?), cannot verify file size
       log.error(`Error handling file. ${e.message}`);
-      errorOccurred = true;
+      //errorOccurred = true;
     } finally {
       // delete tmp file
     }
