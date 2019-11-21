@@ -32,8 +32,6 @@
     "compression": "^1.7.4",
     "config": "^3.2.4",
     "express": "^4.17.1",
-    "jest": "^24.9.0",
-    "jest-sonar-reporter": "^2.0.0",
     "keycloak-connect": "^7.0.1",
     "morgan": "^1.9.1",
     "npmlog": "^4.1.2",
@@ -42,6 +40,8 @@
   },
   "devDependencies": {
     "eslint": "^6.6.0",
+    "jest": "^24.9.0",
+    "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^1.19.4"
   },
   "eslintConfig": {
