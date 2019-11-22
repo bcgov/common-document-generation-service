@@ -8,9 +8,9 @@ const DEFAULT_ATTACHMENT_SIZE = bytes.parse('5mb');
 
 const models = {
   docGen: {
-    /** @function context is required and must be an object */
-    context: value => {
-      return value && value != null && value.constructor.name === 'Object';
+    /** @function contexts is required and must be an array */
+    contexts: value => {
+      return value && Array.isArray(value);
     },
     /** @function template is required and must be an object */
     template: value => {
@@ -72,8 +72,8 @@ const customValidators = {
     // an invalid object will return a populated array of errors.
     const errors = [];
 
-    if (!models.docGen.context(obj.context)) {
-      errors.push({ value: obj.context, message: 'Invalid value `context`.' });
+    if (!models.docGen.contexts(obj.contexts)) {
+      errors.push({ value: obj.contexts, message: 'Invalid value `contexts`.' });
     }
     let validateTemplate = true;
     if (!models.docGen.template(obj.template)) {

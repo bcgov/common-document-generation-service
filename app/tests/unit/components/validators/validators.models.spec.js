@@ -5,35 +5,45 @@ const { smallFile } = require('../../../fixtures/base64Files');
 
 helper.logHelper();
 
-describe('models.docGen.context', () => {
+describe('models.docGen.contexts', () => {
 
-  it('should return true for a valid context object', () => {
-    const value = { firstName: 'x', lastName: 'y' };
-    const result = models.docGen.context(value);
+  it('should return true for a valid contexts object (single)', () => {
+    const value = [{ firstName: 'x', lastName: 'y' }];
+    const result = models.docGen.contexts(value);
     expect(result).toBeTruthy();
   });
 
-  it('should return true for a empty context object', () => {
-    const value = { };
-    const result = models.docGen.context(value);
+  it('should return true for a valid contexts object (multiple)', () => {
+    const value = [{ firstName: 'x', lastName: 'y' }, { firstName: 'a', lastName: 'b' }];
+    const result = models.docGen.contexts(value);
     expect(result).toBeTruthy();
+  });
+
+  it('should return true for a empty contexts object', () => {
+    const value = [{ }];
+    const result = models.docGen.contexts(value);
+    expect(result).toBeTruthy();
+
+    const value2 = [{ }];
+    const result2 = models.docGen.contexts(value2);
+    expect(result2).toBeTruthy();
   });
 
   it('should return false for undefined', () => {
     const value = undefined;
-    const result = models.docGen.context(value);
+    const result = models.docGen.contexts(value);
     expect(result).toBeFalsy();
   });
 
   it('should return false for a string', () => {
     const value = 'test';
-    const result = models.docGen.context(value);
+    const result = models.docGen.contexts(value);
     expect(result).toBeFalsy();
   });
 
-  it('should return false for an array', () => {
-    const value = [1, 3];
-    const result = models.docGen.context(value);
+  it('should return false for an object', () => {
+    const value = {a:1, b:2};
+    const result = models.docGen.contexts(value);
     expect(result).toBeFalsy();
   });
 });
@@ -41,8 +51,8 @@ describe('models.docGen.context', () => {
 describe('models.docGen.template', () => {
 
   it('should return true for a valid template object', () => {
-    const value = { content: 'x', encoding: 'y' };
-    const result = models.docGen.context(value);
+    const value = [{ content: 'x', encoding: 'y' }];
+    const result = models.docGen.contexts(value);
     expect(result).toBeTruthy();
   });
 

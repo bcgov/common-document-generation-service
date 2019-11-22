@@ -9,10 +9,10 @@ describe('customValidators.docGen', () => {
 
   beforeEach(() => {
     body = {
-      context: {
+      contexts: [{
         x: 1,
         y: 2
-      },
+      }],
       template: {
         content: 'ZHNmc2Rmc2RmZHNmc2Rmc2Rmc2Rm',
         contentEncodingType: 'base64'
@@ -30,7 +30,7 @@ describe('customValidators.docGen', () => {
   });
 
   it('should return an error with validation error when invalid', async () => {
-    body.context = 'garbage';
+    body.contexts = 'garbage';
 
     const result = await customValidators.docGen(body);
 
@@ -38,6 +38,6 @@ describe('customValidators.docGen', () => {
     expect(Array.isArray(result)).toBeTruthy();
     expect(result.length).toEqual(1);
     expect(result[0].value).toMatch('garbage');
-    expect(result[0].message).toMatch('Invalid value `context`.');
+    expect(result[0].message).toMatch('Invalid value `contexts`.');
   });
 });

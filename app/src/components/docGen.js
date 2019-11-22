@@ -5,9 +5,8 @@ const tmp = require('tmp');
 const fs = require('fs');
 
 const docGen = {
-  /** TODO: Fill in here...
-   *  @param {object} file TEMP
-   *  @param {object} context The object of replacement variables
+  /** Generate a file using carbone to merge data into the supplied document template
+   *  @param {object} body The request body
    *  @param {object} response The server response to write the generated file to
    */
   generateDocument: async (body, response) => {
@@ -21,7 +20,9 @@ const docGen = {
       await fs.promises.writeFile(tmpFile.name, Buffer.from(body.template.content, body.template.contentEncodingType));
       log.debug(JSON.stringify(tmpFile));
 
-      carbone.render(tmpFile.name, body.context, function (err, result) {
+      // If it's not an array of multiple data items, pass it into carbone as a singular object
+      const data = body.contexts.length > 1 ? body.contexts : body.contexts[0];
+      carbone.render(tmpFile.name, data, function (err, result) {
         if (err) {
           log.error(`Error during Carbone generation. Error: ${err}`);
           throw new Error(err);
