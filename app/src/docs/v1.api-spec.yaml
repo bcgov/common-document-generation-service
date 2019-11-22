@@ -1,8 +1,9 @@
+---
 openapi: 3.0.0
 info:
   version: 1.0.0
   title: Common Document Generation Service API
-  description: DGRSC - Title here TBD
+  description: CDOGS
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
@@ -15,19 +16,30 @@ servers:
 security:
   - OpenID: []
 paths:
-  /checks/status:
+  /health:
     get:
-      summary: Returns status of correspondent APIs
-      operationId: getChecksStatus
+      summary: Returns health checks of external service dependencies.
+      description: >-
+        This endpoint returns the state and connectivity of any external
+        services CDOGS depends on.
+      operationId: getHealth
       tags:
-        - Checks
+        - Health
       responses:
         '200':
-          description: Responds if the correspondent API endpoint(s) are healthy
+          description: Returns the healthiness of the service dependencies
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EndpointList'
+                type: object
+                required:
+                  - dependencies
+                properties:
+                  dependencies:
+                    type: array
+                    description: A list of Health states
+                    items:
+                      $ref: '#/components/schemas/Health'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -38,117 +50,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /email:
+  /docGen:
     post:
-      summary: Email sending
-      operationId: postEmail
+      summary: Generate a document
+      description: >-
+        This endpoint accepts a document template and a set (or multiple sets)
+        of subsitution variables and merges them into the document.
+      operationId: postDocGen
       tags:
-        - Email
+        - DocGen
       security:
         - OpenID:
-            - EMAILER
-      parameters:
-        - in: query
-          name: devMode
-          description: Send output to Ethereal for testing if true
-          schema:
-            type: boolean
+            - GENERATOR
       requestBody:
-        description: Fields required to perform a mail merge and send
+        description: Fields required to generate a document
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequest'
+              $ref: '#/components/schemas/DocGenObject'
       responses:
         '201':
-          description: Responds with the correspondence id(s)? of the message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Success'
+          description: Returns the supplied document with variables merged in
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /email/merge:
-    post:
-      summary: Template mail merge & email sending
-      operationId: postEmailMerge
-      tags:
-        - Email
-      security:
-        - OpenID:
-            - EMAILER
-      parameters:
-        - in: query
-          name: devMode
-          description: Send output to Ethereal for testing if true
-          schema:
-            type: boolean
-      requestBody:
-        description: Fields required to perform a mail merge and send
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailMergeRequest'
-      responses:
-        '201':
-          description: Responds with the correspondence id(s)? of the message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Success'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /email/merge/preview:
-    post:
-      summary: Template mail merge validation & preview
-      operationId: postEmailMergeValidate
-      tags:
-        - Email
-      security:
-        - OpenID:
-            - EMAILER
-      requestBody:
-        description: Fields required to perform a mail merge and send
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailMergeRequest'
-      responses:
-        '200':
-          description: Responds with the result of the validation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Success'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         default:
           description: Unexpected error
           content:
@@ -166,19 +97,107 @@ components:
       openIdConnectUrl: >-
         https://sso.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/.well-known/openid-configuration
   schemas:
-    Attachment:
+    BadRequest:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            status:
+              example: 400
+            title:
+              example: Bad Request
+            type:
+              example: 'https://httpstatuses.com/400'
+    ContextObject:
+      type: object
+      description: >-
+        A freeform JSON object of key-value pairs.  All keys must be
+        alphanumeric or underscore.
+      example:
+        something:
+          greeting: Hello
+          target: World
+        someone: user
+    DocGenObject:
+      type: object
+      properties:
+        contexts:
+          type: array
+          description: An array of Context objects
+          items:
+            $ref: '#/components/schemas/ContextObject'
+        template:
+          allOf:
+            - $ref: '#/components/schemas/TemplateObject'
+            - type: object
+              description: An object containing the document template to merge into
+    Error:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            status:
+              example: 500
+            title:
+              example: Internal Server Error
+            type:
+              example: 'https://httpstatuses.com/500'
+    Health:
+      type: object
+      required:
+        - name
+        - healthy
+        - info
+      properties:
+        name:
+          type: string
+          description: The name of the dependency
+          example: windward
+        healthy:
+          type: boolean
+          description: Is the dependency reachable/alive
+        info:
+          type: string
+          description: Any extra information, generally useful when dependency is unreachable
+          example: 'Windward connected successfully.'
+    NotFound:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            status:
+              example: 404
+            title:
+              example: Not Found
+            type:
+              example: 'https://httpstatuses.com/404'
+    Problem:
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          description: 'What type of problem, link to explanation of problem'
+        title:
+          type: string
+          description: 'Title of problem, generally the Http Status Code description'
+        status:
+          type: string
+          description: The Http Status code
+        detail:
+          type: string
+          description: Short description of why this problem was raised.
+    TemplateObject:
       type: object
       properties:
         content:
           type: string
           description: 'String, Buffer or a Stream contents for the attachment'
           example: PGI+SGVsbG8gV29ybGRcITwvYj4=
-        contentType:
-          type: string
-          description: >-
-            Optional content type for the attachment, if not set will be derived
-            from the filename property
-        encoding:
+        contentEncodingType:
           type: string
           description: >-
             If set and content is string, then encodes the content to a Buffer
@@ -193,239 +212,67 @@ components:
         filename:
           type: string
           description: >-
-            Filename to be reported as the name of the attached file. Use of
+            Filename to be used as the resultant merged document. Use of
             unicode is allowed.
-          example: testfile.txt
-    ContextEntry:
-      type: object
-      required:
-        - context
-        - to
-      properties:
-        to:
-          type: array
-          items:
-            type: string
-          description: >-
-            An array of recipients email addresses that will appear on the To:
-            field
-          example:
-            - baz@gov.bc.ca
-        context:
-          type: object
-          description: A freeform JSON object of key-value pairs
-          example:
-            something:
-              greeting: Hello
-              target: World
-            someone: user
-    EmailRequest:
-      type: object
-      required:
-        - bodyType
-        - body
-        - from
-        - to
-        - subject
-      properties:
-        attachments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Attachment'
-          description: A list of recipient emails
-        bcc:
-          type: array
-          items:
-            type: string
-          description: >-
-            An array of recipients email addresses that will appear on the BCC:
-            field
-          example:
-            - foo@gov.bc.ca
-        bodyType:
-          type: string
-          description: 'The email body type (html = content with html, text = plaintext)'
-          enum:
-            - html
-            - text
-          example: html
-        body:
-          type: string
-          description: >-
-            The body of the message as an Unicode string, Buffer, Stream or an
-            attachment-like object
-          example: Hello World content
-        cc:
-          type: array
-          items:
-            type: string
-          description: >-
-            An array of recipients email addresses that will appear on the CC:
-            field
-          example:
-            - bar@gov.bc.ca
-        encoding:
-          type: string
-          description: >-
-            Identifies encoding for text/html strings (defaults to 'utf-8',
-            other values are 'hex' and 'base64')
-          enum:
-            - base64
-            - binary
-            - hex
-            - utf-8
-          example: utf-8
-        from:
-          type: string
-          description: >-
-            The email address of the sender. All email addresses can be plain
-            'sender@server.com' or formatted '"Sender Name" sender@server.com'
-          example: example@gov.bc.ca
-        priority:
-          type: string
-          description: >-
-            Sets message importance headers, either 'high', 'normal' (default)
-            or 'low'.
-          enum:
-            - normal
-            - low
-            - high
-          example: normal
-        to:
-          type: array
-          items:
-            type: string
-          description: >-
-            An array of recipients email addresses that will appear on the To:
-            field
-          example:
-            - baz@gov.bc.ca
-        subject:
-          type: string
-          description: The email subject
-          example: Hello user
-    EmailMergeRequest:
-      type: object
-      required:
-        - bodyType
-        - body
-        - contexts
-        - from
-        - subject
-      properties:
-        attachments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Attachment'
-        bodyType:
-          type: string
-          description: 'The email body type (html = content with html, text = plaintext)'
-          enum:
-            - html
-            - text
-          example: html
-        body:
-          type: string
-          description: >-
-            A Nunjucks compatible body template of the message as an Unicode
-            string, Buffer, Stream or an attachment-like object. Refer to
-            https://mozilla.github.io/nunjucks/templating.html for template
-            syntax.
-          example: '{{ something.greeting }} {{ something.target }} content'
-        contexts:
-          type: array
-          description: An array of context objects
-          items:
-            $ref: '#/components/schemas/ContextEntry'
-        encoding:
-          type: string
-          description: >-
-            Identifies encoding for text/html strings (defaults to 'utf-8',
-            other values are 'hex' and 'base64')
-          enum:
-            - base64
-            - binary
-            - hex
-            - utf-8
-          example: utf-8
-        from:
-          type: string
-          description: >-
-            The email address of the sender. All email addresses can be plain
-            'sender@server.com' or formatted '"Sender Name" sender@server.com'
-          example: example@gov.bc.ca
-        priority:
-          type: string
-          description: >-
-            Sets message importance headers, either 'high', 'normal' (default)
-            or 'low'.
-          enum:
-            - normal
-            - low
-            - high
-          example: normal
-        subject:
-          type: string
-          description: The email subject
-          example: 'Hello {{ someone }}'
-    EndpointStatus:
-      type: object
-      required:
-        - name
-        - endpoint
-        - healthCheck
-        - authenticated
-        - authorized
-      properties:
-        name:
-          type: string
-          description: The name of the endpoint
-          example: WebADE API
-        endpoint:
-          type: string
-          description: Base endpoint URL
-          example: 'https://example.com/v1/'
-        healthCheck:
-          type: boolean
-          description: Is the endpoint reachable
-        authenticated:
-          type: boolean
-          description: Are credentials valid to access endpoint
-        authorized:
-          type: boolean
-          description: Do the credentials have the right permissions
-    EndpointList:
-      type: object
-      required:
-        - endpoints
-      properties:
-        endpoints:
-          type: array
-          items:
-            $ref: '#/components/schemas/EndpointStatus'
-          description: A list of Endpoint Statuses
-    Error:
-      required:
-        - error
-      properties:
-        error:
-          type: string
-          description: contains a message about the failure
-          example: Something errored
-    Success:
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: 'Contains message about the success, normally "Written successfully"'
-          example: Written successfully
+          example: filename.docx
+    ValidationError:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          required:
+            - errors
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                required:
+                  - message
+                properties:
+                  value:
+                    type: object
+                    description: Contents of the field that was in error.
+                    example: utf-8x
+                  message:
+                    type: string
+                    description: The error message for the field.
+                    example: Invalid value `encoding`.
+            status:
+              example: 422
+            title:
+              example: Unprocessable Entity
+            type:
+              example: 'https://httpstatuses.com/422'
   responses:
     BadRequest:
       description: Request is missing content or is malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequest'
+    Error:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     Forbidden:
       description: Lack required role to perform action
+    NoContent:
+      description: Accepted and no content
     NotFound:
       description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
     UnauthorizedError:
       description: Access token is missing or invalid
+    UnprocessableEntity:
+      description: >-
+        The server was unable to process the contained instructions. Generally
+        validation error(s).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
