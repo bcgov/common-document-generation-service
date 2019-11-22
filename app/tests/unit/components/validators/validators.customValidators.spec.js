@@ -22,7 +22,6 @@ describe('customValidators.docGen', () => {
 
   it('should return an empty error array when valid', async () => {
     const result = await customValidators.docGen(body);
-    console.log(result);
 
     expect(result).toBeTruthy();
     expect(Array.isArray(result)).toBeTruthy();
