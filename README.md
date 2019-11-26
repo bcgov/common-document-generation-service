@@ -1,4 +1,4 @@
-# Common Hosted Document Generation Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+# Common Document Generation Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 CDOGS - A hosted service to merge sets of data into document templates
 
