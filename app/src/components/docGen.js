@@ -28,8 +28,9 @@ const docGen = {
       // up in the v1/docGen.js route layer, then handle response setting there.
       carbone.render(tmpFile.name, data, function (err, result) {
         if (err) {
-          log.error(`Error during Carbone generation. Error: ${err}`);
-          response.status(500).send(`Error during Carbone generation. Error: ${err}`);
+          const errTxt = `Error during Carbone generation. Error: ${err}`;
+          log.error(errTxt);
+          response.status(500).send(errTxt);
         } else {
           // write the result
           var readStream = new stream.PassThrough();
