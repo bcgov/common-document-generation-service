@@ -10,7 +10,7 @@ const models = {
   docGen: {
     /** @function contexts is required and must be an array */
     contexts: value => {
-      return value && Array.isArray(value);
+      return value && Array.isArray(value) && value.length;
     },
     /** @function template is required and must be an object */
     template: value => {

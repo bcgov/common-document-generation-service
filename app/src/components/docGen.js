@@ -22,21 +22,28 @@ const docGen = {
 
       // If it's not an array of multiple data items, pass it into carbone as a singular object
       const data = body.contexts.length > 1 ? body.contexts : body.contexts[0];
-      carbone.render(tmpFile.name, data, function (err, result) {
+
+      // TODO: there's too much response stuff down here in a component layer, figure out how
+      // better to have the asynchronous carbone render be blocking and wait for its response
+      // up in the v1/docGen.js route layer, then handle response setting there.
+      carbone.render(tmpFile.name, data, (err, result) => {
         if (err) {
-          log.error(`Error during Carbone generation. Error: ${err}`);
-          throw new Error(err);
+          const errTxt = `Error during Carbone generation. Error: ${err}`;
+          log.error('generateDocument', errTxt);
+          response.status(500).send(errTxt);
+        } else {
+          // write the result
+          var readStream = new stream.PassThrough();
+          readStream.end(result);
+
+          response.status(201);
+          response.set('Content-Disposition', 'attachment; filename=test');
+          response.set('Content-Type', 'text/plain');
+
+          readStream.pipe(response);
+          // Doc is generated at this point, remove the input file
+          tmpFile.removeCallback();
         }
-        // write the result
-        var readStream = new stream.PassThrough();
-        readStream.end(result);
-
-        response.set('Content-disposition', 'attachment; filename=test');
-        response.set('Content-Type', 'text/plain');
-
-        readStream.pipe(response);
-        // Doc is generated at this point, remove the input file
-        tmpFile.removeCallback();
       });
     } catch (e) {
       // something wrong (disk i/o?), log out and REMOVE THE TEMP FILE

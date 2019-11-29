@@ -46,6 +46,12 @@ describe('models.docGen.contexts', () => {
     const result = models.docGen.contexts(value);
     expect(result).toBeFalsy();
   });
+
+  it('should return false for an empty array', () => {
+    const value = [];
+    const result = models.docGen.contexts(value);
+    expect(result).toBeFalsy();
+  });
 });
 
 describe('models.docGen.template', () => {
