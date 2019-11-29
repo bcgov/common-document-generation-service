@@ -26,17 +26,18 @@ const docGen = {
       // TODO: there's too much response stuff down here in a component layer, figure out how
       // better to have the asynchronous carbone render be blocking and wait for its response
       // up in the v1/docGen.js route layer, then handle response setting there.
-      carbone.render(tmpFile.name, data, function (err, result) {
+      carbone.render(tmpFile.name, data, (err, result) => {
         if (err) {
           const errTxt = `Error during Carbone generation. Error: ${err}`;
-          log.error(errTxt);
+          log.error('generateDocument', errTxt);
           response.status(500).send(errTxt);
         } else {
           // write the result
           var readStream = new stream.PassThrough();
           readStream.end(result);
 
-          response.set('Content-disposition', 'attachment; filename=test');
+          response.status(201);
+          response.set('Content-Disposition', 'attachment; filename=test');
           response.set('Content-Type', 'text/plain');
 
           readStream.pipe(response);
