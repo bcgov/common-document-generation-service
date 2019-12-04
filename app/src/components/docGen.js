@@ -17,7 +17,7 @@ const docGen = {
       if (!body.template.contentEncodingType) {
         body.template.contentEncodingType = 'base64';
       }
-      await fs.promises.writeFile(tmpFile.name, Buffer.from(body.template.content, body.template.contentEncodingType));
+      await fs.promises.writeFile(tmpFile.name + '.docx', Buffer.from(body.template.content, body.template.contentEncodingType));
       log.debug(JSON.stringify(tmpFile));
 
       // If it's not an array of multiple data items, pass it into carbone as a singular object
@@ -26,7 +26,7 @@ const docGen = {
       // TODO: there's too much response stuff down here in a component layer, figure out how
       // better to have the asynchronous carbone render be blocking and wait for its response
       // up in the v1/docGen.js route layer, then handle response setting there.
-      carbone.render(tmpFile.name, data, (err, result) => {
+      carbone.render(tmpFile.name  + '.docx', data, (err, result) => {
         if (err) {
           const errTxt = `Error during Carbone generation. Error: ${err}`;
           log.error('generateDocument', errTxt);

@@ -1,6 +1,6 @@
 const log = require('npmlog');
 
-const checks = {
+const health = {
   /** TODO: Need this? Rethink Checks stuff...
    * Could try to connect to WIndward if we use that
    * Checks the connectivity of something...
@@ -20,8 +20,8 @@ const checks = {
    * @returns {object[]} An array of result objects
    */
   getStatus: () => Promise.all([
-    checks.getGeneratorStatus()
+    health.getGeneratorStatus()
   ])
 };
 
-module.exports = checks;
+module.exports = health;
