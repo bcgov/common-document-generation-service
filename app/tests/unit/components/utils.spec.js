@@ -25,3 +25,19 @@ describe('prettyStringify', () => {
   });
 });
 
+describe('getFileExtension', () => {
+  it('should return a the file extension when there is one', () => {
+    expect(utils.getFileExtension('abc_123.docx')).toEqual('docx');
+    expect(utils.getFileExtension('my file name here.docx')).toEqual('docx');
+    expect(utils.getFileExtension('file.name.with.dots.docx')).toEqual('docx');
+  });
+
+  it('should return undefined if no extension', () => {
+    expect(utils.getFileExtension('abc_123')).toEqual(undefined);
+    expect(utils.getFileExtension('')).toEqual(undefined);
+    expect(utils.getFileExtension('   ')).toEqual(undefined);
+    expect(utils.getFileExtension(null)).toEqual(undefined);
+    expect(utils.getFileExtension(undefined)).toEqual(undefined);
+  });
+});
+

@@ -19,6 +19,11 @@ const models = {
   },
 
   template: {
+    /** @function filename is required */
+    filename: value => {
+      return validatorUtils.isString(value) && !validator.isEmpty(value, { ignore_whitespace: true });
+    },
+
     /** @function content is required */
     content: value => {
       return validatorUtils.isString(value) && !validator.isEmpty(value, { ignore_whitespace: true });
@@ -84,6 +89,11 @@ const customValidators = {
     if (validateTemplate) {
 
       let validateSize = true;
+      if (!models.template.filename(obj.template.filename)) {
+        errors.push({ value: obj.template.filename, message: 'Invalid value `template.filename`.' });
+        validateSize = false;
+      }
+
       if (!models.template.content(obj.template.content)) {
         errors.push({ value: obj.template.content, message: 'Invalid value `template.content`.' });
         validateSize = false;

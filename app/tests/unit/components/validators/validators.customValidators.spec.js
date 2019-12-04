@@ -14,6 +14,7 @@ describe('customValidators.docGen', () => {
         y: 2
       }],
       template: {
+        filename: 'abc_123.docx',
         content: 'ZHNmc2Rmc2RmZHNmc2Rmc2Rmc2Rm',
         contentEncodingType: 'base64'
       }
