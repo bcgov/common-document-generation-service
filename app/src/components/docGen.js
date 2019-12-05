@@ -3,6 +3,7 @@ const carbone = require('carbone');
 const stream = require('stream');
 const tmp = require('tmp');
 const fs = require('fs');
+const utils = require('./utils');
 
 const docGen = {
   /** Generate a file using carbone to merge data into the supplied document template
@@ -17,7 +18,13 @@ const docGen = {
       if (!body.template.contentEncodingType) {
         body.template.contentEncodingType = 'base64';
       }
-      await fs.promises.writeFile(tmpFile.name, Buffer.from(body.template.content, body.template.contentEncodingType));
+
+      // Put the actual extension from the supplied file onto the tmp filename
+      const inboundFileExtension = utils.getFileExtension(body.template.filename);
+      const tmpFilename = inboundFileExtension ? `${tmpFile.name}.${inboundFileExtension}` : tmpFile.name;
+      log.debug('Filename: ' + tmpFilename);
+
+      await fs.promises.writeFile(tmpFilename, Buffer.from(body.template.content, body.template.contentEncodingType));
       log.debug(JSON.stringify(tmpFile));
 
       // If it's not an array of multiple data items, pass it into carbone as a singular object
@@ -26,7 +33,7 @@ const docGen = {
       // TODO: there's too much response stuff down here in a component layer, figure out how
       // better to have the asynchronous carbone render be blocking and wait for its response
       // up in the v1/docGen.js route layer, then handle response setting there.
-      carbone.render(tmpFile.name, data, (err, result) => {
+      carbone.render(tmpFilename, data, (err, result) => {
         if (err) {
           const errTxt = `Error during Carbone generation. Error: ${err}`;
           log.error('generateDocument', errTxt);
@@ -37,7 +44,7 @@ const docGen = {
           readStream.end(result);
 
           response.status(201);
-          response.set('Content-Disposition', 'attachment; filename=test');
+          response.set('Content-Disposition', `attachment; filename=${body.template.filename}`);
           response.set('Content-Type', 'text/plain');
 
           readStream.pipe(response);

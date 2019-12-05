@@ -1,6 +1,6 @@
 const compression = require('compression');
 const config = require('config');
-const cors = require('cors')
+const cors = require('cors');
 const express = require('express');
 const log = require('npmlog');
 const morgan = require('morgan');

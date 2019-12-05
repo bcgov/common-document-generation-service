@@ -57,8 +57,8 @@ describe('models.docGen.contexts', () => {
 describe('models.docGen.template', () => {
 
   it('should return true for a valid template object', () => {
-    const value = [{ content: 'x', encoding: 'y' }];
-    const result = models.docGen.contexts(value);
+    const value = { filename: 'abc_123.docx', content: 'x', encoding: 'y' };
+    const result = models.docGen.template(value);
     expect(result).toBeTruthy();
   });
 
@@ -77,6 +77,24 @@ describe('models.docGen.template', () => {
 
 
 describe('models.template', () => {
+
+  it('should return false for blank filename', async () => {
+    const filename = '';
+    const result = await models.template.filename(filename);
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for null filename', async () => {
+    const filename = null;
+    const result = await models.template.filename(filename);
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for undefined filename', async () => {
+    const filename = undefined;
+    const result = await models.template.filename(filename);
+    expect(result).toBeFalsy();
+  });
 
   it('should return true for file size equal to limit', async () => {
     const content = smallFile.content;

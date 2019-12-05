@@ -1,9 +1,9 @@
-const checksRouter = require('express').Router();
+const healthRouter = require('express').Router();
 
-const checkComponent = require('../../components/checks');
+const checkComponent = require('../../components/health');
 
 /** Returns the status of correspondent APIs */
-checksRouter.get('/status', async (_req, res, next) => {
+healthRouter.get('/status', async (_req, res, next) => {
   const statuses = await checkComponent.getStatus();
 
   if (statuses instanceof Array) {
@@ -15,4 +15,4 @@ checksRouter.get('/status', async (_req, res, next) => {
   }
 });
 
-module.exports = checksRouter;
+module.exports = healthRouter;
