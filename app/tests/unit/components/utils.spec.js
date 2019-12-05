@@ -30,6 +30,7 @@ describe('getFileExtension', () => {
     expect(utils.getFileExtension('abc_123.docx')).toEqual('docx');
     expect(utils.getFileExtension('my file name here.docx')).toEqual('docx');
     expect(utils.getFileExtension('file.name.with.dots.docx')).toEqual('docx');
+    expect(utils.getFileExtension('mx_permit_{d.permitNumber}.docx')).toEqual('docx');
   });
 
   it('should return undefined if no extension', () => {
