@@ -200,9 +200,40 @@ You can expect the template engine to yield the following:
 
 See the Carbone Repitition documentation for the much more complex examples
 
+
+#### File Name
+The `template` object in the request body requires a `filename` field. This field will serve as the requested file name for the resultant merged document.
+This field should include the **extension** that the supplied template file has.
+
+The file name is able to be templated in the same manner as the contents if desired.
+
+An example request is shown below:
+
+``` json
+{
+  "contexts": [
+    {
+      "office": {
+        "id": "Dx1997",
+        "location": "Hello",
+        "phone": "World"
+      },
+      "contact": "Bob"
+    }],
+  "template": {
+    "filename": "office_contact_{d.office.id}.docx",
+    "content": "<encoded file here>"
+  }
+}
+```
+
+This will yield a resultant file in the response named
+`office_contact_Dx1997.docx`
+
+
 #### Further templating functionality
 
 The templating engine in Carbone has a lot of power, refer to the Carbone documentation
-https://carbone.io/documentation.html#substitutions
-https://carbone.io/documentation.html#repetitions
-https://carbone.io/documentation.html#formatters
+- https://carbone.io/documentation.html#substitutions
+- https://carbone.io/documentation.html#repetitions
+- https://carbone.io/documentation.html#formatters
