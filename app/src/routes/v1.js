@@ -30,7 +30,7 @@ router.get('/api-spec.yaml', (_req, res) => {
   res.sendFile(path.join(__dirname, '../docs/v1.api-spec.yaml'));
 });
 
-/** health Router */
+/** Health Router */
 router.use('/health', keycloak.protect(), healthRouter);
 
 /** Doc Gen Router */

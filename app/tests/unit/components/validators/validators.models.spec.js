@@ -78,8 +78,20 @@ describe('models.docGen.template', () => {
 
 describe('models.template', () => {
 
-  it('should return false for no filename', async () => {
+  it('should return false for blank filename', async () => {
     const filename = '';
+    const result = await models.template.filename(filename);
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for null filename', async () => {
+    const filename = null;
+    const result = await models.template.filename(filename);
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for undefined filename', async () => {
+    const filename = undefined;
     const result = await models.template.filename(filename);
     expect(result).toBeFalsy();
   });
