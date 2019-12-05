@@ -22,10 +22,10 @@ const docGen = {
       // Put the actual extension from the supplied file onto the tmp filename
       const inboundFileExtension = utils.getFileExtension(body.template.filename);
       const tmpFilename = inboundFileExtension ? `${tmpFile.name}.${inboundFileExtension}` : tmpFile.name;
-      log.debug('Filename: ' + tmpFilename);
+      log.debug('generateDocument', 'Filename: ' + tmpFilename);
 
       await fs.promises.writeFile(tmpFilename, Buffer.from(body.template.content, body.template.contentEncodingType));
-      log.debug(JSON.stringify(tmpFile));
+      log.debug('generateDocument', JSON.stringify(tmpFile));
 
       // Set options
       const options = {
@@ -44,7 +44,7 @@ const docGen = {
           log.error('generateDocument', errTxt);
           response.status(500).send(errTxt);
         } else {
-          log.debug(`generated filename ${reportName}`);
+          log.debug('generateDocument', `generated filename ${reportName}`);
 
           // write the result
           var readStream = new stream.PassThrough();
