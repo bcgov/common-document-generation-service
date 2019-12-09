@@ -4,7 +4,7 @@ CDOGS - A hosted service to merge sets of data into document templates
 
 ## Application
 
-The application is a node server which serves the Common Hosted Email Service API. It uses the following dependencies from NPM:
+The application is a node server which serves the Common Document Generation Service API. It uses the following dependencies from NPM:
 
 Authentication & Password Management
 
