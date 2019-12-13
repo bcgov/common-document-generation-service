@@ -32,6 +32,12 @@ const docGen = {
         reportName: body.template.filename
       };
 
+      // Only supporting pdf conversion at the moment
+      if (inboundFileExtension && inboundFileExtension.toUpperCase() === 'PDF') {
+        log.debug('setting pdf generation option');
+        options.convertTo = 'pdf';
+      }
+
       // If it's not an array of multiple data items, pass it into carbone as a singular object
       const data = body.contexts.length > 1 ? body.contexts : body.contexts[0];
 
