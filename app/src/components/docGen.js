@@ -58,7 +58,11 @@ const docGen = {
 
           response.status(201);
           response.set('Content-Disposition', `attachment; filename=${reportName}`);
-          response.set('Content-Type', 'text/plain');
+          if (inboundFileExtension && inboundFileExtension.toUpperCase() === 'PDF') {
+            response.set('Content-Type', 'application/pdf');
+          } else {
+            response.set('Content-Type', 'text/plain');
+          }
 
           readStream.pipe(response);
           // Doc is generated at this point, remove the input file
