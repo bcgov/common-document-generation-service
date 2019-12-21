@@ -105,8 +105,8 @@ const customValidators = {
     if (validateTemplate) {
 
       let validateSize = true;
-      if (!models.template.contentFileType(obj.template.filename)) {
-        errors.push({ value: obj.template.filename, message: 'Invalid value `template.filename`.' });
+      if (!models.template.contentFileType(obj.template.contentFileType)) {
+        errors.push({ value: obj.template.contentFileType, message: 'Invalid value `template.contentFileType`.' });
         validateSize = false;
       }
 
