@@ -14,9 +14,11 @@ describe('customValidators.docGen', () => {
         y: 2
       }],
       template: {
-        filename: 'abc_123.docx',
         content: 'ZHNmc2Rmc2RmZHNmc2Rmc2Rmc2Rm',
-        contentEncodingType: 'base64'
+        contentEncodingType: 'base64',
+        contentFileType: 'docx',
+        outputFileType: 'pdf',
+        outputFileName: 'abc_123_{d.firstname}-{d.lastname}',
       }
     };
   });
@@ -39,5 +41,22 @@ describe('customValidators.docGen', () => {
     expect(result.length).toEqual(1);
     expect(result[0].value).toMatch('garbage');
     expect(result[0].message).toMatch('Invalid value `contexts`.');
+  });
+
+  it('should return an empty error array when valid (using the minimum required request fields)', async () => {
+    const simpleBody = {
+      contexts: [{
+        x: 1
+      }],
+      template: {
+        content: 'ZHNmc2Rmc2RmZHNmc2Rmc2Rmc2Rm',
+        contentFileType: 'docx',
+      }
+    };
+    const result = await customValidators.docGen(simpleBody);
+
+    expect(result).toBeTruthy();
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(0);
   });
 });

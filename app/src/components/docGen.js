@@ -36,7 +36,8 @@ const docGen = {
       // If it's not an array of multiple data items, pass it into carbone as a singular object
       const data = body.contexts.length > 1 ? body.contexts : body.contexts[0];
 
-      // TODO: there's too much response stuff down here in a component layer, figure out how
+      // TODO: https://apps.nrs.gov.bc.ca/int/jira/browse/SHOWCASE-500
+      // There's too much response stuff down here in a component layer, figure out how
       // better to have the asynchronous carbone render be blocking and wait for its response
       // up in the v1/docGen.js route layer, then handle response setting there.
       carbone.render(tmpFile.name, data, options, (err, result, reportName) => {
