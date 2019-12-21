@@ -1,6 +1,13 @@
-# Common Document Generation Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+# Common Document Generation Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Quality Gate](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/gate?key=common-document-generation-service-master)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
 
-CDOGS - A hosted service to merge sets of data into document templates
+[![Bugs](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-document-generation-service-master&metric=bugs)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
+[![Vulnerabilities](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-document-generation-service-master&metric=vulnerabilities)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
+[![Code Smells](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-document-generation-service-master&metric=code_smells)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
+[![Coverage](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-document-generation-service-master&metric=coverage)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
+[![Lines](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-document-generation-service-master&metric=lines)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
+[![Duplication](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/api/badges/measure?key=common-document-generation-service-master&metric=duplicated_lines_density)](https://sonarqube-idcqvl-tools.pathfinder.gov.bc.ca/dashboard?id=common-document-generation-service-master)
+
+CDOGS - A common hosted service (API) for generating documents from templates, data documents, and assets
 
 ## Directory Structure
 
