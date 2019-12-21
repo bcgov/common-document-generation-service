@@ -35,8 +35,6 @@ oc create -n idcqvl-<env> configmap cdogs-server-config \
 
 Replace anything in angle brackets with the appropriate value!
 
-_Note: Publickey if used must be a PEM-encoded value encapsulated in double quotes in the argument. Newlines should not be re-encoded when using this command. If authentication fails, it's very likely a newline whitespace issue._
-
 ```sh
 oc create -n idcqvl-<env> secret generic cdogs-keycloak-secret \
   --type=kubernetes.io/basic-auth \
@@ -50,7 +48,7 @@ This application is a Node.js standalone microservice. We are currently leveragi
 
 ### Application
 
-The application is a standard [Node](https://nodejs.org)/[Express](https://expressjs.com) server. It handles the JWT based authentication via OIDC authentication flow, and exposes the API to authorized users. This deployment container is built up using an Openshift S2I image strategy. The resulting container after build is what is deployed.
+The application is a standard [Node](https://nodejs.org)/[Express](https://expressjs.com) server. It handles the JWT based authentication via OIDC authentication flow, and exposes the API to authorized users. This deployment container is built up using a custom Dockerfile strategy. The resulting container after build is what is deployed.
 
 ## Templates
 

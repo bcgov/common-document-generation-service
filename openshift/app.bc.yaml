@@ -12,27 +12,6 @@ objects:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewBuild
-      name: nodejs-10
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - annotations:
-            openshift.io/imported-from: registry.access.redhat.com/rhoar-nodejs/nodejs-10:latest
-          from:
-            kind: DockerImage
-            name: registry.access.redhat.com/rhoar-nodejs/nodejs-10:latest
-          generation:
-          importPolicy:
-            scheduled: true
-          name: latest
-          referencePolicy:
-            type: Local
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewBuild
       name: "${REPO_NAME}-app"
     spec:
       lookupPolicy:
