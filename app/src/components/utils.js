@@ -22,7 +22,7 @@ const utils = {
    *  @param {template} obj The template field from the request
    *  @returns {string} The output filename for the response
    */
-  determinOutputReportName: template => {
+  determineOutputReportName: template => {
     const extension = template.outputFileType ? template.outputFileType : template.contentFileType;
     const name = template.outputFileName ? template.outputFileName : uuidv4();
     return `${name}.${extension}`;

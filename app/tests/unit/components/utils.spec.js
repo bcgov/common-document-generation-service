@@ -43,14 +43,14 @@ describe('getFileExtension', () => {
 });
 
 
-describe('determinOutputReportName', () => {
+describe('determineOutputReportName', () => {
   it('should return the specified output file name with the specified extension', () => {
     const template = {
       contentFileType: 'docx',
       outputFileType: 'pdf',
       outputFileName: 'abc_123_{d.firstname}-{d.lastname}',
     };
-    expect(utils.determinOutputReportName(template)).toMatch('abc_123_{d.firstname}-{d.lastname}.pdf');
+    expect(utils.determineOutputReportName(template)).toMatch('abc_123_{d.firstname}-{d.lastname}.pdf');
   });
 
   it('should return the specified output file name with the input extension if no output specified', () => {
@@ -58,7 +58,7 @@ describe('determinOutputReportName', () => {
       contentFileType: 'xlsx',
       outputFileName: 'abc_123_{d.firstname}-{d.lastname}',
     };
-    expect(utils.determinOutputReportName(template)).toMatch('abc_123_{d.firstname}-{d.lastname}.xlsx');
+    expect(utils.determineOutputReportName(template)).toMatch('abc_123_{d.firstname}-{d.lastname}.xlsx');
   });
 
   it('should return random uuid as the output file name if none specified, with the specified extension', () => {
@@ -66,7 +66,7 @@ describe('determinOutputReportName', () => {
       contentFileType: 'odt',
       outputFileType: 'pdf'
     };
-    expect(utils.determinOutputReportName(template)).toMatch(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.pdf/);
+    expect(utils.determineOutputReportName(template)).toMatch(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.pdf/);
 
   });
 
@@ -74,7 +74,7 @@ describe('determinOutputReportName', () => {
     const template = {
       contentFileType: 'docx'
     };
-    expect(utils.determinOutputReportName(template)).toMatch(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.docx/);
+    expect(utils.determineOutputReportName(template)).toMatch(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.docx/);
 
   });
 });

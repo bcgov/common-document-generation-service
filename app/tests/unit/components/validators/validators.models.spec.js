@@ -14,7 +14,10 @@ describe('models.docGen.contexts', () => {
   });
 
   it('should return true for a valid contexts object (multiple)', () => {
-    const value = [{ firstName: 'x', lastName: 'y' }, { firstName: 'a', lastName: 'b' }];
+    const value = [
+      { firstName: 'x', lastName: 'y' },
+      { firstName: 'a', lastName: 'b' }
+    ];
     const result = models.docGen.contexts(value);
     expect(result).toBeTruthy();
   });
@@ -62,7 +65,13 @@ describe('models.docGen.template', () => {
   });
 
   it('should return true for a template object', () => {
-    const value = { content: 'x', contentEncodingType: 'y', contentFileType: 'docx', outputFileType: 'pdf', outputFileName: '{d.firstname}-{d.lastname}' };
+    const value = {
+      content: 'x',
+      contentEncodingType: 'y',
+      contentFileType: 'docx',
+      outputFileType: 'pdf',
+      outputFileName: '{d.firstname}-{d.lastname}'
+    };
     const result = models.docGen.template(value);
     expect(result).toBeTruthy();
   });
@@ -81,9 +90,8 @@ describe('models.docGen.template', () => {
 });
 
 
-describe('models.template', () => {
+describe('models.template.contentFileType', () => {
 
-  // template.contentFileType ----------------------------------------------------------------
   it('should return false for blank contentFileType', async () => {
     const contentFileType = '';
     const result = await models.template.contentFileType(contentFileType);
@@ -113,9 +121,11 @@ describe('models.template', () => {
     const result = await models.template.contentFileType(contentFileType);
     expect(result).toBeTruthy();
   });
-  // ---------------------------------------------------------------/template.contentFileType
 
-  // template.outputFileType-----------------------------------------------------------------
+});
+
+describe('models.template.outputFileType', () => {
+
   it('should return true for valid outputFileType', async () => {
     const outputFileType = 'pdf';
     const result = await models.template.outputFileType(outputFileType);
@@ -127,9 +137,11 @@ describe('models.template', () => {
     const result = await models.template.outputFileType(outputFileType);
     expect(result).toBeFalsy();
   });
-  // ---------------------------------------------------------------/template.outputFileType
 
-  // template.outputFileName-----------------------------------------------------------------
+});
+
+describe('models.template.outputFileName', () => {
+
   it('should return true for valid outputFileName', async () => {
     const outputFileName = 'abc_123_{d.test}';
     const result = await models.template.outputFileName(outputFileName);
@@ -140,9 +152,11 @@ describe('models.template', () => {
     const result = await models.template.outputFileName(outputFileName);
     expect(result).toBeFalsy();
   });
-  // ----------------------------------------------------------------/template.outputFileName
 
-  // template.content -----------------------------------------------------------------------
+});
+
+describe('models.template.content', () => {
+
   it('should return true for valid content', async () => {
     const content = smallFile.content;
     const result = await models.template.content(content);
@@ -216,9 +230,11 @@ describe('models.template', () => {
 
     spy.mockRestore();
   });
-  // ---------------------------------------------------------------------/template.content
 
-  // template.contentEncodingType ---------------------------------------------------------
+});
+
+describe('models.template.contentEncodingType', () => {
+
   it('should return true for valid contentEncodingType', async () => {
     const contentEncodingType = 'base64';
     const result = await models.template.contentEncodingType(contentEncodingType);
@@ -236,7 +252,5 @@ describe('models.template', () => {
     const result = await models.template.contentEncodingType(contentEncodingType);
     expect(result).toBeFalsy();
   });
-  // ---------------------------------------------------------/template.contentEncodingType
 
 });
-

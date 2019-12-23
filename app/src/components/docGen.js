@@ -26,10 +26,10 @@ const docGen = {
       log.debug('generateDocument', JSON.stringify(tmpFile));
 
       // Set options
-      const reportName = utils.determinOutputReportName(body.template);
+      const reportName = utils.determineOutputReportName(body.template);
       const options = {
-        reportName: reportName,
-        convertTo: body.template.outputFileType ? body.template.outputFileType : body.template.contentFileType
+        convertTo: body.template.outputFileType ? body.template.outputFileType : body.template.contentFileType,
+        reportName: reportName
       };
       log.debug('generateDocument', `Options: ${JSON.stringify(options)}`);
 

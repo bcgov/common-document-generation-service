@@ -220,13 +220,13 @@ components:
         outputFileType:
           type: string
           description: >-
-            The desird file extension of the generated document, used for converting to other types of document.
+            The desired file extension of the generated document, used for converting to other types of document.
             If not suppled, will just use the original contentFileType.
           example: pdf
         outputFileName:
           type: string
           description: >-
-            The desird file name of the generated document, can accept template substitution fields from the contexts.
+            The desired file name of the generated document, can accept template substitution fields from the contexts.
             If not suppled, will use a random UUID.
           example: abc_123_{d.firstName}_{d.lastName}
     ValidationError:
