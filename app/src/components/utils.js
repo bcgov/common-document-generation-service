@@ -1,3 +1,5 @@
+const uuidv4 = require('uuid/v4');
+
 const utils = {
   /** Returns a pretty JSON representation of an object
    *  @param {object} obj A JSON Object
@@ -13,6 +15,17 @@ const utils = {
   getFileExtension: filename => {
     const re = /(?:\.([^.]+))?$/;
     return re.exec(filename)[1];
+  },
+
+  /** For the DocGen component, determine what the outputted (response) filename should be based
+   * on the template object from the request body,
+   *  @param {template} obj The template field from the request
+   *  @returns {string} The output filename for the response
+   */
+  determinOutputReportName: template => {
+    const extension = template.outputFileType ? template.outputFileType : template.contentFileType;
+    const name = template.outputFileName ? template.outputFileName : uuidv4();
+    return `${name}.${extension}`;
   }
 };
 

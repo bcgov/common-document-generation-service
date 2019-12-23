@@ -15,9 +15,7 @@ const docGen = {
   generateDocument: (body, response) => {
     let tmpFile;
     try {
-      const inboundFileExtension = utils.getFileExtension(body.template.filename);
-
-      tmpFile = tmp.fileSync({ postfix: `.${inboundFileExtension}` });
+      tmpFile = tmp.fileSync({ postfix: `.${body.template.contentFileType}` });
       if (!body.template.contentEncodingType) {
         body.template.contentEncodingType = 'base64';
       }
@@ -28,10 +26,12 @@ const docGen = {
       log.debug('generateDocument', JSON.stringify(tmpFile));
 
       // Set options
+      const reportName = utils.determinOutputReportName(body.template);
       const options = {
-        convertTo: inboundFileExtension,
-        reportName: body.template.filename
+        reportName: reportName,
+        convertTo: body.template.outputFileType ? body.template.outputFileType : body.template.contentFileType
       };
+      log.debug('options', JSON.stringify(options));
 
       // If it's not an array of multiple data items, pass it into carbone as a singular object
       const data = body.contexts.length > 1 ? body.contexts : body.contexts[0];
@@ -54,7 +54,7 @@ const docGen = {
 
           response.status(201);
           response.set('Content-Disposition', `attachment; filename=${reportName}`);
-          if (inboundFileExtension && inboundFileExtension.toUpperCase() === 'PDF') {
+          if (body.template.outputFileType && body.template.outputFileType.toUpperCase() === 'PDF') {
             response.set('Content-Type', 'application/pdf');
           } else {
             response.set('Content-Type', 'text/plain');
