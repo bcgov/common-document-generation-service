@@ -19,20 +19,36 @@ const models = {
   },
 
   template: {
-    /** @function filename is required */
-    filename: value => {
-      return validatorUtils.isString(value) && !validator.isEmpty(value, { ignore_whitespace: true });
-    },
-
     /** @function content is required */
     content: value => {
-      return validatorUtils.isString(value) && !validator.isEmpty(value, { ignore_whitespace: true });
+      return validatorUtils.isNonEmptyString(value);
     },
 
     /** @function contentEncodingType must be in a set list */
     contentEncodingType: value => {
       if (value) {
-        return validatorUtils.isString(value) && !validator.isEmpty(value, { ignore_whitespace: true }) && validator.isIn(value, ['base64', 'binary', 'hex']);
+        return validatorUtils.isNonEmptyString(value) && validator.isIn(value, ['base64', 'binary', 'hex']);
+      }
+      return true;
+    },
+
+    /** @function contentFileType is required */
+    contentFileType: value => {
+      return validatorUtils.isNonEmptyString(value);
+    },
+
+    /** @function outputFileName is not required, must be a string */
+    outputFileName: value => {
+      if (value) {
+        return validatorUtils.isNonEmptyString(value);
+      }
+      return true;
+    },
+
+    /** @function outputFileType is not required, must be a string */
+    outputFileType: value => {
+      if (value) {
+        return validatorUtils.isNonEmptyString(value);
       }
       return true;
     },
@@ -89,8 +105,8 @@ const customValidators = {
     if (validateTemplate) {
 
       let validateSize = true;
-      if (!models.template.filename(obj.template.filename)) {
-        errors.push({ value: obj.template.filename, message: 'Invalid value `template.filename`.' });
+      if (!models.template.contentFileType(obj.template.contentFileType)) {
+        errors.push({ value: obj.template.contentFileType, message: 'Invalid value `template.contentFileType`.' });
         validateSize = false;
       }
 
@@ -145,6 +161,11 @@ const validatorUtils = {
   /** @function isString */
   isString: x => {
     return Object.prototype.toString.call(x) === '[object String]';
+  },
+
+  /** @function isNonEmptyString */
+  isNonEmptyString: x => {
+    return validatorUtils.isString(x) && !validator.isEmpty(x, { ignore_whitespace: true });
   }
 };
 
