@@ -31,7 +31,7 @@ const docGen = {
         reportName: reportName,
         convertTo: body.template.outputFileType ? body.template.outputFileType : body.template.contentFileType
       };
-      log.debug('options', JSON.stringify(options));
+      log.debug('generateDocument', `Options: ${JSON.stringify(options)}`);
 
       // If it's not an array of multiple data items, pass it into carbone as a singular object
       const data = body.contexts.length > 1 ? body.contexts : body.contexts[0];
