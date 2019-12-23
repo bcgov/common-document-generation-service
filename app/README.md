@@ -202,8 +202,8 @@ See the Carbone Repitition documentation for the much more complex examples
 
 
 #### File Name
-The `template` object in the request body requires a `filename` field. This field will serve as the requested file name for the resultant merged document.
-This field should include the **extension** that the supplied template file has.
+The `template` object in the request body contains an optional `outputFileName` field. This field will serve as the requested file name for the resultant merged document.
+If not supplied, a random UUID (such as 6a2f41a3-c54c-fce8-32d2-0324e1c32e22) will serve as the placeholder.
 
 The file name is able to be templated in the same manner as the contents if desired.
 
@@ -221,8 +221,9 @@ An example request is shown below:
       "contact": "Bob"
     }],
   "template": {
-    "filename": "office_contact_{d.office.id}.docx",
-    "content": "<encoded file here>"
+    "content": "<encoded file here>",
+    "contentFileType": "docx",
+    "outputFileName": "office_contact_{d.office.id}",
   }
 }
 ```
