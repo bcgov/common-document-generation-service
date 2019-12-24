@@ -9,6 +9,8 @@
 
 CDOGS - A common hosted service (API) for generating documents from templates, data documents, and assets
 
+To learn more about the **Common Services** available visit the [Common Services Showcase](https://bcgov.github.io/common-service-showcase/) page.
+
 ## Directory Structure
 
     .github/                   - PR and Issue templates
