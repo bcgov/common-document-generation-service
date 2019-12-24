@@ -203,3 +203,55 @@ describe('validatorUtils.isString', () => {
   });
 
 });
+
+describe('validatorUtils.isNonEmptyString', () => {
+
+  it('should return true for a non-empty string', () => {
+    const value = 'this is a string';
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeTruthy();
+  });
+
+  it('should return true for a string object ', () => {
+    const value = String(123456);
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeTruthy();
+  });
+
+  it('should return false for an empty string ', () => {
+    const value = '';
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for a whitespace string ', () => {
+    const value = '   ';
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for undefined ', () => {
+    const value = undefined;
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for null ', () => {
+    const value = null;
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeFalsy();
+  });
+
+  it('should return false for empty String object', () => {
+    const value = String('  ');
+    const result = validatorUtils.isNonEmptyString(value);
+
+    expect(result).toBeFalsy();
+  });
+});

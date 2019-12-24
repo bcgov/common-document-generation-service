@@ -37,6 +37,7 @@
     "morgan": "^1.9.1",
     "npmlog": "^4.1.2",
     "tmp": "^0.1.0",
+    "uuid": "^3.3.3",
     "validator": "^12.0.0"
   },
   "devDependencies": {

@@ -7,91 +7,93 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-bc"
 objects:
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-    name: nodejs-10
-  spec:
-    lookupPolicy:
-      local: false
-    tags:
-    - annotations:
-        openshift.io/imported-from: registry.access.redhat.com/rhoar-nodejs/nodejs-10:latest
-      from:
-        kind: DockerImage
-        name: registry.access.redhat.com/rhoar-nodejs/nodejs-10:latest
-      generation:
-      importPolicy:
-        scheduled: true
-      name: latest
-      referencePolicy:
-        type: Local
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-    name: "${REPO_NAME}-app"
-  spec:
-    lookupPolicy:
-      local: false
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-    name: "${REPO_NAME}-app-${JOB_NAME}"
-  spec:
-    completionDeadlineSeconds: 600
-    successfulBuildsHistoryLimit: 3
-    failedBuildsHistoryLimit: 3
-    nodeSelector:
-    output:
-      to:
-        kind: ImageStreamTag
-        name: "${REPO_NAME}-app:latest"
-    postCommit: {}
-    resources:
-      requests:
-        cpu: 1000m
-        memory: 1Gi
-      limits:
-        cpu: 2000m
-        memory: 2Gi
-    runPolicy: SerialLatestOnly
-    source:
-      contextDir: app
-      git:
-        ref: "${SOURCE_REPO_REF}"
-        uri: "${SOURCE_REPO_URL}"
-      type: Git
-    strategy:
-      sourceStrategy:
-        env:
-        - name: BUILD_LOGLEVEL
-          value: '2'
-        - name: NPM_CONFIG_LOGLEVEL
-          value: notice
-        from:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewBuild
+      name: "${REPO_NAME}-app"
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewBuild
+      name: "${REPO_NAME}-app-${JOB_NAME}"
+    spec:
+      completionDeadlineSeconds: 600
+      failedBuildsHistoryLimit: 3
+      nodeSelector:
+      output:
+        to:
           kind: ImageStreamTag
-          name: nodejs-10:latest
-      type: Source
+          name: "${REPO_NAME}-app:latest"
+      postCommit: {}
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+      runPolicy: SerialLatestOnly
+      source:
+        contextDir: app
+        git:
+          ref: "${SOURCE_REPO_REF}"
+          uri: "${SOURCE_REPO_URL}"
+        type: Git
+        dockerfile: |-
+          FROM BuildConfig
+          ARG APP_ROOT=/opt/app-root/src
+          ENV PATH="/usr/lib/libreoffice/program:${PATH}" \
+              PYTHONUNBUFFERED=1
+          WORKDIR ${APP_ROOT}
+
+          # Install LibreOffice & Common Fonts
+          RUN apk --no-cache add bash libreoffice util-linux \
+              ttf-droid-nonlatin ttf-droid ttf-dejavu ttf-freefont ttf-liberation \
+          && rm -rf /var/cache/apk/*
+
+          # Fix Python/LibreOffice Integration
+          COPY docker ${APP_ROOT}/docker
+          RUN chmod a+rx ${APP_ROOT}/docker/bindPython.sh \
+           && ${APP_ROOT}/docker/bindPython.sh
+
+          # Install CDOGS
+          COPY . .
+          RUN npm ci
+
+          EXPOSE 3000
+          CMD ["npm", "run", "start"]
+      strategy:
+        dockerStrategy:
+          env:
+            - name: BUILD_LOGLEVEL
+              value: "2"
+            - name: NPM_CONFIG_LOGLEVEL
+              value: notice
+          from:
+            kind: DockerImage
+            name: "mhart/alpine-node:12"
+        type: Docker
+      successfulBuildsHistoryLimit: 3
 parameters:
-- name: REPO_NAME
-  description: Application repository name
-  displayName: Repository Name
-  required: true
-- name: JOB_NAME
-  description: Job identifier (i.e. 'pr-5' OR 'master')
-  displayName: Job Branch Name
-  required: true
-- name: SOURCE_REPO_REF
-  description: Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head')
-  displayName: Source Repository Reference
-  required: true
-- name: SOURCE_REPO_URL
-  description: Git Repository URL
-  displayName: Source Repository URL
-  required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: SOURCE_REPO_REF
+    description: Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head')
+    displayName: Source Repository Reference
+    required: true
+  - name: SOURCE_REPO_URL
+    description: Git Repository URL
+    displayName: Source Repository URL
+    required: true

@@ -191,6 +191,9 @@ components:
           type: string
           description: Short description of why this problem was raised.
     TemplateObject:
+      required:
+        - content
+        - contentFileType
       type: object
       properties:
         content:
@@ -209,12 +212,23 @@ components:
             - binary
             - hex
           example: base64
-        filename:
+        contentFileType:
           type: string
           description: >-
-            Filename to be used as the resultant merged document. Use of
-            unicode is allowed.
-          example: filename.docx
+            The file extension of the encoded content file.
+          example: docx
+        outputFileType:
+          type: string
+          description: >-
+            The desired file extension of the generated document, used for converting to other types of document.
+            If not suppled, will just use the original contentFileType.
+          example: pdf
+        outputFileName:
+          type: string
+          description: >-
+            The desired file name of the generated document, can accept template substitution fields from the contexts.
+            If not suppled, will use a random UUID.
+          example: abc_123_{d.firstName}_{d.lastName}
     ValidationError:
       allOf:
         - $ref: '#/components/schemas/Problem'

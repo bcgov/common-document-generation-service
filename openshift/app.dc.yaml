@@ -7,138 +7,138 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
-    name: "${APP_NAME}-app-${JOB_NAME}"
-  spec:
-    replicas: 2
-    selector:
-      app: "${APP_NAME}-${JOB_NAME}"
-      deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
-    strategy:
-      type: Rolling
-      rollingParams:
-        timeoutSeconds: 600
-        resources: {}
-    template:
-      metadata:
-        annotations:
-          openshift.io/generated-by: OpenShiftNewApp
-        labels:
-          app: "${APP_NAME}-${JOB_NAME}"
-          deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
-      spec:
-        containers:
-        - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /
-              port: 3000
-              scheme: HTTP
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          name: "${APP_NAME}-app-${JOB_NAME}"
-          ports:
-          - containerPort: 3000
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /
-              port: 3000
-              scheme: HTTP
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources: {}
-          env:
-          - name: NODE_ENV
-            value: production
-          - name: KC_CLIENTID
-            valueFrom:
-              secretKeyRef:
-                key: username
-                name: cdogs-keycloak-secret
-          - name: KC_CLIENTSECRET
-            valueFrom:
-              secretKeyRef:
-                key: password
-                name: cdogs-keycloak-secret
-          envFrom:
-          - configMapRef:
-              name: cdogs-keycloak-config
-          - configMapRef:
-              name: cdogs-server-config
-    test: false
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - "${APP_NAME}-app-${JOB_NAME}"
-        from:
-          kind: ImageStreamTag
-          name: "${REPO_NAME}-app:${JOB_NAME}"
-          namespace: "${NAMESPACE}"
-      type: ImageChange
-- apiVersion: v1
-  kind: Service
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
-    name: "${APP_NAME}-app-${JOB_NAME}"
-  spec:
-    ports:
-    - name: 3000-tcp
-      port: 3000
-      protocol: TCP
-      targetPort: 3000
-    selector:
-      app: "${APP_NAME}-${JOB_NAME}"
-      deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
-- apiVersion: v1
-  kind: Route
-  metadata:
-    annotations:
-      openshift.io/host.generated: 'true'
-    name: "${APP_NAME}-app-${JOB_NAME}"
-  spec:
-    host: "${HOST_ROUTE}"
-    path: /
-    port:
-      targetPort: 3000-tcp
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: edge
-    to:
-      kind: Service
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
       name: "${APP_NAME}-app-${JOB_NAME}"
-      weight: 100
-    wildcardPolicy: None
+    spec:
+      replicas: 2
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+      strategy:
+        type: Rolling
+        rollingParams:
+          timeoutSeconds: 600
+          resources: {}
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: OpenShiftNewApp
+          labels:
+            app: "${APP_NAME}-${JOB_NAME}"
+            deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        spec:
+          containers:
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 3000
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: "${APP_NAME}-app-${JOB_NAME}"
+              ports:
+                - containerPort: 3000
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 3000
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources: {}
+              env:
+                - name: NODE_ENV
+                  value: production
+                - name: KC_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: cdogs-keycloak-secret
+                - name: KC_CLIENTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: cdogs-keycloak-secret
+              envFrom:
+                - configMapRef:
+                    name: cdogs-keycloak-config
+                - configMapRef:
+                    name: cdogs-server-config
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - "${APP_NAME}-app-${JOB_NAME}"
+            from:
+              kind: ImageStreamTag
+              name: "${REPO_NAME}-app:${JOB_NAME}"
+              namespace: "${NAMESPACE}"
+          type: ImageChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      ports:
+        - name: 3000-tcp
+          port: 3000
+          protocol: TCP
+          targetPort: 3000
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: "true"
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      host: "${HOST_ROUTE}"
+      path: /
+      port:
+        targetPort: 3000-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${APP_NAME}-app-${JOB_NAME}"
+        weight: 100
+      wildcardPolicy: None
 parameters:
-- name: REPO_NAME
-  description: Application repository name
-  displayName: Repository Name
-  required: true
-- name: JOB_NAME
-  description: Job identifier (i.e. 'pr-5' OR 'master')
-  displayName: Job Branch Name
-  required: true
-- name: NAMESPACE
-  description: Target namespace reference (i.e. '9f0fbe-dev')
-  displayName: Target Namespace
-  required: true
-- name: APP_NAME
-  description: Application name
-  displayName: Application name
-  required: true
-- name: HOST_ROUTE
-  description: The host the route will use to expose service outside cluster
-  displayName: Host route
-  required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. '9f0fbe-dev')
+    displayName: Target Namespace
+    required: true
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: HOST_ROUTE
+    description: The host the route will use to expose service outside cluster
+    displayName: Host route
+    required: true
