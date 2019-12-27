@@ -2,11 +2,22 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: "${REPO_NAME}-template"
   app: "${APP_NAME}-${JOB_NAME}"
+  template: "${REPO_NAME}-app-dc-template"
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
+  - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}-pods-to-k8s-api-${NAMESPACE}"
+    spec:
+      description: |
+        Allow pods to talk to the internal K8S api
+      source:
+        - - $namespace=${NAMESPACE}
+      destination:
+        - - int:network=internal-cluster-api-endpoint
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -15,14 +26,16 @@ objects:
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
       replicas: 2
+      revisionHistoryLimit: 10
       selector:
         app: "${APP_NAME}-${JOB_NAME}"
         deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
       strategy:
         type: Rolling
+        resources: {}
         rollingParams:
           timeoutSeconds: 600
-          resources: {}
       template:
         metadata:
           annotations:
@@ -30,6 +43,7 @@ objects:
           labels:
             app: "${APP_NAME}-${JOB_NAME}"
             deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+            role: app
         spec:
           containers:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
@@ -40,7 +54,8 @@ objects:
                   path: /
                   port: 3000
                   scheme: HTTP
-                periodSeconds: 10
+                initialDelaySeconds: 10
+                periodSeconds: 60
                 successThreshold: 1
                 timeoutSeconds: 1
               name: "${APP_NAME}-app-${JOB_NAME}"
@@ -53,10 +68,17 @@ objects:
                   path: /
                   port: 3000
                   scheme: HTTP
+                initialDelaySeconds: 10
                 periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
-              resources: {}
+              resources:
+                requests:
+                  cpu: "${CPU_REQUEST}"
+                  memory: "${MEMORY_REQUEST}"
+                limits:
+                  cpu: "${CPU_LIMIT}"
+                  memory: "${MEMORY_LIMIT}"
               env:
                 - name: NODE_ENV
                   value: production
@@ -102,6 +124,7 @@ objects:
       selector:
         app: "${APP_NAME}-${JOB_NAME}"
         deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
   - apiVersion: v1
     kind: Route
     metadata:
@@ -122,9 +145,13 @@ objects:
         weight: 100
       wildcardPolicy: None
 parameters:
-  - name: REPO_NAME
-    description: Application repository name
-    displayName: Repository Name
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: HOST_ROUTE
+    description: The host the route will use to expose service outside cluster
+    displayName: Host route
     required: true
   - name: JOB_NAME
     description: Job identifier (i.e. 'pr-5' OR 'master')
@@ -134,11 +161,23 @@ parameters:
     description: Target namespace reference (i.e. '9f0fbe-dev')
     displayName: Target Namespace
     required: true
-  - name: APP_NAME
-    description: Application name
-    displayName: Application name
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
     required: true
-  - name: HOST_ROUTE
-    description: The host the route will use to expose service outside cluster
-    displayName: Host route
-    required: true
+  - name: CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 1000m
+  - name: CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 100m
+  - name: MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 1Gi
+  - name: MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 256Mi
