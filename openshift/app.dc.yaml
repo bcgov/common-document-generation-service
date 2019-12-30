@@ -10,12 +10,13 @@ objects:
   - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     kind: NetworkSecurityPolicy
     metadata:
-      name: "${APP_NAME}-app-${JOB_NAME}-pods-to-k8s-api-${NAMESPACE}"
+      name: "${APP_NAME}-app-${JOB_NAME}-sa-deployer-to-k8s-api-${NAMESPACE}"
     spec:
       description: |
-        Allow pods to talk to the internal K8S api
+        Allow deployer service account to talk to the internal K8S api
       source:
         - - $namespace=${NAMESPACE}
+          - "@app:k8s:serviceaccountname=deployer"
       destination:
         - - int:network=internal-cluster-api-endpoint
   - apiVersion: v1
