@@ -10,19 +10,18 @@ objects:
   - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     kind: NetworkSecurityPolicy
     metadata:
-      name: "${APP_NAME}-app-${JOB_NAME}-pods-to-k8s-api-${NAMESPACE}"
+      name: "${APP_NAME}-${JOB_NAME}-sa-deployer-to-k8s-api-${NAMESPACE}"
     spec:
       description: |
-        Allow pods to talk to the internal K8S api
+        Allow deployer pods to talk to the internal K8S api
       source:
-        - - $namespace=${NAMESPACE}
+        - - "$namespace=${NAMESPACE}"
+          - "@app:k8s:serviceaccountname=deployer"
       destination:
         - - int:network=internal-cluster-api-endpoint
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewApp
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
       replicas: 2
@@ -38,8 +37,6 @@ objects:
           timeoutSeconds: 600
       template:
         metadata:
-          annotations:
-            openshift.io/generated-by: OpenShiftNewApp
           labels:
             app: "${APP_NAME}-${JOB_NAME}"
             deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
@@ -112,8 +109,6 @@ objects:
   - apiVersion: v1
     kind: Service
     metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewApp
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
       ports:
@@ -128,8 +123,6 @@ objects:
   - apiVersion: v1
     kind: Route
     metadata:
-      annotations:
-        openshift.io/host.generated: "true"
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
       host: "${HOST_ROUTE}"
