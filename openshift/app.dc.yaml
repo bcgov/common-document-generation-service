@@ -19,6 +19,20 @@ objects:
           - "@app:k8s:serviceaccountname=deployer"
       destination:
         - - int:network=internal-cluster-api-endpoint
+  - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}-pods-to-egress-${NAMESPACE}"
+    spec:
+      description: |
+        Allow pods to open connections to the internet
+      source:
+        - - "$namespace=${NAMESPACE}"
+          - "app=${APP_NAME}-${JOB_NAME}"
+          - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
+          - role=app
+    destination:
+      - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
