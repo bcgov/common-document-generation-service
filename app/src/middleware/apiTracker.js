@@ -7,7 +7,6 @@
  *
  * @exports initializeApiTracker
  */
-const log = require('npmlog');
 const moment = require('moment');
 const morgan = require('morgan');
 
