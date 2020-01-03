@@ -133,7 +133,7 @@ const initializeApiTracker = (app) => {
     stream: {
       write: (s) => {
         if (s && s.trim().length > 0) {
-          process.stdout.write(`CDOGS_API_TRACKER ${s.trim()}`);
+          process.stdout.write(`CDOGS_API_TRACKER ${s.trim()}\n`);
 
           const parts = s.trim().split(' ');
           const o = {
@@ -149,7 +149,7 @@ const initializeApiTracker = (app) => {
             contentLength: parts[8],
             responseTime: parts[9]
           };
-          process.stdout.write(JSON.stringify(o));
+          process.stdout.write(`${JSON.stringify(o)}\n`);
         }
       }
     }
