@@ -137,17 +137,21 @@ const initializeApiTracker = (app) => {
 
           const parts = s.trim().split(' ');
           const o = {
-            type: 'CDOGS_API_TRACKER',
-            operation: parts[0],
-            authorizedParty: parts[1],
-            timestamp: parts[2],
-            contextKeyCount: parts[3],
-            contentFileType: parts[4],
-            contentEncodingType: parts[5],
-            contentSize: parts[6],
-            outputFileType: parts[7],
-            contentLength: parts[8],
-            responseTime: parts[9]
+            commonlogging: {
+              type:'CDOGS_API_TRACKER',
+              data: {
+                operation: parts[0],
+                authorizedParty: parts[1],
+                timestamp: parts[2],
+                contextKeyCount: parts[3],
+                contentFileType: parts[4],
+                contentEncodingType: parts[5],
+                contentSize: parts[6],
+                outputFileType: parts[7],
+                contentLength: parts[8],
+                responseTime: parts[9]
+              }
+            }
           };
           process.stdout.write(`${JSON.stringify(o)}\n`);
         }
