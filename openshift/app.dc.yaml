@@ -31,8 +31,8 @@ objects:
           - "app=${APP_NAME}-${JOB_NAME}"
           - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
           - role=app
-    destination:
-      - - ext:network=any
+      destination:
+        - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
