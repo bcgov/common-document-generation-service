@@ -133,7 +133,7 @@ const initializeApiTracker = (app) => {
     },
     stream: {
       write: (s) => {
-        if (s && s.trim().length > 0) log.info('apiTracker', s.trim());
+        if (s && s.trim().length > 0) process.stdout(`CDOGS_API_TRACKER ${s.trim()}`);
       }
     }
   }));
