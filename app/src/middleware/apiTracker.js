@@ -91,10 +91,9 @@ const initializeApiTracker = (app) => {
 
     try {
       // want to return some idea of the size/magnitude/complexity of the contexts
-      const keyCount = countKeys(req.body.contexts);
-      return keyCount;
+      return countKeys(req.body.contexts);
     } catch (e) {
-      return '-';
+      return '0';
     }
   });
 
