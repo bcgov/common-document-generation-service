@@ -141,8 +141,8 @@ const initializeApiTracker = (app) => {
         if (s && s.trim().length > 0) {
           const parts = s.trim().split(' ');
           const ts = Number.parseInt(parts[2]);
-          // format this to match Kibana pretty format...
-          const timestamp = moment.utc(ts).format('MMMM Do YYYY, h:mm:ss.SSS');
+          // format this to match Kibana pretty format (almost - utc + timezone)...
+          const timestamp = moment.utc(ts).format('MMMM Do YYYY, HH:mm:ss.SSSZZ');
           const o = {
             clogs: {
               type: 'CDOGS_API_TRACKER',
@@ -153,20 +153,20 @@ const initializeApiTracker = (app) => {
                 op: parts[0],
                 azp: parts[1],
                 context: {
-                  keyCount: parts[3]
+                  keyCount: Number.parseInt(parts[3])
                 },
                 content: {
                   fileType: parts[4],
                   encodingType: parts[5],
-                  size: parts[6]
+                  size: Number.parseInt(parts[6])
                 },
                 output: {
                   fileType: parts[7],
-                  size: '-' !== parts[8] ? parts[8] : undefined
+                  size: '-' !== parts[8] ? Number.parseInt(parts[8]) : undefined
                 },
                 response: {
                   status: parts[9],
-                  timeMs: parts[10]
+                  timeMs: Number.parseFloat(parts[10])
                 }
               }
             }
