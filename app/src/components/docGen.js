@@ -1,6 +1,8 @@
 const carbone = require('carbone');
 const fs = require('fs');
 const log = require('npmlog');
+const mime = require('mime-types');
+const path = require('path');
 const stream = require('stream');
 const tmp = require('tmp');
 const utils = require('./utils');
@@ -54,41 +56,11 @@ const docGen = {
 
           response.status(201);
           response.set('Content-Disposition', `attachment; filename=${reportName}`);
+          const contentType = mime.contentType(path.extname(reportName));
+          response.set('Content-Type', contentType);
           // Note that content-length header is not always returned, depends on the content-type
           // For example: text/plain, text/html do not return content-length
           response.set('Content-Length', result.length);
-          if (body.template.outputFileType && body.template.outputFileType.toUpperCase() === 'PDF') {
-            response.set('Content-Type', 'application/pdf');
-          } else {
-            let contentType = 'text/plain';
-            switch (utils.getFileExtension(reportName).toUpperCase()) {
-            case 'DOCX':
-              contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-              break;
-            case 'XLSX':
-              contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-              break;
-            case 'PPTX':
-              contentType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-              break;
-            case 'ODT':
-              contentType = 'application/vnd.oasis.opendocument.text';
-              break;
-            case 'ODS':
-              contentType = 'application/vnd.oasis.opendocument.spreadsheet';
-              break;
-            case 'ODP':
-              contentType = 'application/vnd.oasis.opendocument.presentation ';
-              break;
-            case 'HTML':
-              contentType = 'text/html';
-              break;
-            case 'CSV':
-              contentType = 'text/csv';
-              break;
-            }
-            response.set('Content-Type', contentType);
-          }
 
           readStream.pipe(response);
           // Doc is generated at this point, remove the input file

@@ -133,8 +133,6 @@ const initializeApiTracker = (app) => {
     stream: {
       write: (s) => {
         if (s && s.trim().length > 0) {
-          process.stdout.write(`CDOGS_API_TRACKER ${s.trim()}\n`);
-
           const parts = s.trim().split(' ');
           const o = {
             commonlogging: {
@@ -153,7 +151,7 @@ const initializeApiTracker = (app) => {
               }
             }
           };
-          process.stdout.write(`${JSON.stringify(o)}\n`);
+          process.stdout.write(`TEST_STRING_OPEN ${JSON.stringify(o)} TEST_STRING_CLOSE\n`);
         }
       }
     }
