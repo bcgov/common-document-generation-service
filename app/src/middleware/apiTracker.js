@@ -142,7 +142,7 @@ const initializeApiTracker = (app) => {
           const parts = s.trim().split(' ');
           const ts = Number.parseInt(parts[2]);
           // format this to match Kibana pretty format...
-          const timestamp = moment(ts).format('MMMM Do YYYY, h:mm:ss.SSS');
+          const timestamp = moment.utc(ts).format('MMMM Do YYYY, h:mm:ss.SSS');
           const o = {
             clogs: {
               type: 'CDOGS_API_TRACKER',
