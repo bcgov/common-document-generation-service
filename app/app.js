@@ -10,6 +10,9 @@ const keycloak = require('./src/components/keycloak');
 const utils = require('./src/components/utils');
 const v1Router = require('./src/routes/v1');
 
+const { authorizedParty } = require('./src/middleware/authorizedParty');
+const initializeApiTracker = require('./src/middleware/apiTracker');
+
 const apiRouter = express.Router();
 const state = {
   isShutdown: false
@@ -36,6 +39,8 @@ log.debug('Config', utils.prettyStringify(config));
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
+  app.use(authorizedParty);
+  initializeApiTracker(app);
   // Add Morgan endpoint logging
   app.use(morgan(config.get('server.morganFormat')));
 }

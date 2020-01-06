@@ -1,6 +1,8 @@
 const carbone = require('carbone');
 const fs = require('fs');
 const log = require('npmlog');
+const mime = require('mime-types');
+const path = require('path');
 const stream = require('stream');
 const tmp = require('tmp');
 const utils = require('./utils');
@@ -54,11 +56,11 @@ const docGen = {
 
           response.status(201);
           response.set('Content-Disposition', `attachment; filename=${reportName}`);
-          if (body.template.outputFileType && body.template.outputFileType.toUpperCase() === 'PDF') {
-            response.set('Content-Type', 'application/pdf');
-          } else {
-            response.set('Content-Type', 'text/plain');
-          }
+          const contentType = mime.contentType(path.extname(reportName));
+          response.set('Content-Type', contentType);
+          // Note that content-length header is not always returned, depends on the content-type
+          // For example: text/plain, text/html do not return content-length
+          response.set('Content-Length', result.length);
 
           readStream.pipe(response);
           // Doc is generated at this point, remove the input file
