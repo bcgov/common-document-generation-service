@@ -10,12 +10,18 @@
 const moment = require('moment');
 const morgan = require('morgan');
 
+// this will suppress a console warning about moment deprecating a default fallback on non ISO/RFC2822 date formats
+// we will just force it to use the new Date constructor.
+moment.createFromInputFallback = function (config) {
+  config._d = new Date(config._i);
+};
+
 const docGenUrl = '/api/v1/docGen';
 const trackerUrls = [docGenUrl];
 
 // add in any token (custom or morgan built-in) we want to the format, then morgan can parse out later
 // status and response-time is a built-in morgan token
-const apiTrackerFormat = ':operation :authorizedParty :timestamp :contextKeyCount :contentFileType :contentEncodingType :contentSize :outputFileType :res[content-length] :status :response-time';
+const apiTrackerFormat = ':operation :azp :timestamp :contextKeyCount :contentFileType :contentEncodingType :contentSize :outputFileType :res[content-length] :status :response-time';
 
 const apiTracker = async (req, res, next) => {
 
@@ -49,7 +55,7 @@ const initializeApiTracker = (app) => {
 
   // register token parser functions.
   // this one would depend on authorizedParty middleware being loaded
-  morgan.token('authorizedParty', (req) => {
+  morgan.token('azp', (req) => {
     return req.authorizedParty ? req.authorizedParty : '-';
   });
 
@@ -134,24 +140,40 @@ const initializeApiTracker = (app) => {
       write: (s) => {
         if (s && s.trim().length > 0) {
           const parts = s.trim().split(' ');
+          const ts = Number.parseInt(parts[2]);
+          // format this to match Kibana pretty format...
+          const timestamp = moment(ts).format('MMMM Do YYYY, h:mm:ss.SSS');
           const o = {
-            commonlogging: {
-              type:'CDOGS_API_TRACKER',
+            clogs: {
+              type: 'CDOGS_API_TRACKER',
+              ts: ts,
+              timestamp: timestamp,
+              level: 'info',
               data: {
-                operation: parts[0],
-                authorizedParty: parts[1],
-                timestamp: parts[2],
-                contextKeyCount: parts[3],
-                contentFileType: parts[4],
-                contentEncodingType: parts[5],
-                contentSize: parts[6],
-                outputFileType: parts[7],
-                contentLength: parts[8],
-                responseTime: parts[9]
+                op: parts[0],
+                azp: parts[1],
+                context: {
+                  keyCount: parts[3]
+                },
+                content: {
+                  fileType: parts[4],
+                  encodingType: parts[5],
+                  size: parts[6]
+                },
+                output: {
+                  fileType: parts[7],
+                  size: '-' !== parts[8] ? parts[8] : undefined
+                },
+                response: {
+                  status: parts[9],
+                  timeMs: parts[10]
+                }
               }
             }
           };
-          process.stdout.write(`TEST_STRING_OPEN ${JSON.stringify(o)} TEST_STRING_CLOSE\n`);
+          // always print this directly to stdout
+          // must be a single line of JSON only, Kibana can parse and we can query by clogs.* fields.
+          process.stdout.write(`${JSON.stringify(o)}\n`);
         }
       }
     }
