@@ -70,6 +70,13 @@ objects:
                 successThreshold: 1
                 timeoutSeconds: 1
               name: "${APP_NAME}-app-${JOB_NAME}"
+              args:
+                - npm
+                - run
+                - start
+                - ">"
+                - /var/log/log.log
+                - "2>&1"
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -108,6 +115,22 @@ objects:
                     name: cdogs-keycloak-config
                 - configMapRef:
                     name: cdogs-server-config
+              volumeMounts:
+                - name: varlog
+                  mountPath: /var/log
+            - image: alpine:3.11
+              imagePullPolicy: IfNotPresent
+              name: "${APP_NAME}-logger-${JOB_NAME}"
+              args:
+                - /bin/sh
+                - -c
+                - "tail -n+1 -f /var/log/log.log"
+              volumeMounts:
+                - name: varlog
+                  mountPath: /var/log
+          volumes:
+            - name: varlog
+              emptyDir: {}
       test: false
       triggers:
         - type: ConfigChange
