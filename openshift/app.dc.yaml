@@ -119,8 +119,9 @@ objects:
             - image: alpine:3.11
               imagePullPolicy: IfNotPresent
               name: "${APP_NAME}-logger-${JOB_NAME}"
-              args:
+              command:
                 - /bin/sh
+              args:
                 - -c
                 - "tail -n+1 -f /var/log/log.log"
               volumeMounts:
