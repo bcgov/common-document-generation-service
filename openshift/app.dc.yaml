@@ -74,7 +74,7 @@ objects:
                 - /bin/sh
               args:
                 - -c
-                - "npm run start > /var/log/log.log 2>&1"
+                - "npm run start 2>&1 | tee /var/log/log.log"
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -116,14 +116,9 @@ objects:
               volumeMounts:
                 - name: varlog
                   mountPath: /var/log
-            - image: alpine:3.11
+            - image: elastic/filebeat:7.5.1
               imagePullPolicy: IfNotPresent
-              name: "${APP_NAME}-logger-${JOB_NAME}"
-              command:
-                - /bin/sh
-              args:
-                - -c
-                - "tail -n+1 -f /var/log/log.log"
+              name: "${APP_NAME}-filebeat-${JOB_NAME}"
               volumeMounts:
                 - name: varlog
                   mountPath: /var/log
