@@ -70,13 +70,11 @@ objects:
                 successThreshold: 1
                 timeoutSeconds: 1
               name: "${APP_NAME}-app-${JOB_NAME}"
+              command:
+                - /bin/sh
               args:
-                - npm
-                - run
-                - start
-                - ">"
-                - /var/log/log.log
-                - "2>&1"
+                - -c
+                - "npm run start > /var/log/log.log 2>&1"
               ports:
                 - containerPort: 3000
                   protocol: TCP
