@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  build: "filebeat"
+  template: "filebeat-template"
+metadata:
+  name: "filebeat-bc"
+objects:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: "filebeat"
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "filebeat"
+    spec:
+      completionDeadlineSeconds: 600
+      failedBuildsHistoryLimit: 3
+      nodeSelector:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "filebeat:latest"
+      postCommit: {}
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+      runPolicy: SerialLatestOnly
+      source:
+        dockerfile: |-
+          FROM BuildConfig
+          USER root
+
+          RUN export PATH=$PATH:/usr/share/filebeat \
+           && chmod -R a+rwx /usr/share/filebeat \
+           && printf "filebeat.config:\n  modules:\n    path: \${path.config}/modules.d/*.yml\n    reload.enabled: false" > /usr/share/filebeat/filebeat.yml \
+           && printf "\nfilebeat.inputs:\n- type: log\n  paths:\n  - \${LOG_FILE_PATH:/var/log/app.log}\n" >> /usr/share/filebeat/filebeat.yml \
+           && printf "output.logstash:\n  hosts:\n  - \${LOGSTASH_URL:logstash:5044}" >> /usr/share/filebeat/filebeat.yml \
+           && chmod go-w /usr/share/filebeat/filebeat.yml
+      strategy:
+        dockerStrategy:
+          from:
+            kind: DockerImage
+            name: "elastic/filebeat:7.5.1"
+        type: Docker
+      successfulBuildsHistoryLimit: 3

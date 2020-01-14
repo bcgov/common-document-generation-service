@@ -74,7 +74,7 @@ objects:
                 - /bin/sh
               args:
                 - -c
-                - "npm run start 2>&1 | tee /var/log/log.log"
+                - "npm run start 2>&1 | tee /var/log/app.log"
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -116,14 +116,14 @@ objects:
               volumeMounts:
                 - name: varlog
                   mountPath: /var/log
-            - image: elastic/filebeat:7.5.1
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/filebeat:latest
               imagePullPolicy: IfNotPresent
               name: "${APP_NAME}-filebeat-${JOB_NAME}"
-              ports:
-                - containerPort: 5400
-                  protocol: TCP
-                - containerPort: 9600
-                  protocol: TCP
+              env:
+                - name: LOG_FILE_PATH
+                  value: /var/log/app.log
+                - name: LOGSTASH_URL
+                  value: logstash-z208i4-tools.pathfinder.gov.bc.ca
               volumeMounts:
                 - name: varlog
                   mountPath: /var/log
