@@ -52,6 +52,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /fileTypes:
+    get:
+      summary: Returns supported template file types and output file types. If an input file type is passed as a query parameter, the allowed output file types for this template are returned.
+      description: >-
+        This endpoint checks the supported file types defined by the Carbone JS library that CDOGS depends on.
+      operationId: getFileTypes
+      tags:
+        - FileTypes
+      parameters:
+        - in: query
+          name: inputFileType
+          schema:
+            $ref: "#/components/schemas/TemplateObject/properties/contentFileType"
+          description: The file type of your template (without the '.'. For example 'docx' or 'xlsx', etc..) 
+      responses:
+        "200":
+          description: Returns an array of the supported input Template file types and corresponding output file types available.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileTypes"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /docGen:
     post:
       summary: Generate a document
@@ -191,6 +222,22 @@ components:
             Any extra information, generally useful when dependency is
             unreachable
           example: Windward connected successfully.
+    FileTypes:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          inputFileType:
+            type: string
+          outputFileTypes:
+            type: array
+            items:
+              type: string
+      example:
+       xlsx:
+         [xslx, docx, pdf]
+       docx:
+         [docx, pdf]
     NotFound:
       allOf:
         - $ref: "#/components/schemas/Problem"
