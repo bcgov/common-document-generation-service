@@ -5,6 +5,7 @@ const path = require('path');
 const keycloak = require('../components/keycloak');
 
 const healthRouter = require('./v1/health');
+const fileTypesRouter = require('./v1/fileTypes');
 const docGenRouter = require('./v1/docGen');
 
 const clientId = config.get('keycloak.clientId');
@@ -14,6 +15,7 @@ router.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
       '/health',
+      '/fileTypes',
       '/docGen'
     ]
   });
@@ -32,6 +34,9 @@ router.get('/api-spec.yaml', (_req, res) => {
 
 /** Health Router */
 router.use('/health', keycloak.protect(), healthRouter);
+
+/** File Types Router */
+router.use('/fileTypes', keycloak.protect(), fileTypesRouter);
 
 /** Doc Gen Router */
 router.use('/docGen', keycloak.protect(`${clientId}:GENERATOR`), docGenRouter);
