@@ -1,13 +1,13 @@
 // manually updated dictionary of input/output file types supported by the carbone js library
 const fileTypesDictionary = {
-  'csv':['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt', 'csv'],
-  'docx':['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
-  'html':['html', 'odt', 'pdf', 'rtf', 'txt'],
-  'odt':['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
-  'pptx':['odt', 'pdf'],
-  'rtf':['docx','pdf'],
-  'txt':['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
-  'xlsx':['odt', 'pdf', 'rtf', 'txt', 'csv', 'xls', 'xlsx']
+  'csv': ['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt', 'csv'],
+  'docx': ['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
+  'html': ['html', 'odt', 'pdf', 'rtf', 'txt'],
+  'odt': ['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
+  'pptx': ['odt', 'pdf'],
+  'rtf': ['docx','pdf'],
+  'txt': ['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
+  'xlsx': ['odt', 'pdf', 'rtf', 'txt', 'csv', 'xls', 'xlsx']
 };
 
 const fileTypes = {  
