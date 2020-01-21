@@ -91,7 +91,7 @@ const models = {
       const fileTypes = fileTypesComponent.fileTypesDictionary;
       // if input/output combination not in dictionary then error
       if(!fileTypes[inputFileType].includes(outputFileType) ){    
-        log.error(`File conversion not supported`);
+        log.error('File conversion not supported');
         return false;
       }
       else{
@@ -145,14 +145,12 @@ const customValidators = {
           });
         }
 
-        let validateConversion = true;
         const validConversion = models.template.fileConversion(obj.template.contentFileType, obj.template.outputFileType);
         if(!validConversion) {
           errors.push({ 
             values: [obj.template.contentFileType, obj.template.outputFileType],
             message: 'Unsupported file type conversion. A dictionary of supported input and output file types can be found at API endpoint \'/fileTypes\''
           });
-          validateConversion = false;
         }
 
       }
