@@ -4,6 +4,7 @@ const tmp = require('tmp');
 const log = require('npmlog');
 const validator = require('validator');
 
+const fileTypesComponent = require('./fileTypes');
 const DEFAULT_ATTACHMENT_SIZE = bytes.parse('5mb');
 
 const models = {
@@ -82,7 +83,22 @@ const models = {
         // delete tmp file
         if (tmpFile) tmpFile.removeCallback();
       }
-    }
+    },
+
+    /** @function fileConversion input/output file types must exist in fileType conversion dictionary */
+    fileConversion: (inputFileType, outputFileType) => {  
+      // get dictionary
+      const fileTypes = fileTypesComponent.fileTypesDictionary;
+      // if input/output combination not in dictionary then error
+      if(!fileTypes[inputFileType].includes(outputFileType) ){    
+        log.error(`File conversion not supported`);
+        return false;
+      }
+      else{
+        return true;
+      }
+    } 
+
   }
 };
 
@@ -128,6 +144,17 @@ const customValidators = {
             message: `Template exceeds size limit of ${bytes.format(attachmentSizeLimit, 'MB')}.`
           });
         }
+
+        let validateConversion = true;
+        const validConversion = models.template.fileConversion(obj.template.contentFileType, obj.template.outputFileType);
+        if(!validConversion) {
+          errors.push({ 
+            values: [obj.template.contentFileType, obj.template.outputFileType],
+            message: 'Unsupported file type conversion. A dictionary of supported input and output file types can be found at API endpoint \'/fileTypes\''
+          });
+          validateConversion = false;
+        }
+
       }
     }
 

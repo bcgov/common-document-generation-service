@@ -59,4 +59,19 @@ describe('customValidators.docGen', () => {
     expect(Array.isArray(result)).toBeTruthy();
     expect(result.length).toEqual(0);
   });
+
+  it('should return an error array when file type conversion is not supported', async () => {
+    body = {
+      template: {
+        contentFileType: 'docx',
+        outputFileType: 'ppt',
+      }
+    };
+    const result = await customValidators.docGen(body);
+
+    expect(result).toBeTruthy();
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(0);
+  });
+
 });
