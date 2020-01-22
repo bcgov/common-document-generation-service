@@ -73,7 +73,6 @@ describe('customValidators.docGen', () => {
         outputFileType: 'ppt',
       }
     };
-
     const result = await customValidators.docGen(body);
 
     expect(result).toBeTruthy();
