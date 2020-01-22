@@ -1,14 +1,12 @@
 const fileTypesRouter = require('express').Router();
-const fileTypesComponent = require('../../components/fileTypes');
+const fileTypesObject = require('../../assets/fileTypes.json');
 
 /** Returns the dictionary of input/output file types */
 fileTypesRouter.get('/', async (_req, res, next) => {
-  
-  const fileTypes = await fileTypesComponent.getFileTypes();
 
-  if (fileTypes instanceof Array) {
+  if (fileTypesObject instanceof Object) {
     res.status(200).json({
-      dictionary: fileTypes
+      dictionary: fileTypesObject
     });
   } else {
     next(new Error('Unable to get file types dictionary'));

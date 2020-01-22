@@ -4,7 +4,7 @@ const tmp = require('tmp');
 const log = require('npmlog');
 const validator = require('validator');
 
-const fileTypesComponent = require('./fileTypes');
+const fileTypes = require('../assets/fileTypes.json');
 const DEFAULT_ATTACHMENT_SIZE = bytes.parse('5mb');
 
 const models = {
@@ -87,8 +87,6 @@ const models = {
 
     /** @function fileConversion input/output file types must exist in fileType conversion dictionary */
     fileConversion: (inputFileType, outputFileType) => {  
-      // get dictionary
-      const fileTypes = fileTypesComponent.fileTypesDictionary;
       // if input/output combination not in dictionary then error
       if(!fileTypes[inputFileType].includes(outputFileType) ){    
         log.error('File conversion not supported');
