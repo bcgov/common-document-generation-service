@@ -35,24 +35,12 @@ const clogsSvc = {
 
   log: async msg => {
     try {
-      let data = msg;
-      let contentType = 'text/plain';
-      try {
-        const o = JSON.parse(msg);
-        if (o) {
-          contentType = 'application/json';
-          data = o;
-        }
-      } catch (err) {
-        contentType = 'text/plain';
-      }
-
       const response = await axios.post(
         `${config.get('clogs.serverUrl')}`,
-        data,
+        msg,
         {
           headers: {
-            'Content-Type': contentType
+            'Content-Type': 'text/plain'
           },
           maxContentLength: Infinity,
           maxBodyLength: Infinity
