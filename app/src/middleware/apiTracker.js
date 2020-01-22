@@ -143,36 +143,35 @@ const initializeApiTracker = app => {
           // format this to match Kibana 2020-01-06T22:55:29.767054+00:00...
           const timestamp = moment.utc(ts).format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ');
           const o = {
-            clogs: {
-              type: 'CDOGS_API_TRACKER',
-              ts: ts,
-              timestamp: timestamp,
-              level: 'info',
-              data: {
-                op: parts[0],
-                azp: parts[1],
-                context: {
-                  keyCount: Number.parseInt(parts[3])
-                },
-                content: {
-                  fileType: parts[4],
-                  encodingType: parts[5],
-                  size: Number.parseInt(parts[6])
-                },
-                output: {
-                  fileType: parts[7],
-                  size: '-' !== parts[8] ? Number.parseInt(parts[8]) : undefined
-                },
-                response: {
-                  status: parts[9],
-                  timeMs: Number.parseFloat(parts[10])
-                }
+            type: 'CDOGS_API_TRACKER',
+            ts: ts,
+            timestamp: timestamp,
+            level: 'info',
+            data: {
+              op: parts[0],
+              azp: parts[1],
+              context: {
+                keyCount: Number.parseInt(parts[3])
+              },
+              content: {
+                fileType: parts[4],
+                encodingType: parts[5],
+                size: Number.parseInt(parts[6])
+              },
+              output: {
+                fileType: parts[7],
+                size: '-' !== parts[8] ? Number.parseInt(parts[8]) : undefined
+              },
+              response: {
+                status: parts[9],
+                timeMs: Number.parseFloat(parts[10])
               }
             }
           };
           // always print this directly to stdout
           // must be a single line of JSON only, Kibana can parse and we can query by clogs.* fields.
           process.stdout.write(`${JSON.stringify(o)}\n`);
+          process.stdout.write(s);
         }
       }
     }

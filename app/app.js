@@ -11,6 +11,7 @@ const utils = require('./src/components/utils');
 const v1Router = require('./src/routes/v1');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
+const clogsSvc = require('./src/components/clogsSvc');
 const initializeApiTracker = require('./src/middleware/apiTracker');
 
 const apiRouter = express.Router();
@@ -39,6 +40,7 @@ log.debug('Config', utils.prettyStringify(config));
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
+  clogsSvc.hook();
   app.use(authorizedParty);
   initializeApiTracker(app);
   // Add Morgan endpoint logging
@@ -104,6 +106,7 @@ process.on('SIGINT', shutdown);
 
 function shutdown() {
   log.info('Received kill signal. Shutting down...');
+  clogsSvc.unhook();
   state.isShutdown = true;
   // Wait 3 seconds before hard exiting
   setTimeout(() => process.exit(), 3000);
