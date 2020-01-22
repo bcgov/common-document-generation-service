@@ -254,14 +254,3 @@ describe('models.template.contentEncodingType', () => {
   });
 
 });
-
-describe('models.template.fileConversion', () => {
-
-  it('should return true for valid fileConversion', async () => {
-    const inputFileType = 'docx';
-    const outputFileType = 'pdf';
-    const result = await models.template.fileConversion(inputFileType, outputFileType);
-    expect(result).toBeTruthy();
-  });
-
-});

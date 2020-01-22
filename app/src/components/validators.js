@@ -33,9 +33,9 @@ const models = {
       return true;
     },
 
-    /** @function contentFileType is required */
+    /** @function contentFileType is required and exists as a valid input file type defined in the fileTypes Dictionary */
     contentFileType: value => {
-      return validatorUtils.isNonEmptyString(value);
+      return validatorUtils.isNonEmptyString(value) && fileTypes[value];
     },
 
     /** @function outputFileName is not required, must be a string */
@@ -85,15 +85,34 @@ const models = {
       }
     },
 
+
     /** @function fileConversion input/output file types must exist in fileType conversion dictionary */
-    fileConversion: (inputFileType, outputFileType) => {
-      // if input/output combination not in dictionary then error
-      if (!fileTypes[inputFileType].includes(outputFileType)) {
-        log.error('File conversion not supported');
+    // this also validates that the input template file type is supported.
+    fileConversion: (contentFileType, outputFileType = null) => {
+      try {
+        let isSupported = false;
+
+        // if outputFileType was not entered
+        if(outputFileType == null){
+          // if a valid input file
+          if(fileTypes[contentFileType]){
+            // if conversion supported
+            if(fileTypes[contentFileType].includes(contentFileType)){
+              isSupported = true;
+            }
+          }
+        }
+        // else output type was entered
+        else if(fileTypes[contentFileType]){
+          // if conversion supported
+          if(fileTypes[contentFileType].includes(outputFileType)){
+            isSupported = true;
+          }
+        }
+        return isSupported;
+      } catch (e) {
+        log.error('Error checking file conversion dictionary');
         return false;
-      }
-      else {
-        return true;
       }
     }
 
