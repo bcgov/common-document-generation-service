@@ -59,4 +59,27 @@ describe('customValidators.docGen', () => {
     expect(Array.isArray(result)).toBeTruthy();
     expect(result.length).toEqual(0);
   });
+
+  it('should return an error array when file type conversion is not supported', async () => {
+    body = {
+      contexts: [{
+        x: 1,
+        y: 2
+      }],
+      template: {
+        content: 'ZHNmc2Rmc2RmZHNmc2Rmc2Rmc2Rm',
+        contentEncodingType: 'base64',
+        contentFileType: 'DOCX',
+        outputFileType: 'ppt',
+      }
+    };
+    const result = await customValidators.docGen(body);
+
+    expect(result).toBeTruthy();
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(1);
+    expect(result[0].message).toMatch('Unsupported file type conversion');
+
+  });
+
 });

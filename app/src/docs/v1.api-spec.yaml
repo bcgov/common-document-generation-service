@@ -52,6 +52,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /fileTypes:
+    get:
+      summary: Returns a dictionary of supported input template file types and output file types.
+      description: >-
+        This endpoint checks the supported file types defined by the Carbone JS library that CDOGS depends on.
+      operationId: getFileTypes
+      tags:
+        - FileTypes
+      responses:
+        "200":
+          description: Returns the supported combinations of input templates and output file types
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileTypes"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /docGen:
     post:
       summary: Generate a document
@@ -191,6 +216,22 @@ components:
             Any extra information, generally useful when dependency is
             unreachable
           example: Windward connected successfully.
+    FileTypes:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          inputFileType:
+            type: string
+          outputFileTypes:
+            type: array
+            items:
+              type: string
+      example:
+        docx:
+          [docx, pdf]
+        xlsx:
+          [docx, pdf, xslx]
     NotFound:
       allOf:
         - $ref: "#/components/schemas/Problem"
