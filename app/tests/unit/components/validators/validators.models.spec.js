@@ -122,6 +122,12 @@ describe('models.template.contentFileType', () => {
     expect(result).toBeTruthy();
   });
 
+  it('should return false for contentFileType not in fileTypes', async () => {
+    const contentFileType = 'bim';
+    const result = await models.template.contentFileType(contentFileType);
+    expect(result).toBeFalsy();
+  });
+
 });
 
 describe('models.template.outputFileType', () => {

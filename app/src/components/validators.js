@@ -139,14 +139,14 @@ const customValidators = {
           });
         }
 
-        const validConversion = models.template.fileConversion(obj.template.contentFileType, obj.template.outputFileType);
-        if (!validConversion) {
-          errors.push({
-            values: [obj.template.contentFileType, obj.template.outputFileType],
-            message: 'Unsupported file type conversion. A dictionary of supported input and output file types can be found at API endpoint \'/fileTypes\''
-          });
-        }
+      }
 
+      const validConversion = models.template.fileConversion(obj.template.contentFileType, obj.template.outputFileType);
+      if (!validConversion) {
+        errors.push({
+          values: [obj.template.contentFileType, obj.template.outputFileType],
+          message: 'Unsupported file type conversion. A dictionary of supported input and output file types can be found at API endpoint \'/fileTypes\''
+        });
       }
     }
 
