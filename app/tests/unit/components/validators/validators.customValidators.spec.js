@@ -69,7 +69,7 @@ describe('customValidators.docGen', () => {
       template: {
         content: 'ZHNmc2Rmc2RmZHNmc2Rmc2Rmc2Rm',
         contentEncodingType: 'base64',
-        contentFileType: 'docx',
+        contentFileType: 'DOCX',
         outputFileType: 'ppt',
       }
     };

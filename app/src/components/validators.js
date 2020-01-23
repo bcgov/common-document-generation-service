@@ -35,7 +35,7 @@ const models = {
 
     /** @function contentFileType is required and exists as a valid input file type defined in the fileTypes Dictionary */
     contentFileType: value => {
-      return validatorUtils.isNonEmptyString(value) && value in fileTypes;
+      return validatorUtils.isNonEmptyString(value) && value.toLowerCase() in fileTypes;
     },
 
     /** @function outputFileName is not required, must be a string */
@@ -88,7 +88,7 @@ const models = {
     /** @function fileConversion input/output file types must exist in fileType conversion dictionary */
     fileConversion: (contentFileType, outputFileType) => {
       if (contentFileType && outputFileType) {
-        return fileTypes[contentFileType] && fileTypes[contentFileType].includes(outputFileType);
+        return fileTypes[contentFileType.toLowerCase()] && fileTypes[contentFileType.toLowerCase()].includes(outputFileType.toLowerCase());
       }
       return true;
     }
