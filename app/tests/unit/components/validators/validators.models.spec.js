@@ -260,3 +260,27 @@ describe('models.template.contentEncodingType', () => {
   });
 
 });
+
+
+describe('models.template.fileConversion', () => {
+
+  it('should return true for valid lowercase contentFileType', async () => {
+    const contentFileType = 'docx';
+    const result = await models.template.fileConversion(contentFileType, 'pdf');
+    expect(result).toBeTruthy();
+  });
+
+  it('should return true for valid uppercase contentFileType', async () => {
+    const contentFileType = 'DOCX';
+    const result = await models.template.fileConversion(contentFileType, 'pdf');
+    expect(result).toBeTruthy();
+  });
+
+  it('should return false for empty contentFileType', async () => {
+    const contentFileType = '';
+    const result = await models.template.fileConversion(contentFileType, 'pdf');
+    expect(result).toBeFalsy();
+  });
+
+});
+

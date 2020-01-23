@@ -87,6 +87,9 @@ const models = {
 
     /** @function fileConversion input/output file types must exist in fileType conversion dictionary */
     fileConversion: (contentFileType, outputFileType) => {
+      if (contentFileType == '') {
+        return false;
+      }
       if (contentFileType && outputFileType) {
         return fileTypes[contentFileType.toLowerCase()] && fileTypes[contentFileType.toLowerCase()].includes(outputFileType.toLowerCase());
       }
