@@ -32,7 +32,7 @@
     "bytes": "^3.1.0",
     "carbone": "^1.2.1",
     "compression": "^1.7.4",
-    "config": "^3.2.4",
+    "config": "^3.2.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "intercept-stdout": "^0.1.2",
@@ -44,12 +44,12 @@
     "morgan": "^1.9.1",
     "npmlog": "^4.1.2",
     "tmp": "^0.1.0",
-    "uuid": "^3.3.3",
+    "uuid": "^3.4.0",
     "validator": "^12.1.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^2.0.2"
   },

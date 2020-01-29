@@ -1,3 +1,4 @@
+const carbone = require('carbone');
 const compression = require('compression');
 const config = require('config');
 const cors = require('cors');
@@ -45,6 +46,8 @@ if (process.env.NODE_ENV !== 'test') {
   initializeApiTracker(app);
   // Add Morgan endpoint logging
   app.use(morgan(config.get('server.morganFormat')));
+  // Initialize LibreOffice Factories
+  carbone.set({ startFactory: true });
 }
 
 // Use Keycloak OIDC Middleware

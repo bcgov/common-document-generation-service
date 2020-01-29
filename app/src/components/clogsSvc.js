@@ -9,7 +9,7 @@ const clogsSvc = {
 
   hook: () => {
     if (!unhook_intercept) {
-      unhook_intercept = intercept(function (text) {
+      unhook_intercept = intercept(text => {
         // remove any control sequences
         if (text && isString(text)) {
           // eslint-disable-next-line no-control-regex
