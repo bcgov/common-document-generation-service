@@ -1,4 +1,7 @@
 {
+  "clogs": {
+    "serverUrl": "https://logstash-master-ixhmbm-dev.pathfinder.gov.bc.ca/http"
+  },
   "keycloak": {
     "realm": "jbd6rnxw",
     "serverUrl": "https://sso-dev.pathfinder.gov.bc.ca/auth"

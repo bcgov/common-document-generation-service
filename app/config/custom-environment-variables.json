@@ -1,15 +1,17 @@
 {
-    "keycloak": {
-      "clientId": "KC_CLIENTID",
-      "clientSecret": "KC_CLIENTSECRET",
-      "realm": "KC_REALM",
-      "serverUrl": "KC_SERVERURL"
-    },
-    "server": {
-      "bodyLimit": "SERVER_BODYLIMIT",
-      "logLevel": "SERVER_LOGLEVEL",
-      "morganFormat": "SERVER_MORGANFORMAT",
-      "port": "SERVER_PORT"
-    }
+  "clogs": {
+    "serverUrl": "CLOGS_SERVERURL"
+  },
+  "keycloak": {
+    "clientId": "KC_CLIENTID",
+    "clientSecret": "KC_CLIENTSECRET",
+    "realm": "KC_REALM",
+    "serverUrl": "KC_SERVERURL"
+  },
+  "server": {
+    "bodyLimit": "SERVER_BODYLIMIT",
+    "logLevel": "SERVER_LOGLEVEL",
+    "morganFormat": "SERVER_MORGANFORMAT",
+    "port": "SERVER_PORT"
   }
-  
+}
