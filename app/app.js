@@ -12,8 +12,10 @@ const utils = require('./src/components/utils');
 const v1Router = require('./src/routes/v1');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
-const clogsSvc = require('./src/components/clogsSvc');
 const initializeApiTracker = require('./src/middleware/apiTracker');
+
+const { commonlogger, commonloggerStdout } = require('./src/components/commonlogger');
+
 
 const apiRouter = express.Router();
 const state = {
@@ -39,9 +41,10 @@ log.addLevel('debug', 1500, {
 // Print out configuration settings in verbose startup
 log.debug('Config', utils.prettyStringify(config));
 
-// Skip if running tests
+// Skip if running testsx
 if (process.env.NODE_ENV !== 'test') {
-  clogsSvc.hook();
+  // hook into standard out/err automatically...
+  commonloggerStdout.hook();
   app.use(authorizedParty);
   initializeApiTracker(app);
   // Add Morgan endpoint logging
@@ -109,10 +112,11 @@ process.on('SIGINT', shutdown);
 
 function shutdown() {
   log.info('Received kill signal. Shutting down...');
-  clogsSvc.unhook();
+  commonloggerStdout.unhook();
+  commonlogger.flushImmediate();
   state.isShutdown = true;
   // Wait 3 seconds before hard exiting
-  setTimeout(() => process.exit(), 3000);
+  setTimeout(() => process.exit(), 5000);
 }
 
 module.exports = app;
