@@ -30,8 +30,7 @@ const apiTrackerParse = (msg) => {
     const ts = Number.parseInt(parts[2]);
     const ms = Number.parseFloat(parts[10]);
     const s = ms / 1000;
-    const multiplier = Math.pow(10, 1 || 0);
-    const roundedSeconds = Math.round(s * multiplier) / multiplier;
+    const roundedSeconds = Math.round(s * 10) / 10;
     const message = {
       type: 'api-tracker',
       timestamp: ts,
