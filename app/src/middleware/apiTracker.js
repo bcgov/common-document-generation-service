@@ -9,6 +9,7 @@
  */
 const moment = require('moment');
 const morgan = require('morgan');
+const { commonlogger } = require('../components/commonlogger');
 
 // this will suppress a console warning about moment deprecating a default fallback on non ISO/RFC2822 date formats
 // we will just force it to use the new Date constructor.
@@ -23,6 +24,40 @@ const trackerUrls = [docGenUrl];
 // status and response-time is a built-in morgan token
 const apiTrackerFormat = ':op :azp :ts :contextKeyCount :contentFileType :contentEncodingType :contentSize :outputFileType :res[content-length] :status :response-time';
 
+const apiTrackerParse = (msg) => {
+  if (msg && msg.trim().length) {
+    const parts = msg.trim().split(' ');
+    const ts = Number.parseInt(parts[2]);
+    const ms = Number.parseFloat(parts[10]);
+    const s = ms / 1000;
+    const roundedSeconds = Math.round(s * 10) / 10;
+    const message = {
+      type: 'api-tracker',
+      timestamp: ts,
+      op: parts[0],
+      azp: parts[1],
+      context: {
+        keyCount: Number.parseInt(parts[3])
+      },
+      content: {
+        fileType: parts[4],
+        encodingType: parts[5],
+        size: Number.parseInt(parts[6])
+      },
+      output: {
+        fileType: parts[7],
+        size: '-' !== parts[8] ? Number.parseInt(parts[8]) : undefined
+      },
+      response: {
+        status: Number.parseInt(parts[9]),
+        timeMs: s,
+        seconds: roundedSeconds
+      }
+    };
+    return message;
+  }
+  return null;
+};
 const apiTracker = async (req, res, next) => {
 
   if (trackerUrls.includes(req.url)) {
@@ -137,42 +172,8 @@ const initializeApiTracker = app => {
     },
     stream: {
       write: (s) => {
-        if (s && s.trim().length) {
-          const parts = s.trim().split(' ');
-          const ts = Number.parseInt(parts[2]);
-          // format this to match Kibana 2020-01-06T22:55:29.767054+00:00...
-          const timestamp = moment.utc(ts).format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ');
-          const o = {
-            type: 'CDOGS_API_TRACKER',
-            ts: ts,
-            timestamp: timestamp,
-            level: 'info',
-            data: {
-              op: parts[0],
-              azp: parts[1],
-              context: {
-                keyCount: Number.parseInt(parts[3])
-              },
-              content: {
-                fileType: parts[4],
-                encodingType: parts[5],
-                size: Number.parseInt(parts[6])
-              },
-              output: {
-                fileType: parts[7],
-                size: '-' !== parts[8] ? Number.parseInt(parts[8]) : undefined
-              },
-              response: {
-                status: parts[9],
-                timeMs: Number.parseFloat(parts[10])
-              }
-            }
-          };
-          // always print this directly to stdout
-          // must be a single line of JSON only, Kibana can parse and we can query by clogs.* fields.
-          process.stdout.write(`${JSON.stringify(o)}\n`);
-          process.stdout.write(s);
-        }
+        // send a parsed message to our common logger
+        commonlogger.log(apiTrackerParse(s));
       }
     }
   }));

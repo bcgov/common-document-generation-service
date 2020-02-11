@@ -48,7 +48,8 @@ objects:
         dockerfile: |-
           FROM BuildConfig
           ARG APP_ROOT=/opt/app-root/src
-          ENV PATH="/usr/lib/libreoffice/program:${PATH}" \
+          ENV NO_UPDATE_NOTIFIER=true \
+              PATH="/usr/lib/libreoffice/program:${PATH}" \
               PYTHONUNBUFFERED=1
           WORKDIR ${APP_ROOT}
 

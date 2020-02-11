@@ -1,6 +1,15 @@
 {
   "clogs": {
-    "serverUrl": "https://logstash-master-ixhmbm-dev.pathfinder.gov.bc.ca/http"
+    "queue" : {
+      "batchSize" : "50",
+      "batchTimeout" : "5000"
+    },
+    "http" : {
+      "apiUrl": "https://clogs-dev.pathfinder.gov.bc.ca",
+      "clientId": "CDOGS_SERVICE_CLIENT",
+      "clientSecret": "replaced-with-environment-varible-or-local-file",
+      "tokenUrl": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token"
+    }
   },
   "keycloak": {
     "realm": "jbd6rnxw",

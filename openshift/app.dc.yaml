@@ -103,11 +103,23 @@ objects:
                     secretKeyRef:
                       key: password
                       name: cdogs-keycloak-secret
+                - name: CLOGS_HTTP_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: cdogs-common-service-secret
+                - name: CLOGS_HTTP_CLIENTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: cdogs-common-service-secret
               envFrom:
                 - configMapRef:
                     name: cdogs-keycloak-config
                 - configMapRef:
                     name: cdogs-server-config
+                - configMapRef:
+                    name: cdogs-common-service-config
       test: false
       triggers:
         - type: ConfigChange
