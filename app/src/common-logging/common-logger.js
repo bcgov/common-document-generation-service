@@ -18,6 +18,7 @@ class StdOutXfer {
     }
   }
 }
+
 const defaultXfer = new StdOutXfer();
 
 class CommonLogger {

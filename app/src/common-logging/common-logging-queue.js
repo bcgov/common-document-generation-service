@@ -27,11 +27,13 @@ class CommonLoggingQueue extends EE {
     let opts = options || {};
     this._batchSize = intOption(opts.batchSize, 50);
     this._batchTimeout = intOption(opts.batchTimeout, Infinity);
-    this._initialDelay = intOption(opts.initialDelay,1000);
+    this._initialDelay = intOption(opts.initialDelay, 1000);
     this._queue = new MemoryQueue();
     this._mutex = new Mutex();
 
-    setTimeout(() => { batchTimer(this, this._batchTimeout); }, this._initialDelay);
+    setTimeout(() => {
+      batchTimer(this, this._batchTimeout);
+    }, this._initialDelay);
   }
 
   async push(item) {
@@ -49,7 +51,7 @@ class CommonLoggingQueue extends EE {
 
     // lock queue - no writing
     let unlock = await this._mutex.lock();
-    const size = (all) ? Infinity : this._batchSize;
+    const size = all ? Infinity : this._batchSize;
     while (this._queue.getLength() && (items.length < size)) {
       items.push(this._queue.dequeue());
     }

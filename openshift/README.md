@@ -32,7 +32,7 @@ oc create -n idcqvl-<env> configmap cdogs-server-config \
 ```
 
 ```sh
-oc create -n idcqvl-<env> configmap cdogs-clogs-config \
+oc create -n idcqvl-<env> configmap cdogs-common-service-config \
   --from-literal=CLOGS_QUEUE_BATCHSIZE=50 \
   --from-literal=CLOGS_QUEUE_BATCHTIMEOUT=5000 \
   --from-literal=CLOGS_HTTP_APIURL=https://clogs-dev.pathfinder.gov.bc.ca \
@@ -52,7 +52,7 @@ oc create -n idcqvl-<env> secret generic cdogs-keycloak-secret \
 ```
 
 ```sh
-oc create -n idcqvl-<env> secret generic cdogs-clogs-secret \
+oc create -n idcqvl-<env> secret generic cdogs-common-service-secret \
   --type=kubernetes.io/basic-auth \
   --from-literal=username=<clogs service client id> \
   --from-literal=password=<clogs service client password>

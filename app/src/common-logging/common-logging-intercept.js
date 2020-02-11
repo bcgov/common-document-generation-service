@@ -17,7 +17,7 @@ module.exports = function (stdoutIntercept, stderrIntercept) {
   process.stdout.write = (function (write) {
     // eslint-disable-next-line no-unused-vars
     return function (string, encoding, fd) {
-      var args = toArray(arguments);
+      let args = toArray(arguments);
       args[0] = interceptor(string, stdoutIntercept);
       write.apply(process.stdout, args);
     };
@@ -26,7 +26,7 @@ module.exports = function (stdoutIntercept, stderrIntercept) {
   process.stderr.write = (function (write) {
     // eslint-disable-next-line no-unused-vars
     return function (string, encoding, fd) {
-      var args = toArray(arguments);
+      let args = toArray(arguments);
       args[0] = interceptor(string, stderrIntercept);
       write.apply(process.stderr, args);
     };
@@ -34,7 +34,7 @@ module.exports = function (stdoutIntercept, stderrIntercept) {
 
   function interceptor(string, callback) {
     // only intercept the string
-    let result = callback(string);
+    const result = callback(string);
     if (typeof result == 'string') {
       string = result.replace(/\n$/, '') + (result && (/\n$/).test(string) ? '\n' : '');
     }

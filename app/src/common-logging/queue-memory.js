@@ -1,5 +1,6 @@
 // http://code.iamkate.com/javascript/queues/
 const EE = require('events').EventEmitter;
+
 /* Creates a new queue. A queue is a first-in-first-out (FIFO) data structure -
  * items are added to the end of the queue and removed from the front.
  */
@@ -9,7 +10,6 @@ class MemoryQueue extends EE {
     super();
     this.queue = [];
     this.offset = 0;
-
   }
 
   // Returns the length of the queue.
@@ -35,7 +35,6 @@ class MemoryQueue extends EE {
    * 'undefined' is returned.
    */
   dequeue() {
-
     // if the queue is empty, return immediately
     if (this.queue.length == 0) return undefined;
 
@@ -51,7 +50,6 @@ class MemoryQueue extends EE {
     // return the dequeued item
     this.emit('dequeued', this.queue.length, item);
     return item;
-
   }
 
   /* Returns the item at the front of the queue (without dequeuing it). If the
@@ -60,8 +58,6 @@ class MemoryQueue extends EE {
   peek() {
     return (this.queue.length > 0 ? this.queue[this.offset] : undefined);
   }
-
-
 }
 
 module.exports = MemoryQueue;

@@ -41,7 +41,7 @@ log.addLevel('debug', 1500, {
 // Print out configuration settings in verbose startup
 log.verbose('Config', utils.prettyStringify(config));
 
-// Skip if running testsx
+// Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
   // hook into standard out/err automatically...
   commonloggerStdout.hook();

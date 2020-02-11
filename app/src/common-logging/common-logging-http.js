@@ -4,7 +4,7 @@ const tokenProvider = require('axios-token-interceptor');
 
 class AuthorizedConnection {
   constructor(options) {
-    if (!options ||(!options.tokenUrl || !options.clientId || !options.clientSecret)) {
+    if (!options || !options.tokenUrl || !options.clientId || !options.clientSecret) {
       throw new Error('AuthorizedConnection is not configured.  Check configuration.');
     }
 
@@ -28,7 +28,7 @@ class AuthorizedConnection {
 
 class CommonLoggingHttp {
   constructor(options) {
-    if (!options || (!options.tokenUrl || !options.clientId || !options.clientSecret || !options.apiUrl)) {
+    if (!options || !options.tokenUrl || !options.clientId || !options.clientSecret || !options.apiUrl) {
       throw new Error('CommonLoggingHttp is not configured.  Check configuration.');
     }
     this.connection = new AuthorizedConnection(options);

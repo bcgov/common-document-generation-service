@@ -260,9 +260,9 @@ def deployStage(String stageEnv, String projectEnv, String hostRouteEnv) {
       echo "Checking for ConfigMaps and Secrets in project ${openshift.project()}..."
       if(!(openshift.selector('cm', "cdogs-keycloak-config").exists() &&
       openshift.selector('cm', "cdogs-server-config").exists() &&
-      openshift.selector('cm', "cdogs-clogs-config").exists() &&
+      openshift.selector('cm', "cdogs-common-service-config").exists() &&
       openshift.selector('secret', "cdogs-keycloak-secret").exists() &&
-      openshift.selector('secret', "cdogs-clogs-secret").exists())) {
+      openshift.selector('secret', "cdogs-common-service-secret").exists())) {
         echo 'Some ConfigMaps and/or Secrets are missing. Please consult the openshift readme for details.'
         throw new Exception('Missing ConfigMaps and/or Secrets')
       }
