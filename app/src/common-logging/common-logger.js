@@ -1,4 +1,4 @@
-const defaultQueue = require('./common-logging-queue');
+const CommonLoggingQueue = require('./common-logging-queue');
 const defaultXform = require('./common-logging-xform');
 
 class StdOutXfer {
@@ -24,14 +24,16 @@ class CommonLogger {
 
   constructor(transfer, queue, transformer) {
     this._transformer = transformer || defaultXform;
-    this._queue = queue || defaultQueue;
+    this._queue = queue || new CommonLoggingQueue();
     this._transfer = transfer || defaultXfer;
 
-    this._queue.on('flush', async (items) => {
-      if (items && items.length) {
-        await this._transfer.xfer(items);
-      }
-    });
+    if (this._queue && this._queue.on) {
+      this._queue.on('flush', async (items) => {
+        if (items && items.length) {
+          await this._transfer.xfer(items);
+        }
+      });
+    }
   }
 
   async log(message, options) {

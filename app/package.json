@@ -1,7 +1,7 @@
 {
-  "name": "docgen-poc",
-  "version": "0.0.1",
-  "description": "Document Generation POC",
+  "name": "cdogs",
+  "version": "1.0.0",
+  "description": "CDOGS - A common document generation API",
   "scripts": {
     "build": "echo Nothing to build",
     "serve": "nodemon ./bin/www",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/loneil/docgen-poc.git"
+    "url": "git+https://github.com/bcgov/common-document-generation-service.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "NR Common Service Showcase <NR.CommonServiceShowcase@gov.bc.ca>",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/loneil/docgen-poc/issues"
+    "url": "https://github.com/bcgov/common-document-generation-service/issues"
   },
-  "homepage": "https://github.com/loneil/docgen-poc#readme",
+  "homepage": "https://bcgov.github.io/common-document-generation-service",
   "dependencies": {
     "api-problem": "^6.0.1",
     "atob": "^2.1.2",
@@ -49,8 +49,9 @@
     "validator": "^12.1.0"
   },
   "devDependencies": {
+    "axios-mock-adapter": "^1.17.0",
     "eslint": "^6.8.0",
-    "jest": "^25.1.0",
+    "jest": "^24.9.0",
     "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^2.0.2"
   },

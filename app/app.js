@@ -39,7 +39,7 @@ log.addLevel('debug', 1500, {
 });
 
 // Print out configuration settings in verbose startup
-log.debug('Config', utils.prettyStringify(config));
+log.verbose('Config', utils.prettyStringify(config));
 
 // Skip if running testsx
 if (process.env.NODE_ENV !== 'test') {

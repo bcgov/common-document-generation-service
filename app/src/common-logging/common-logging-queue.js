@@ -50,7 +50,7 @@ class CommonLoggingQueue extends EE {
     // lock queue - no writing
     let unlock = await this._mutex.lock();
     const size = (all) ? Infinity : this._batchSize;
-    while (this._queue.getLength() && (items.length <= size)) {
+    while (this._queue.getLength() && (items.length < size)) {
       items.push(this._queue.dequeue());
     }
     // release mutex, allow writing to the queue

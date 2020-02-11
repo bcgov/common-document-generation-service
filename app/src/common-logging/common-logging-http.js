@@ -34,7 +34,6 @@ class CommonLoggingHttp {
     this.connection = new AuthorizedConnection(options);
     this.axios = this.connection.axios;
     this.apiUrl = options.apiUrl;
-    this._silent = false;
   }
 
   async xfer(messages) {
@@ -42,7 +41,7 @@ class CommonLoggingHttp {
       const batch = Array.isArray(messages) ? messages : [messages];
 
       if (!batch.length) {
-        return;
+        return -2;
       }
 
       let status;
@@ -62,11 +61,14 @@ class CommonLoggingHttp {
       } catch (e) {
         const errMsg = e.response ? `${e.response.status} from Common Logging Service. Data : ${JSON.stringify(e.response.data)}` : `Unknown error from Common Logging Service: ${e.message}`;
         process.stderr.write(`common-logging - error ${errMsg}\n`);
+        return e.response ? e.response.status : -3;
       }
       if (201 !== status) {
         process.stderr.write(`common-logging - warn ${status} from Common Logging Service\n`);
       }
+      return status;
     }
+    return -1;
   }
 }
 
