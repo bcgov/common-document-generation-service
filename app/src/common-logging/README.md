@@ -4,7 +4,7 @@ Library code to get messages from the application to Common Logging Service (CLO
 Please note that this library does not write to a file nor to the console, it logs data to CLOGS only.
 
 ### common-logger
-The main class (CommonLogger) uses a tranformer, a queue, and a transport to process logging messages and deliver to the Common Logging Service (CLOGS). 
+The main class (CommonLogger) uses a transformer, a queue, and a transport to process logging messages and deliver to the Common Logging Service (CLOGS). 
 
 The flow is:  
 1. application writes a message and passes to the common logger.  
@@ -72,11 +72,3 @@ commonloggerStdout.hook();
 commonLogger.log('this is a message that will get sent to CLOGS');
 
 ```
-
-
-
-
- 
-  
-
-
