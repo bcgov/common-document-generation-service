@@ -17,7 +17,7 @@ describe('common-logger constructor', () => {
     expect(logger._transfer).toBeTruthy();
   });
 
-  test('constructor, uses parameters when no parameters', () => {
+  test('constructor, uses parameters', () => {
     const clogsHttp = new CommonLoggingHttp(config.get('clogs.http'));
     const clogsQueue = new CommonLoggingQueue(config.get('clogs.queue'));
     const xform = require('../../../src/common-logging/common-logging-xform');

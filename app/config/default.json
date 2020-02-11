@@ -7,6 +7,7 @@
     "http" : {
       "apiUrl": "https://clogs-dev.pathfinder.gov.bc.ca",
       "clientId": "CDOGS_SERVICE_CLIENT",
+      "clientSecret": "replaced-with-environment-varible-or-local-file",
       "tokenUrl": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token"
     }
   },
