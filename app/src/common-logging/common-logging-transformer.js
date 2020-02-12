@@ -17,7 +17,7 @@ class CommonLoggingTransformer {
     if (!message) {
       return;
     }
-    let opts = options || {};
+    const opts = options || {};
 
     // create object
     const obj = {

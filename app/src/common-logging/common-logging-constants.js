@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = Object.freeze({
   COMMON_LOGGING_PREFIX: 'common-logging - ',
   QUEUE_DEFAULT_BATCH_TIMEOUT: Infinity,
   QUEUE_DEFAULT_INITIAL_DELAY: 1000,
@@ -10,4 +10,4 @@ module.exports = {
   TRANSFORM_DEFAULT_ENV: 'dev',
   TRANSFORM_DEFAULT_LEVEL: 'info',
   TRANSFORM_DEFAULT_RETENTION: 'default'
-};
+});
