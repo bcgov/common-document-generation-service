@@ -1,5 +1,6 @@
 const isString = require('lodash.isstring');
 
+const Constants = require('./common-logging-constants');
 const intercept = require('./common-logging-intercept');
 const Mutex = require('./mutex-await');
 
@@ -35,7 +36,7 @@ class CommonLoggingStdout {
             this._stdoutMessages = [];
             unlock();
 
-            if (!s.startsWith('common-logging - ') && this._logger) {
+            if (!s.startsWith(Constants.COMMON_LOGGING_PREFIX) && this._logger) {
               this._logger.log(s);
             }
           } else {
