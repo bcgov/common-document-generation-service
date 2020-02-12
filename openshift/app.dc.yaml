@@ -103,12 +103,12 @@ objects:
                     secretKeyRef:
                       key: password
                       name: cdogs-keycloak-secret
-                - name: CMNSRV_CLIENTID
+                - name: CLOGS_HTTP_CLIENTID
                   valueFrom:
                     secretKeyRef:
                       key: username
                       name: cdogs-common-service-secret
-                - name: CMNSRV_CLIENTSECRET
+                - name: CLOGS_HTTP_CLIENTSECRET
                   valueFrom:
                     secretKeyRef:
                       key: password

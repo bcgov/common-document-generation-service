@@ -31,15 +31,12 @@ oc create -n idcqvl-<env> configmap cdogs-server-config \
   --from-literal=SERVER_PORT=3000
 ```
 
-*Note: Change all urls per environment, and update the CLOGS_METADATA_ENV to match your CDOGS env (dev, test, prod)*
-
 ```sh
 oc create -n idcqvl-<env> configmap cdogs-common-service-config \
-  --from-literal=CLOGS_QUEUE_MAXBATCHSIZE=50 \
+  --from-literal=CLOGS_QUEUE_BATCHSIZE=50 \
   --from-literal=CLOGS_QUEUE_BATCHTIMEOUT=5000 \
   --from-literal=CLOGS_HTTP_APIURL=https://clogs-dev.pathfinder.gov.bc.ca \
-  --from-literal=CLOGS_METADATA_ENV=dev \
-  --from-literal=CMNSRV_TOKENURL=https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token 
+  --from-literal=CLOGS_HTTP_TOKENURL=https://sso-dev.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token 
 ```
 
 
@@ -57,8 +54,8 @@ oc create -n idcqvl-<env> secret generic cdogs-keycloak-secret \
 ```sh
 oc create -n idcqvl-<env> secret generic cdogs-common-service-secret \
   --type=kubernetes.io/basic-auth \
-  --from-literal=username=<cdogs common service client id> \
-  --from-literal=password=<cdogs common service client password>
+  --from-literal=username=<clogs service client id> \
+  --from-literal=password=<clogs service client password>
 ```
 
 ## Build Config & Deployment

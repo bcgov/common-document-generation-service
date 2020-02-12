@@ -1,6 +1,5 @@
 const EE = require('events').EventEmitter;
 
-const Constants = require('./common-logging-constants');
 const MemoryQueue = require('./queue-memory');
 const Mutex = require('./mutex-await');
 
@@ -26,9 +25,9 @@ class CommonLoggingQueue extends EE {
   constructor(options) {
     super();
     let opts = options || {};
-    this._maxBatchSize = intOption(opts.maxBatchSize, Constants.QUEUE_DEFAULT_MAX_BATCH_SIZE);
-    this._batchTimeout = intOption(opts.batchTimeout, Constants.QUEUE_DEFAULT_BATCH_TIMEOUT);
-    this._initialDelay = intOption(opts.initialDelay, Constants.QUEUE_DEFAULT_INITIAL_DELAY);
+    this._batchSize = intOption(opts.batchSize, 50);
+    this._batchTimeout = intOption(opts.batchTimeout, Infinity);
+    this._initialDelay = intOption(opts.initialDelay, 1000);
     this._queue = new MemoryQueue();
     this._mutex = new Mutex();
 
@@ -52,7 +51,7 @@ class CommonLoggingQueue extends EE {
 
     // lock queue - no writing
     let unlock = await this._mutex.lock();
-    const size = all ? Infinity : this._maxBatchSize;
+    const size = all ? Infinity : this._batchSize;
     while (this._queue.getLength() && (items.length < size)) {
       items.push(this._queue.dequeue());
     }

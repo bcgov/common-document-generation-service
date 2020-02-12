@@ -14,19 +14,8 @@ The flow is:
 5. batch is passed to transporter
 6. transporter sends batch to CLOGS   
 
-### transformer (common-logging-transformer)
-
-| option | description |
-| --- | --- |
-| env | default environment to include in api log object |
-| level | default level for api log objects |
-| pattern | default pattern (GROK) for api object message field, api will attempt to parse message field using this pattern (if exists) |
-| retention | default retention for api log objects |
-| data | additional JSON to add to data field in api log object (only applies if populating data field) |
-| metadata | additional JSON to add to api log object (root of api log object) |
-
-#### xform function
-Accepts a message (string or JSON), and options (env, level, pattern, retention, parse) that override the transformer defaults.  
+### transformer (common-logging-xform)
+Accepts a message (string or JSON), and options (format, level, retention, parse).  
 The message parameter will be set the api object message field or data field (if message is JSON).  The options can be used to set corresponding api log object fields.  
   
 *NOTE*: the parse option is a function that can parse the message parameter and turn it into JSON. In such a case, the api log object data field is set instead of message.  
@@ -35,9 +24,9 @@ The message parameter will be set the api object message field or data field (if
 
 | option | description |
 | --- | --- |
+| batchSize | how many items to place in a single API call |
 | batchTimeout | how many milliseconds to wait between batches |
 | initialDelay | how many milliseconds to delay initial batch check |
-| maxBatchSize | maximum number of items to place in a single API call |
 
 Queue holds items in First In First Out, queue is checked for items every batchTimeout milliseconds, batchSize items are then dequeued and passed to the transporter.  
 
@@ -58,23 +47,20 @@ Use this to intercept all writes to stdout and stderr and automatically deliver 
 
 ## create and initialize
 
-1. Create Transporter
+1. Create Tranporter
 2. Create Queue
-2. Create Transformer
-4. Create Common Logger
-5. Optionally create StdOut Intercept
-6. Hook intercept to stdout/stderr
+3. Create Common Logger
+4. Optionally create StdOut Intercept
+5. Hook intercept to stdout/stderr
 
 ```
 const CommonLogger = require('../common-logging/common-logger');
 const CommonLoggingHttp = require('../common-logging/common-logging-http');
 const CommonLoggingQueue = require('../common-logging/common-logging-queue');
 const CommonLoggingStdout = require('../common-logging/common-logging-stdout');
-const CommonLoggingTransformer = require('../common-logging/common-logging-xform');
 
 const clogsHttp = new CommonLoggingHttp({'apiUrl': 'CLOGS_HTTP_APIURL', 'clientId': 'CLOGS_HTTP_CLIENTID', 'clientSecret': 'CLOGS_HTTP_CLIENTSECRET', 'tokenUrl': 'CLOGS_HTTP_TOKENURL'});
-const clogsQueue = new CommonLoggingQueue({'maxBatchSize': '100', 'batchTimeout': '10000'});
-const clogsXform = new CommonLoggingTransformer({'env':'test'});
+const clogsQueue = new CommonLoggingQueue({'batchSize': '100', 'batchTimeout': '10000'});
 
 const commonlogger = new CommonLogger(clogsHttp, clogsQueue);
 const commonloggerStdout = new CommonLoggingStdout();

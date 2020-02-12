@@ -1,21 +1,15 @@
 {
   "clogs": {
     "queue" : {
-      "batchTimeout" : "CLOGS_QUEUE_BATCHTIMEOUT",
-      "initialDelay" : "CLOGS_QUEUE_INITIAL_DELAY",
-      "maxBatchSize" : "CLOGS_QUEUE_MAXBATCHSIZE"
+      "batchSize" : "CLOGS_QUEUE_BATCHSIZE",
+      "batchTimeout" : "CLOGS_QUEUE_BATCHTIMEOUT"
     },
     "http" : {
-      "apiUrl": "CLOGS_HTTP_APIURL"
-    },
-    "metadata" : {
-      "env": "CLOGS_METADATA_ENV"
+      "apiUrl": "CLOGS_HTTP_APIURL",
+      "clientId": "CLOGS_HTTP_CLIENTID",
+      "clientSecret": "CLOGS_HTTP_CLIENTSECRET",
+      "tokenUrl": "CLOGS_HTTP_TOKENURL"
     }
-  },
-  "cmnsrv": {
-    "clientId": "CMNSRV_CLIENTID",
-    "clientSecret": "CMNSRV_CLIENTSECRET",
-    "tokenUrl": "CMNSRV_TOKENURL"
   },
   "keycloak": {
     "clientId": "KC_CLIENTID",
