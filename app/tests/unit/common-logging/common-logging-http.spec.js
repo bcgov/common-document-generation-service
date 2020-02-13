@@ -5,6 +5,7 @@ const mockAxios = new MockAdapter(axios);
 const helper = require('../../common/helper');
 
 const CommonLoggingHttp = require('../../../src/common-logging/common-logging-http');
+const Constants = require('../../../src/common-logging/common-logging-constants');
 
 helper.logHelper();
 
@@ -67,7 +68,8 @@ describe('common-logging-http xfer', () => {
     mockAxios.onPost(apiUrl).reply(201, 'truthy');
     const messages = payload;
     const result = await clogsHttp.xfer(messages);
-    expect(result).toBe(201);
+    expect(result.success).toBeTruthy();
+    expect(result.status).toBe(Constants.TRANSFER_GOOD_STATUS);
   });
 
   it('should return -1 when undefined messages passed in ', async () => {
@@ -77,7 +79,8 @@ describe('common-logging-http xfer', () => {
     const result = await clogsHttp.xfer(messages);
 
     expect(axiosSpy).toHaveBeenCalledTimes(0);
-    expect(result).toBe(-1);
+    expect(result.success).toBeFalsy();
+    expect(result.status).toBe(Constants.TRANSFER_NO_MESSAGES);
   });
 
   it('should return -2 when no messages passed in ', async () => {
@@ -87,7 +90,8 @@ describe('common-logging-http xfer', () => {
     const result = await clogsHttp.xfer(messages);
 
     expect(axiosSpy).toHaveBeenCalledTimes(0);
-    expect(result).toBe(-2);
+    expect(result.success).toBeFalsy();
+    expect(result.status).toBe(Constants.TRANSFER_NO_BATCH_ITEMS);
   });
 
   it('should return status code when not in error', async () => {
@@ -96,7 +100,8 @@ describe('common-logging-http xfer', () => {
     mockAxios.onPost(apiUrl).reply(200, 'falsy');
     const messages = payload;
     const result = await clogsHttp.xfer(messages);
-    expect(result).toBe(200);
+    expect(result.success).toBeFalsy();
+    expect(result.status).toBe(200);
   });
 
   it('should return status code when in error', async () => {
@@ -105,7 +110,8 @@ describe('common-logging-http xfer', () => {
     mockAxios.onPost(apiUrl).reply(500, 'falsy');
     const messages = payload;
     const result = await clogsHttp.xfer(messages);
-    expect(result).toBe(500);
+    expect(result.success).toBeFalsy();
+    expect(result.status).toBe(500);
   });
 
 

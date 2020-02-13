@@ -4,11 +4,27 @@ const helper = require('../../common/helper');
 
 const CommonLogger = require('../../../src/common-logging/common-logger');
 
+const httpConfig = {
+  tokenUrl: config.get('cmnsrv.tokenUrl'),
+  clientId: config.get('cmnsrv.clientId'),
+  clientSecret: config.get('cmnsrv.clientSecret'),
+  apiUrl: config.get('clogs.http.apiUrl')
+};
+const queueConfig = {
+  maxBatchSize: config.get('clogs.queue.maxBatchSize'),
+  batchTimeout: config.get('clogs.queue.batchTimeout'),
+  initialDelay: config.get('clogs.queue.initialDelay')
+};
+const xformConfig = {
+  env: config.get('clogs.metadata.env')
+};
+
 helper.logHelper();
 
 describe('common-logger constructor', () => {
   const CommonLoggingHttp = require('../../../src/common-logging/common-logging-http');
   const CommonLoggingQueue = require('../../../src/common-logging/common-logging-queue');
+  const CommonLoggingTransformer = require('../../../src/common-logging/common-logging-transformer');
 
   test('constructor, uses defaults when no parameters', () => {
     const logger = new CommonLogger();
@@ -18,11 +34,11 @@ describe('common-logger constructor', () => {
   });
 
   test('constructor, uses parameters', () => {
-    const clogsHttp = new CommonLoggingHttp(config.get('clogs.http'));
-    const clogsQueue = new CommonLoggingQueue(config.get('clogs.queue'));
-    const xform = require('../../../src/common-logging/common-logging-xform');
+    const clogsHttp = new CommonLoggingHttp(httpConfig);
+    const clogsQueue = new CommonLoggingQueue(queueConfig);
+    const clogsXform = new CommonLoggingTransformer(xformConfig);
 
-    const logger = new CommonLogger(clogsHttp, clogsQueue, xform);
+    const logger = new CommonLogger(clogsHttp, clogsQueue, clogsXform);
 
     expect(logger._transfer).toBeTruthy();
     expect(logger._transfer).toBe(clogsHttp);
@@ -31,7 +47,7 @@ describe('common-logger constructor', () => {
     expect(logger._queue).toBe(clogsQueue);
 
     expect(logger._transformer).toBeTruthy();
-    expect(logger._transformer).toBe(xform);
+    expect(logger._transformer).toBe(clogsXform);
   });
 
 });
@@ -40,7 +56,7 @@ describe('common-logger log', () => {
   // we will be mocking these classes and functions...
   const CommonLoggingHttp = require('../../../src/common-logging/common-logging-http');
   const CommonLoggingQueue = require('../../../src/common-logging/common-logging-queue');
-  const xform = require('../../../src/common-logging/common-logging-xform');
+  const CommonLoggingTransformer = require('../../../src/common-logging/common-logging-transformer');
 
   // mock data/queue
   const queueItems = [
@@ -76,8 +92,8 @@ describe('common-logger log', () => {
     });
   });
 
-  jest.mock('../../../src/common-logging/common-logging-xform');
-  xform.mockImplementation((s, opts) => {
+
+  const mockXform = jest.fn().mockImplementation((s, opts) => {
     return {
       message: s,
       data: undefined,
@@ -86,32 +102,41 @@ describe('common-logger log', () => {
       retention: opts.retention || 'default'
     };
   });
+  jest.mock('../../../src/common-logging/common-logging-transformer', () => {
+    return jest.fn().mockImplementation(() => {
+      return {
+        xform: mockXform
+      };
+    });
+  });
 
   beforeEach(() => {
     mockXfer.mockClear();
     mockPush.mockClear();
     mockFlush.mockClear();
-    xform.mockClear();
+    mockXform.mockClear();
   });
 
   test('log message', async () => {
-    const clogsHttp = new CommonLoggingHttp(config.get('clogs.http'));
-    const clogsQueue = new CommonLoggingQueue(config.get('clogs.queue'));
-    const logger = new CommonLogger(clogsHttp, clogsQueue, xform);
+    const clogsHttp = new CommonLoggingHttp(httpConfig);
+    const clogsQueue = new CommonLoggingQueue(queueConfig);
+    const clogsXform = new CommonLoggingTransformer(xformConfig);
+    const logger = new CommonLogger(clogsHttp, clogsQueue, clogsXform);
 
     const s = 'my message string';
     const l = 'test';
     await logger.log(s, {level: l});
-    expect(xform).toHaveBeenCalledTimes(1);
-    expect(xform).toHaveBeenCalledWith(s, {level: l});
+    expect(mockXform).toHaveBeenCalledTimes(1);
+    expect(mockXform).toHaveBeenCalledWith(s, {level: l});
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({message: s, data: undefined, level: l, pattern: '', retention: 'default'});
   });
 
   test('flush immediate', async () => {
-    const clogsHttp = new CommonLoggingHttp(config.get('clogs.http'));
-    const clogsQueue = new CommonLoggingQueue(config.get('clogs.queue'));
-    const logger = new CommonLogger(clogsHttp, clogsQueue, xform);
+    const clogsHttp = new CommonLoggingHttp(httpConfig);
+    const clogsQueue = new CommonLoggingQueue(queueConfig);
+    const clogsXform = new CommonLoggingTransformer(xformConfig);
+    const logger = new CommonLogger(clogsHttp, clogsQueue, clogsXform);
 
     await logger.flushImmediate();
     expect(mockFlush).toHaveBeenCalledTimes(1);

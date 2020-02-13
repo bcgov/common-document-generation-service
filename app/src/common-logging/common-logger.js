@@ -1,5 +1,6 @@
 const CommonLoggingQueue = require('./common-logging-queue');
-const defaultXform = require('./common-logging-xform');
+const CommonLoggingTransformer = require('./common-logging-transformer');
+const Constants = require('./common-logging-constants');
 
 class StdOutXfer {
   async xfer(messages) {
@@ -10,9 +11,9 @@ class StdOutXfer {
       }
       batch.forEach(m => {
         if (m.message) {
-          process.stdout.write(`common-logging - ${m.message.trim()}\n`);
+          process.stdout.write(`${Constants.COMMON_LOGGING_PREFIX} ${m.message.trim()}\n`);
         } else {
-          process.stdout.write(`common-logging - ${JSON.stringify(m.data)}\n`);
+          process.stdout.write(`${Constants.COMMON_LOGGING_PREFIX} ${JSON.stringify(m.data)}\n`);
         }
       });
     }
@@ -24,7 +25,7 @@ const defaultXfer = new StdOutXfer();
 class CommonLogger {
 
   constructor(transfer, queue, transformer) {
-    this._transformer = transformer || defaultXform;
+    this._transformer = transformer || new CommonLoggingTransformer();
     this._queue = queue || new CommonLoggingQueue();
     this._transfer = transfer || defaultXfer;
 
@@ -38,7 +39,7 @@ class CommonLogger {
   }
 
   async log(message, options) {
-    const o = this._transformer(message, options);
+    const o = this._transformer.xform(message, options);
     if (o) {
       await this._queue.push(o);
     }
