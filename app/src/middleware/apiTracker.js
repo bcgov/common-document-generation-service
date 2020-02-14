@@ -159,7 +159,8 @@ const initializeApiTracker = app => {
 
   morgan.token('outputFileType', req => {
     try {
-      return req.body.template.outputFileType;
+      // if output file type not specified, then we use the content (input) file type.
+      return req.body.template.outputFileType ? req.body.template.outputFileType : req.body.template.contentFileType;
     } catch (e) {
       return '-';
     }
