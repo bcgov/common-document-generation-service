@@ -123,7 +123,27 @@ objects:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
               imagePullPolicy: IfNotPresent
               name: "${APP_NAME}-logging-${JOB_NAME}"
-              env:
+              args:
+                - /bin/sh
+                - -c
+                - touch /tmp/healthy; touch /tmp/liveness; sleep 999999
+              livenessProbe:
+                exec:
+                  command:
+                    - cat
+                    - /tmp/liveness
+                initialDelaySeconds: 5
+                periodSeconds: 5
+              readinessProbe:
+                exec:
+                  command:
+                    - cat
+                    - /tmp/healthy
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+                env:
                 - name: POD_NAME
                   valueFrom:
                     fieldRef:
