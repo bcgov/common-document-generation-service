@@ -30,4 +30,4 @@ echo "Caught HOSTNAME ${HOSTNAME}"
 echo "Caught STARTUP_TIME ${STARTUP_TIME}"
 
 # sidecar does nothing if a header is empty
-sleep infinity
+sleep 999999

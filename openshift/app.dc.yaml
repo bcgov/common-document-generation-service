@@ -126,17 +126,17 @@ objects:
               livenessProbe:
                 exec:
                   command:
-                    - echo
-                    - "liveness"
+                    - cat
+                    - /tmp/liveness
                 initialDelaySeconds: 5
                 periodSeconds: 5
               readinessProbe:
                 exec:
                   command:
-                    - echo
-                    - "healthy"
+                    - cat
+                    - /tmp/healthy
                 initialDelaySeconds: 10
-                periodSeconds: 5
+                periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
                 env:
