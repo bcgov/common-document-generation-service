@@ -41,4 +41,9 @@ router.use('/fileTypes', keycloak.protect(), fileTypesRouter);
 /** Health Router */
 router.use('/health', keycloak.protect(), healthRouter);
 
+
+router.post('/oclogs',  async (req, res, _next) => {
+  res.status(201).json({oclogs: true});
+});
+
 module.exports = router;

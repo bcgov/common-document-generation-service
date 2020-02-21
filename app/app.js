@@ -29,7 +29,10 @@ app.use(express.json({
   limit: config.get('server.bodyLimit')
 }));
 app.use(express.urlencoded({
-  extended: false
+  extended: true,
+  type: 'application/x-www-form-urlencoded',
+  limit: config.get('server.bodyLimit'),
+  parameterLimit: 10000000
 }));
 
 // Logging Setup

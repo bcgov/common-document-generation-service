@@ -120,6 +120,18 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
+              imagePullPolicy: IfNotPresent
+              name: "${APP_NAME}-logging-${JOB_NAME}"
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: CONTAINER_NAME
+                  value: "sidecar-logging"
+                - name: LOGSERVER_URL
+                  value: "${HOST_ROUTE}/api/v1/oclogs"
       test: false
       triggers:
         - type: ConfigChange
