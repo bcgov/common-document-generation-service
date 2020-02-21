@@ -143,6 +143,10 @@ pipeline {
                 openshift.tag("${REPO_NAME}-app:latest",
                   "${REPO_NAME}-app:${JOB_NAME}"
                 )
+                echo "Tagging Image ${REPO_NAME}-logging:${JOB_NAME}..."
+                openshift.tag("${REPO_NAME}-logging:latest",
+                        "${REPO_NAME}-logging:${JOB_NAME}"
+                )
 
                 echo 'App build successful'
                 notifyStageStatus('Build', 'SUCCESS')
