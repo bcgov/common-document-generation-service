@@ -42,7 +42,7 @@ objects:
       postCommit: {}
       runPolicy: SerialLatestOnly
       source:
-        contextDir: openshift/docker
+        contextDir: openshift/sidecar
         git:
           ref: "${SOURCE_REPO_REF}"
           uri: "${SOURCE_REPO_URL}"
