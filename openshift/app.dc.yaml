@@ -123,24 +123,20 @@ objects:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
               imagePullPolicy: IfNotPresent
               name: "${APP_NAME}-logging-${JOB_NAME}"
-              args:
-                - /bin/sh
-                - -c
-                - touch /tmp/healthy; touch /tmp/liveness; sleep 999999
               livenessProbe:
                 exec:
                   command:
-                    - cat
-                    - /tmp/liveness
+                    - echo
+                    - "liveness"
                 initialDelaySeconds: 5
                 periodSeconds: 5
               readinessProbe:
                 exec:
                   command:
-                    - cat
-                    - /tmp/healthy
+                    - echo
+                    - "healthy"
                 initialDelaySeconds: 10
-                periodSeconds: 10
+                periodSeconds: 5
                 successThreshold: 1
                 timeoutSeconds: 1
                 env:
