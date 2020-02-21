@@ -130,7 +130,7 @@ objects:
                       fieldPath: metadata.name
                 - name: CONTAINER_NAME
                   value: "sidecar-logging"
-                - name: LOGSERVER_URL
+                - name: LOG_SERVER_URI
                   value: "${HOST_ROUTE}/api/v1/oclogs"
       test: false
       triggers:
