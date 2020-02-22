@@ -120,9 +120,9 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logger:${JOB_NAME}
               imagePullPolicy: IfNotPresent
-              name: "${APP_NAME}-logging-${JOB_NAME}"
+              name: "${APP_NAME}-logger-${JOB_NAME}"
               livenessProbe:
                 exec:
                   command:

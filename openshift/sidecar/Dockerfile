@@ -4,4 +4,4 @@ RUN microdnf --enablerepo=rhel-7-server-ose-3.11-rpms --enablerepo=rhel-7-server
 RUN mkdir -p ${APP_ROOT} && touch ${APP_ROOT}/liveness && chmod a+r ${APP_ROOT}/liveness && touch ${APP_ROOT}/readiness && chmod a+r ${APP_ROOT}/readiness
 COPY ./sidecar-logging.sh ${APP_ROOT}
 RUN chmod a+rx ${APP_ROOT}/sidecar-logging.sh
-CMD ["/opt/app/sidecar-logging.sh"]
+ENTRYPOINT ["/opt/app/sidecar-logging.sh"]
