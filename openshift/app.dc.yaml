@@ -123,6 +123,10 @@ objects:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
               imagePullPolicy: IfNotPresent
               name: "${APP_NAME}-logging-${JOB_NAME}"
+              args:
+                - /bin/bash
+                - -c
+                - touch /tmp/healthy; touch /tmp/liveness; /usr/local/bin/sidecar-logging.sh
               livenessProbe:
                 exec:
                   command:
