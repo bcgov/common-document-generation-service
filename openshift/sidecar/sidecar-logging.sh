@@ -3,10 +3,6 @@
 # debug on fail
 set -euo pipefail
 
-if [ "x${DEBUG}" = xtrue ]; then
-  set -x
-fi
-
 # required
 : "${DEDUPE:?You must set deduplication}"
 : "${POD_NAME:?Pod name should be set from downward api}"
