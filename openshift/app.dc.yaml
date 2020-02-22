@@ -123,22 +123,18 @@ objects:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
               imagePullPolicy: IfNotPresent
               name: "${APP_NAME}-logging-${JOB_NAME}"
-              args:
-                - /bin/bash
-                - -c
-                - /usr/local/bin/sidecar-logging.sh
               livenessProbe:
                 exec:
                   command:
-                    - echo
-                    - "liveness"
+                    - cat
+                    - /opt/app/liveness
                 initialDelaySeconds: 5
                 periodSeconds: 5
               readinessProbe:
                 exec:
                   command:
-                    - echo
-                    - "readiness"
+                    - cat
+                    - /opt/app/readiness
                 initialDelaySeconds: 10
                 periodSeconds: 10
                 successThreshold: 1
