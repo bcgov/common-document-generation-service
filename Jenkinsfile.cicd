@@ -143,9 +143,9 @@ pipeline {
                 openshift.tag("${REPO_NAME}-app:latest",
                   "${REPO_NAME}-app:${JOB_NAME}"
                 )
-                echo "Tagging Image ${REPO_NAME}-logging:${JOB_NAME}..."
-                openshift.tag("${REPO_NAME}-logging:latest",
-                        "${REPO_NAME}-logging:${JOB_NAME}"
+                echo "Tagging Image ${REPO_NAME}-logger:${JOB_NAME}..."
+                openshift.tag("${REPO_NAME}-logger:latest",
+                        "${REPO_NAME}-logger:${JOB_NAME}"
                 )
 
                 echo 'App build successful'
@@ -249,8 +249,8 @@ def deployStage(String stageEnv, String projectEnv, String hostRouteEnv) {
         // Apply Server
         echo "Tagging Image ${REPO_NAME}-app:${JOB_NAME}..."
         openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-app:${JOB_NAME}", "${REPO_NAME}-app:${JOB_NAME}")
-        echo "Tagging Image ${REPO_NAME}-logging:${JOB_NAME}..."
-        openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-logging:${JOB_NAME}", "${REPO_NAME}-logging:${JOB_NAME}")
+        echo "Tagging Image ${REPO_NAME}-logger:${JOB_NAME}..."
+        openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-logger:${JOB_NAME}", "${REPO_NAME}-logger:${JOB_NAME}")
 
         echo "Processing DeploymentConfig ${REPO_NAME}-app..."
         def dcAppTemplate = openshift.process('-f',
