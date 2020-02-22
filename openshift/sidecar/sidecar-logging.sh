@@ -3,12 +3,6 @@
 # debug on fail
 set -euo pipefail
 
-# required
-: "${DEDUPE:?You must set deduplication}"
-: "${POD_NAME:?Pod name should be set from downward api}"
-: "${CONTAINER_NAME:?You must set container name}"
-: "${LOG_SERVER_URI:?You must set logging server endpoint}"
-
 # sensible defaults if not set
 : "${DEDUPE:=true}"
 : "${SLEEP_TIME:=60}"
