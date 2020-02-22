@@ -20,14 +20,14 @@ fi
 : "${HOSTNAME:=unknown}"
 : "${STARTUP_TIME:=20}"
 
-echo "Caught DEDUPE ${DEDUPE}"
-echo "Caught POD_NAME ${POD_NAME}"
-echo "Caught CONTAINER_NAME ${CONTAINER_NAME}"
-echo "Caught LOG_SERVER_URI ${LOG_SERVER_URI}"
-echo "Caught SLEEP_TIME ${SLEEP_TIME}"
-echo "Caught GRACEFUL_EXIT_TIME ${GRACEFUL_EXIT_TIME}"
-echo "Caught HOSTNAME ${HOSTNAME}"
-echo "Caught STARTUP_TIME ${STARTUP_TIME}"
+echo " DEDUPE ${DEDUPE}"
+echo " POD_NAME ${POD_NAME}"
+echo " CONTAINER_NAME ${CONTAINER_NAME}"
+echo " LOG_SERVER_URI ${LOG_SERVER_URI}"
+echo " SLEEP_TIME ${SLEEP_TIME}"
+echo " GRACEFUL_EXIT_TIME ${GRACEFUL_EXIT_TIME}"
+echo " HOSTNAME ${HOSTNAME}"
+echo " STARTUP_TIME ${STARTUP_TIME}"
 
 # sidecar does nothing if a header is empty
-sleep 999999
+sleep infinity
