@@ -127,14 +127,14 @@ objects:
                 exec:
                   command:
                     - cat
-                    - /tmp/app/liveness
+                    - /opt/app/liveness
                 initialDelaySeconds: 5
                 periodSeconds: 5
               readinessProbe:
                 exec:
                   command:
                     - cat
-                    - /tmp/app/readiness
+                    - /opt/app/readiness
                 initialDelaySeconds: 10
                 periodSeconds: 10
                 successThreshold: 1
