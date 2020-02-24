@@ -169,10 +169,15 @@ pipeline {
                   echo "DEBUG - Using project: ${openshift.project()}"
                 } else {
                   def bcApp = openshift.selector('bc', "${REPO_NAME}-app-${JOB_NAME}")
+                  def bcSide = openshift.selector('bc', "${REPO_NAME}-logger-${JOB_NAME}")
 
                   if(bcApp.exists()) {
                     echo "Removing BuildConfig ${REPO_NAME}-app-${JOB_NAME}..."
                     bcApp.delete()
+                  }
+                  if(bcSide.exists()) {
+                    echo "Removing BuildConfig ${REPO_NAME}-logger-${JOB_NAME}..."
+                    bcSide.delete()
                   }
                 }
               }
