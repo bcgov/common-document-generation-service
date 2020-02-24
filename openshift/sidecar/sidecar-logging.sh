@@ -22,7 +22,6 @@ _send() {
     return
   fi
 
-  ECHO "${PATH}"
   # removes duplicates
   (
     # wait for exclusive lock (fd 200) for 2 seconds
