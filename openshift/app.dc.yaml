@@ -161,6 +161,70 @@ objects:
               namespace: "${NAMESPACE}"
           type: ImageChange
   - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}-applog-${JOB_NAME}"
+    spec:
+      replicas: 2
+      revisionHistoryLimit: 10
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
+      strategy:
+        type: Rolling
+        resources: {}
+        rollingParams:
+          timeoutSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-${JOB_NAME}"
+            deploymentconfig: "${APP_NAME}-applog-${JOB_NAME}"
+            role: app
+        spec:
+          containers:
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logger:${JOB_NAME}
+              imagePullPolicy: IfNotPresent
+              name: "${APP_NAME}-applog-${JOB_NAME}"
+              livenessProbe:
+                exec:
+                  command:
+                    - cat
+                    - /opt/app/liveness
+                initialDelaySeconds: 5
+                periodSeconds: 5
+              readinessProbe:
+                exec:
+                  command:
+                    - cat
+                    - /opt/app/readiness
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: CONTAINER_NAME
+                  value: "${APP_NAME}-app-${JOB_NAME}"
+                - name: LOG_SERVER_URI
+                  value: "https://${HOST_ROUTE}/api/v1/oclogs"
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - "${APP_NAME}-app-${JOB_NAME}"
+            from:
+              kind: ImageStreamTag
+              name: "${REPO_NAME}-app:${JOB_NAME}"
+              namespace: "${NAMESPACE}"
+          type: ImageChange
+  - apiVersion: v1
     kind: Service
     metadata:
       name: "${APP_NAME}-app-${JOB_NAME}"
