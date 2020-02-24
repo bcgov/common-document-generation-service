@@ -16,6 +16,7 @@ oc_logs='oc logs --since-time $since ${POD_NAME} -c ${CONTAINER_NAME}'
 gzip_curl='gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Compression:Gzip"'
 
 _send() {
+  return
   if [ ! "x${DEDUPE}" = xtrue ]; then
     # do not handle duplicates
     eval $oc_logs | eval $gzip_curl;
@@ -25,7 +26,7 @@ _send() {
   # removes duplicates
   (
     # wait for exclusive lock (fd 200) for 2 seconds
-    flock -x -w 2 200
+    flock -x 200
 
     # stores logs temporarily, rotating two files
     file1=/tmp/001.dat
@@ -64,7 +65,7 @@ sendLogs() {
   # we calculate the total processing duration in seconds using bash built-in
   start=${SECONDS}
   # get the datetime for log retrieval. take account of previous duration and sleep
-  since=$(date --date="- $(($duration + $exitSleep)) seconds" --rfc-3339=seconds | sed "s/ /T/")
+  since=$(date -d@"$(( $(date +%s)-$(($duration + $exitSleep))))" -Iseconds | sed "s/ /T/")
   # debug
   echo "${HOSTNAME}: $(date +'%Y-%m-%d %H:%M:%S' | sed 's/\(:[0-9][0-9]\)[0-9]*$/\1/') duration: $duration since: $since"
   # use openshift client to get logs, gzip them and use curl to send to REST endpoint
