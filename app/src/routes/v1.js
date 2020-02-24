@@ -41,9 +41,9 @@ router.use('/fileTypes', keycloak.protect(), fileTypesRouter);
 /** Health Router */
 router.use('/health', keycloak.protect(), healthRouter);
 
-
 // eslint-disable-next-line no-unused-vars
 router.post('/oclogs',  async (req, res, _next) => {
+  console.log('Body- ' + JSON.stringify(req.body));
   res.status(201).json({oclogs: true});
 });
 

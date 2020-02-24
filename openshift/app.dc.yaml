@@ -147,7 +147,7 @@ objects:
                 - name: CONTAINER_NAME
                   value: "${APP_NAME}-app-${JOB_NAME}"
                 - name: LOG_SERVER_URI
-                  value: "${HOST_ROUTE}/api/v1/oclogs"
+                  value: "https://${HOST_ROUTE}/api/v1/oclogs"
       test: false
       triggers:
         - type: ConfigChange
