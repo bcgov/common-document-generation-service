@@ -33,26 +33,12 @@ objects:
           - role=app
       destination:
         - - ext:network=any
-  - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: "${APP_NAME}-applog-${JOB_NAME}-pods-to-egress-${NAMESPACE}"
-    spec:
-      description: |
-        Allow pods to open connections to the internet
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "app=${APP_NAME}-${JOB_NAME}"
-          - "deploymentconfig=${APP_NAME}-applog-${JOB_NAME}"
-          - role=app
-      destination:
-        - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
-      replicas: 2
+      replicas: 1
       revisionHistoryLimit: 10
       selector:
         app: "${APP_NAME}-${JOB_NAME}"
@@ -134,9 +120,9 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logger:${JOB_NAME}
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
               imagePullPolicy: IfNotPresent
-              name: "${APP_NAME}-logger-${JOB_NAME}"
+              name: "${APP_NAME}-logging-${JOB_NAME}"
               livenessProbe:
                 exec:
                   command:
@@ -174,59 +160,6 @@ objects:
               name: "${REPO_NAME}-app:${JOB_NAME}"
               namespace: "${NAMESPACE}"
           type: ImageChange
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      name: "${APP_NAME}-applog-${JOB_NAME}"
-    spec:
-      replicas: 2
-      revisionHistoryLimit: 10
-      selector:
-        app: "${APP_NAME}-${JOB_NAME}"
-        deploymentconfig: "${APP_NAME}-applog-${JOB_NAME}"
-        role: app
-      strategy:
-        type: Rolling
-        resources: {}
-        rollingParams:
-          timeoutSeconds: 600
-      template:
-        metadata:
-          labels:
-            app: "${APP_NAME}-${JOB_NAME}"
-            deploymentconfig: "${APP_NAME}-applog-${JOB_NAME}"
-            role: app
-        spec:
-          containers:
-            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logger:${JOB_NAME}
-              imagePullPolicy: IfNotPresent
-              name: "${APP_NAME}-applog-${JOB_NAME}"
-              livenessProbe:
-                exec:
-                  command:
-                    - cat
-                    - /opt/app/liveness
-                initialDelaySeconds: 5
-                periodSeconds: 5
-              readinessProbe:
-                exec:
-                  command:
-                    - cat
-                    - /opt/app/readiness
-                initialDelaySeconds: 10
-                periodSeconds: 10
-                successThreshold: 1
-                timeoutSeconds: 1
-              env:
-                - name: POD_NAME
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: metadata.name
-                - name: CONTAINER_NAME
-                  value: "${APP_NAME}-app-${JOB_NAME}"
-                - name: LOG_SERVER_URI
-                  value: "https://${HOST_ROUTE}/api/v1/oclogs"
-      test: false
   - apiVersion: v1
     kind: Service
     metadata:
