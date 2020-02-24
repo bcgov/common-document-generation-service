@@ -8,7 +8,7 @@ set -euo pipefail
 : "${SLEEP_TIME:=60}"
 : "${GRACEFUL_EXIT_TIME:=55}"
 : "${HOSTNAME:=unknown}"
-: "${STARTUP_TIME:=20}"
+: "${STARTUP_TIME:=30}"
 
 # get openshift logs for container
 oc_logs='oc logs --since-time $since ${POD_NAME} -c ${CONTAINER_NAME}'
