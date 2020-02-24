@@ -16,7 +16,6 @@ oc_logs='oc logs --since-time $since ${POD_NAME} -c ${CONTAINER_NAME}'
 gzip_curl='gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Compression:Gzip"'
 
 _send() {
-  return
   if [ ! "x${DEDUPE}" = xtrue ]; then
     # do not handle duplicates
     eval $oc_logs | eval $gzip_curl;
@@ -65,7 +64,8 @@ sendLogs() {
   # we calculate the total processing duration in seconds using bash built-in
   start=${SECONDS}
   # get the datetime for log retrieval. take account of previous duration and sleep
-  since=$(date -d@"$(( $(date +%s)-$(($duration + $exitSleep))))" -Iseconds | sed "s/ /T/")
+  # format since to be parseable by oc logs - use UTC and no additional timezone info (ex 2020-02-24T18:41:41Z)
+  since=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d@"$(( $(date +%s)-$(($duration + $exitSleep))))" | sed "s/ /T/")
   # debug
   echo "${HOSTNAME}: $(date +'%Y-%m-%d %H:%M:%S' | sed 's/\(:[0-9][0-9]\)[0-9]*$/\1/') duration: $duration since: $since"
   # use openshift client to get logs, gzip them and use curl to send to REST endpoint
