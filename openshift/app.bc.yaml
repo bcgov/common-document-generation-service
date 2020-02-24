@@ -12,7 +12,7 @@ objects:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewBuild
-      name: "${REPO_NAME}-logging"
+      name: "${REPO_NAME}-log"
     spec:
       lookupPolicy:
         local: false
@@ -21,7 +21,7 @@ objects:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewBuild
-      name: "${REPO_NAME}-logging-${JOB_NAME}"
+      name: "${REPO_NAME}-log-${JOB_NAME}"
     spec:
       completionDeadlineSeconds: 600
       failedBuildsHistoryLimit: 3
@@ -29,7 +29,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: "${REPO_NAME}-logging:latest"
+          name: "${REPO_NAME}-log:latest"
       postCommit: {}
       runPolicy: SerialLatestOnly
       source:

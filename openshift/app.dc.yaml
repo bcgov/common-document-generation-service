@@ -38,7 +38,7 @@ objects:
     metadata:
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
-      replicas: 1
+      replicas: 2
       revisionHistoryLimit: 10
       selector:
         app: "${APP_NAME}-${JOB_NAME}"
@@ -120,9 +120,9 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-logging:${JOB_NAME}
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-log:${JOB_NAME}
               imagePullPolicy: IfNotPresent
-              name: "${APP_NAME}-logging-${JOB_NAME}"
+              name: "${APP_NAME}-log-${JOB_NAME}"
               livenessProbe:
                 exec:
                   command:
