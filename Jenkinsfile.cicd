@@ -143,9 +143,9 @@ pipeline {
                 openshift.tag("${REPO_NAME}-app:latest",
                   "${REPO_NAME}-app:${JOB_NAME}"
                 )
-                echo "Tagging Image ${REPO_NAME}-logging:${JOB_NAME}..."
-                openshift.tag("${REPO_NAME}-logging:latest",
-                        "${REPO_NAME}-logging:${JOB_NAME}"
+                echo "Tagging Image ${REPO_NAME}-log:${JOB_NAME}..."
+                openshift.tag("${REPO_NAME}-log:latest",
+                        "${REPO_NAME}-log:${JOB_NAME}"
                 )
 
                 echo 'App build successful'
@@ -169,14 +169,14 @@ pipeline {
                   echo "DEBUG - Using project: ${openshift.project()}"
                 } else {
                   def bcApp = openshift.selector('bc', "${REPO_NAME}-app-${JOB_NAME}")
-                  def bcSide = openshift.selector('bc', "${REPO_NAME}-logging-${JOB_NAME}")
+                  def bcSide = openshift.selector('bc', "${REPO_NAME}-log-${JOB_NAME}")
 
                   if(bcApp.exists()) {
                     echo "Removing BuildConfig ${REPO_NAME}-app-${JOB_NAME}..."
                     bcApp.delete()
                   }
                   if(bcSide.exists()) {
-                    echo "Removing BuildConfig ${REPO_NAME}-logging-${JOB_NAME}..."
+                    echo "Removing BuildConfig ${REPO_NAME}-log-${JOB_NAME}..."
                     bcSide.delete()
                   }
                 }
@@ -254,8 +254,8 @@ def deployStage(String stageEnv, String projectEnv, String hostRouteEnv) {
         // Apply Server
         echo "Tagging Image ${REPO_NAME}-app:${JOB_NAME}..."
         openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-app:${JOB_NAME}", "${REPO_NAME}-app:${JOB_NAME}")
-        echo "Tagging Image ${REPO_NAME}-logging:${JOB_NAME}..."
-        openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-logging:${JOB_NAME}", "${REPO_NAME}-logging:${JOB_NAME}")
+        echo "Tagging Image ${REPO_NAME}-log:${JOB_NAME}..."
+        openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-log:${JOB_NAME}", "${REPO_NAME}-log:${JOB_NAME}")
 
         echo "Processing DeploymentConfig ${REPO_NAME}-app..."
         def dcAppTemplate = openshift.process('-f',
