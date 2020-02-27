@@ -176,8 +176,9 @@ const initializeApiTracker = app => {
         const m = apiTrackerParse(s);
         if (m) {
           // write to stdout and let logging appliance pick it up
-          // put the JSON string as a single line.
-          log.info('apiTracker', JSON.stringify(m));
+          // put the JSON string as a single line
+          // cannot have the method name/group if we want to auto-convert to JSON in CLOGS
+          log.info(JSON.stringify(m));
         }
       }
     }
