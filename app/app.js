@@ -14,9 +14,6 @@ const v1Router = require('./src/routes/v1');
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 const initializeApiTracker = require('./src/middleware/apiTracker');
 
-const { commonlogger, commonloggerStdout } = require('./src/components/commonlogger');
-
-
 const apiRouter = express.Router();
 const state = {
   isShutdown: false
@@ -43,8 +40,6 @@ log.verbose('Config', utils.prettyStringify(config));
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
-  // hook into standard out/err automatically...
-  commonloggerStdout.hook();
   app.use(authorizedParty);
   initializeApiTracker(app);
   // Add Morgan endpoint logging
@@ -112,8 +107,6 @@ process.on('SIGINT', shutdown);
 
 function shutdown() {
   log.info('Received kill signal. Shutting down...');
-  commonloggerStdout.unhook();
-  commonlogger.flushImmediate();
   state.isShutdown = true;
   // Wait 3 seconds before hard exiting
   setTimeout(() => process.exit(), 5000);

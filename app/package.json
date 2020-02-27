@@ -38,8 +38,6 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "keycloak-connect": "^8.0.1",
-    "lodash.isstring": "^4.0.1",
-    "lodash.toarray": "^4.4.0",
     "mime-types": "^2.1.26",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
