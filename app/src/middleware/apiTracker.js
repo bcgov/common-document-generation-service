@@ -9,7 +9,7 @@
  */
 const moment = require('moment');
 const morgan = require('morgan');
-const { commonlogger } = require('../components/commonlogger');
+const log = require('npmlog');
 
 // this will suppress a console warning about moment deprecating a default fallback on non ISO/RFC2822 date formats
 // we will just force it to use the new Date constructor.
@@ -173,8 +173,13 @@ const initializeApiTracker = app => {
     },
     stream: {
       write: (s) => {
-        // send a parsed message to our common logger
-        commonlogger.log(apiTrackerParse(s));
+        const m = apiTrackerParse(s);
+        if (m) {
+          // write to stdout and let logging appliance pick it up
+          // put the JSON string as a single line
+          // cannot have the method name/group if we want to auto-convert to JSON in CLOGS
+          log.info(JSON.stringify(m));
+        }
       }
     }
   }));
