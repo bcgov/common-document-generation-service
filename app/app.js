@@ -79,7 +79,7 @@ apiRouter.use('/v1', v1Router);
 // v2 - use carbone copy api..
 // we are using routes() so we can use middleware, so the relative path for carbone-copy-api yaml spec isn't set.
 // call to carbone-copy-api /docs will call /api-spec.yaml, let's redirect the call to the correct url
-app.get('/api-spec.yaml', function(req, res){
+app.get('/api-spec.yaml', (req, res) => {
   req.url = `${carboneBasePath}/api-spec.yaml`;
   app.handle(req, res);
 });

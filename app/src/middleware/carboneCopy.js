@@ -66,27 +66,19 @@ const apiTrackerParse = (msg) => {
       }
     };
 
-    let extended = {};
+    const extended = {};
     if (parts.length === 11) {
-      const outputFileType = parts[5];
-      const contextKeyCount = Number.parseInt(parts[6]);
-      const contentFileType = parts[7];
-      const contentEncodingType = parts[8];
-      const contentSize = Number.parseInt(parts[9]);
-      const contentLength = '-' !== parts[10] ? Number.parseInt(parts[10]) : undefined;
-      extended = {
-        context: {
-          keyCount: contextKeyCount
-        },
-        content: {
-          fileType: contentFileType,
-          encodingType: contentEncodingType,
-          size: contentSize
-        },
-        output: {
-          fileType: outputFileType,
-          size: contentLength
-        }
+      extended.context = {
+        keyCount: Number.parseInt(parts[6])
+      };
+      extended.content = {
+        fileType: parts[7],
+        encodingType: parts[8],
+        size: Number.parseInt(parts[9])
+      };
+      extended.output = {
+        fileType: parts[5],
+        size: '-' !== parts[10] ? Number.parseInt(parts[10]) : undefined
       };
     }
 
@@ -244,8 +236,3 @@ const operation = basePath => {
 module.exports.initializeApiTracker = initializeApiTracker;
 module.exports.operation = operation;
 module.exports.security = security;
-
-
-
-
-
