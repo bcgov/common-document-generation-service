@@ -47,21 +47,6 @@ objects:
         type: Git
         dockerfile: |-
           FROM BuildConfig
-          ARG APP_ROOT=/opt/app-root/src
-          ENV NO_UPDATE_NOTIFIER=true \
-              PATH="/usr/lib/libreoffice/program:${PATH}" \
-              PYTHONUNBUFFERED=1
-          WORKDIR ${APP_ROOT}
-
-          # Install LibreOffice & Common Fonts
-          RUN apk --no-cache add bash libreoffice util-linux \
-              ttf-droid-nonlatin ttf-droid ttf-dejavu ttf-freefont ttf-liberation \
-          && rm -rf /var/cache/apk/*
-
-          # Fix Python/LibreOffice Integration
-          COPY docker ${APP_ROOT}/docker
-          RUN chmod a+rx ${APP_ROOT}/docker/bindPython.sh \
-           && ${APP_ROOT}/docker/bindPython.sh
 
           # Install CDOGS
           COPY . .
@@ -78,7 +63,7 @@ objects:
               value: notice
           from:
             kind: DockerImage
-            name: "mhart/alpine-node:12"
+            name: "bcgovimages/alpine-node-libreoffice:v1.0.0"
         type: Docker
       successfulBuildsHistoryLimit: 3
 parameters:
