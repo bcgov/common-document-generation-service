@@ -136,7 +136,7 @@ The templating engine is XML-agnostic. It means the template engine works on any
 
 #### Concepts
 
-In order to provide template substitution of variables into the supplied document, we have the pass in a **data**  object.  The data object is a free-form JSON object which consists of key-value pairs. The purpose is to provide a key-value mapping between an inline variable in the template document and the intended merged document output after the values are replaced.  **data** can be an array of JSON objects.  
+In order to provide template substitution of variables into the supplied document, we have to pass in a **data**  object.  The data object is a free-form JSON object which consists of key-value pairs. The purpose is to provide a key-value mapping between an inline variable in the template document and the intended merged document output after the values are replaced.  **data** can be an array of JSON objects.  
 
 Carbone can behave as a glorified string-replacement engine, or more complex conditional or iterative logic can be built into the template variables. See below sections for documentation.
 In the event the Context object has extra variables that are not used in the template document, nothing happens. You can expect to see blanks where no value was substituted.
