@@ -13,7 +13,7 @@ const operations = Object.freeze([
   {method: 'POST', regex: /\/template\/\w+\/render/g, name: 'GENERATE_FROM_TEMPLATE', isGenerator: true},
   {method: 'POST', regex: /\/template\/render$/, name: 'GENERATE_FROM_UPLOAD', isGenerator: true},
   {method: 'GET', regex: /\/render/g, name: 'GET_OUTPUT', isGenerator: false},
-  {method: 'GET', regex: /\/template\/(?!render)/g, name: 'GET_TEMPLATE', isGenerator: false}
+  {method: 'GET', regex: /\/template\/(?!render)/g, name: 'GET_TEMPLATE', isGenerator: false},
 ]);
 
 const getOperation = (req) => {
@@ -212,12 +212,18 @@ const initializeApiTracker = (app, basePath) => {
 };
 
 const security = (req, res, next) => {
-  const operation = req._carboneOp;
-  if (operation) {
-    if (operation.isGenerator) {
-      return keycloak.protect(`${clientId}:GENERATOR`)(req, res, next);
-    } else {
-      return keycloak.protect()(req, res, next);
+  // allow docs and the api spec to be accessible by non-authenticated users.
+  // everything else should be authenticated
+  if (!['/docs','/api-spec.yaml'].includes(req.url)) {
+    const operation = req._carboneOp;
+    if (operation) {
+      if (operation.isGenerator) {
+        // authenticated AND has specific role...
+        return keycloak.protect(`${clientId}:GENERATOR`)(req, res, next);
+      } else {
+        // authenticated, no specific role privileges.
+        return keycloak.protect()(req, res, next);
+      }
     }
   }
   next();
