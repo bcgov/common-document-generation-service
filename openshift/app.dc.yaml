@@ -147,15 +147,11 @@ objects:
       name: file-cache-${JOB_NAME}
     spec:
       accessModes:
-        - ReadWriteMany
+        - ReadWriteOnce
       storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:
           storage: '${FILE_CACHE_VOLUME_CAPACITY}'
-      selector:
-        app: "${APP_NAME}-${JOB_NAME}"
-        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
-        role: app
   - apiVersion: v1
     kind: Service
     metadata:
