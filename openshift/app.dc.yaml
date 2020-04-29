@@ -125,10 +125,10 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-            volumes:
-            - name: file-cache-${JOB_NAME}-data
-              persistentVolumeClaim:
-                claimName: file-cache-${JOB_NAME}
+            - volumes:
+              - name: file-cache-${JOB_NAME}-data
+                persistentVolumeClaim:
+                  claimName: file-cache-${JOB_NAME}
       test: false
       triggers:
         - type: ConfigChange
