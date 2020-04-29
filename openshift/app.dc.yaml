@@ -123,7 +123,9 @@ objects:
                 - name: CACHE_DIR
                   value: "${FILE_CACHE_DIR}"
                 - name: CACHE_SIZE
-                  value: "${FILE_CACHE_VOLUME_CAPACITY}"
+                  value: "${FILE_CACHE_VOLUME_CAPACITY_BYTES}"
+                - name: UPLOAD_FILE_SIZE
+                  value: "${FILE_CACHE_MAX_FILE_SIZE}"
               envFrom:
                 - configMapRef:
                     name: cdogs-keycloak-config
@@ -234,6 +236,16 @@ parameters:
     displayName: File Cache Volume Capacity (use M or G, not Mi or Gi)
     required: true
     value: 2G
+  - name: FILE_CACHE_VOLUME_CAPACITY_BYTES
+    description: Volume space available for File Cache in npm bytes parseable format
+    displayName: File Cache Volume Capacity Bytes in npm bytes parseable format (use MB or GB, not Mi or Gi).  Must match File Cache Volume Capacity
+    required: true
+    value: 2GB
+  - name: FILE_CACHE_MAX_FILE_SIZE
+    description: Set a maximum file size to store in cache.
+    displayName: Set a maximum file size to store in cache, cache should always leave this space free to handle request.  Use MB or GB or B - parseable by npm bytes library.
+    required: true
+    value: 25MB
   - name: FILE_CACHE_PERSISTENT_VOLUME_CLASS
     description: The storage class of the volume
     displayName: Persistent Volume Class name

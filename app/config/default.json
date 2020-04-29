@@ -29,7 +29,7 @@
   },
   "carbone": {
     "cacheDir": "/tmp/carbone-files",
-    "cacheSize": "2G",
+    "cacheSize": "2GB",
     "uploadSize": "25MB"
   }
 }

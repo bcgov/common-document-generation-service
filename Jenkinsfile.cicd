@@ -254,7 +254,9 @@ def deployStage(String stageEnv, String projectEnv, String hostRouteEnv) {
           "NAMESPACE=${projectEnv}",
           "APP_NAME=${APP_NAME}",
           "HOST_ROUTE=${hostRouteEnv}",
-          'FILE_CACHE_VOLUME_CAPACITY=21M'
+          'FILE_CACHE_VOLUME_CAPACITY=21M',
+          'FILE_CACHE_VOLUME_CAPACITY_BYTES=21MB',
+          'FILE_CACHE_MAX_FILE_SIZE=10MB'
         )
 
         echo "Applying ${REPO_NAME}-app Deployment..."

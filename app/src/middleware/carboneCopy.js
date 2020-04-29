@@ -11,17 +11,12 @@ const keycloak = require('../components/keycloak');
 const clientId = config.get('keycloak.clientId');
 
 const _CACHE_DIR = config.get('carbone.cacheDir');
-const _DEFAULT_CACHE_SIZE = bytes.parse('50MB');
-const _MIN_CACHE_SIZE = bytes.parse('1MB');
-//ugh, translating between openshift configurations for PVC and bytes parsing.... :|
+const _DEFAULT_CACHE_SIZE = bytes.parse('25MB');
+const _MIN_CACHE_SIZE = bytes(config.get('carbone.uploadSize'));
 const configuredCacheSize = config.get('carbone.cacheSize');
 let _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
 if (configuredCacheSize) {
-  if (configuredCacheSize.toUpperCase().endsWith('B')) {
-    _CACHE_SIZE =  bytes.parse(configuredCacheSize) ;
-  } else {
-    _CACHE_SIZE =  bytes.parse(`${configuredCacheSize}B`) ;
-  }
+  _CACHE_SIZE =  bytes.parse(configuredCacheSize);
   if (_CACHE_SIZE === undefined || isNaN(_CACHE_SIZE)) {
     _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
   }
@@ -264,7 +259,7 @@ const operation = basePath => {
 const cacheCleanup = (req, res, next) => {
   try {
     // 90% of configured cache storage, with enough room for a max upload...
-    const freeSpace = (_CACHE_SIZE * 0.9) - bytes(config.get('carbone.uploadSize'));
+    const freeSpace = ((_CACHE_SIZE * 0.9) - _MIN_CACHE_SIZE);
     const cacheSpace = Math.max(freeSpace, _MIN_CACHE_SIZE);
     let storedFiles = fileCacheUtils.getAllFiles(_CACHE_DIR);
     let storedSize = fileCacheUtils.getTotalSize(storedFiles);
