@@ -90,6 +90,9 @@ objects:
                 limits:
                   cpu: "${CPU_LIMIT}"
                   memory: "${MEMORY_LIMIT}"
+              volumeMounts:
+                - mountPath: "/var/lib/file-cache/data"
+                  name: file-cache-${JOB_NAME}-data
               env:
                 - name: NODE_ENV
                   value: production
@@ -113,6 +116,8 @@ objects:
                     secretKeyRef:
                       key: password
                       name: cdogs-common-service-secret
+                - name: CACHE_DIR
+                  value: "/var/lib/file-cache/data"
               envFrom:
                 - configMapRef:
                     name: cdogs-keycloak-config
@@ -120,6 +125,10 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
+            volumes:
+              - name: file-cache-${JOB_NAME}-data
+                persistentVolumeClaim:
+                  claimName: file-cache-${JOB_NAME}
       test: false
       triggers:
         - type: ConfigChange
@@ -132,6 +141,21 @@ objects:
               name: "${REPO_NAME}-app:${JOB_NAME}"
               namespace: "${NAMESPACE}"
           type: ImageChange
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: file-cache-${JOB_NAME}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
+      resources:
+        requests:
+          storage: '${FILE_CACHE_VOLUME_CAPACITY}'
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
   - apiVersion: v1
     kind: Service
     metadata:
@@ -200,3 +224,13 @@ parameters:
     description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
     displayName: Memory Request
     value: 256Mi
+  - name: FILE_CACHE_VOLUME_CAPACITY
+    description: Volume space available for File Cache
+    displayName: File Cache Volume Capacity
+    required: true
+    value: 2Gi
+  - name: FILE_CACHE_PERSISTENT_VOLUME_CLASS
+    description: The storage class of the volume
+    displayName: Persistent Volume Class name
+    required: false
+    value: netapp-file-standard
