@@ -26,5 +26,10 @@
     "logLevel": "debug",
     "morganFormat": "dev",
     "port": "3000"
+  },
+  "carbone": {
+    "cacheDir": "/tmp/carbone-files",
+    "cacheSize": "2G",
+    "uploadSize": "25MB"
   }
 }

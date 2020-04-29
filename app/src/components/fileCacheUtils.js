@@ -36,10 +36,12 @@ const removeOldest = function(fileList, cacheRootDir) {
     // sort by timestamp ascending (oldest first)
     fileList.sort((a, b) => a.modifiedTs - b.modifiedTs);
     const f = fileList[0];
-    const dir = path.dirname(f.path);
-    if (dir === cacheRootDir) return false; // just in case, we do not want to delete the actual cache dir!
-    try{
-      fs.removeSync(dir);
+    try {
+      let p = f.path;
+      if (path.dirname(p) !== cacheRootDir) {
+        p = path.dirname(p);
+      }
+      fs.removeSync(p);
       return true;
     } catch (e) {
       log.error('fileCacheUtils.removeOldest', e.message);

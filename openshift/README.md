@@ -31,6 +31,16 @@ oc create -n idcqvl-<env> configmap cdogs-server-config \
   --from-literal=SERVER_PORT=3000
 ```
 
+*Note: Carbone configuration can be overridden in deployment configs and jenkinsfiles. CACHE_DIR and CACHE_SIZE are critical to the PVC.  These do not follow the same format for naming because they are picked up by 3rd party library.*
+*Important: Also... CACHE_SIZE must be G or M, not Gi/Mi or GB/MB*
+
+```sh
+oc create -n idcqvl-<env> configmap cdogs-carbone-config \
+  --from-literal=CACHE_DIR=/var/lib/file-cache/data \
+  --from-literal=CACHE_SIZE=2G \
+  --from-literal=UPLOAD_FILE_SIZE=25MB
+```
+
 ### Secrets
 
 Replace anything in angle brackets with the appropriate value!

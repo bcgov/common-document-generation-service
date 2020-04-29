@@ -95,7 +95,7 @@ objects:
                   cpu: "${CPU_LIMIT}"
                   memory: "${MEMORY_LIMIT}"
               volumeMounts:
-                - mountPath: "/var/lib/file-cache/data"
+                - mountPath: "${FILE_CACHE_DIR}"
                   name: file-cache-${JOB_NAME}-data
               env:
                 - name: NODE_ENV
@@ -121,7 +121,7 @@ objects:
                       key: password
                       name: cdogs-common-service-secret
                 - name: CACHE_DIR
-                  value: "/var/lib/file-cache/data"
+                  value: "${FILE_CACHE_DIR}"
                 - name: CACHE_SIZE
                   value: "${FILE_CACHE_VOLUME_CAPACITY}"
               envFrom:
@@ -131,6 +131,8 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
+                - configMapRef:
+                    name: cdogs-carbone-config
       test: false
       triggers:
         - type: ConfigChange
@@ -222,6 +224,11 @@ parameters:
     description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
     displayName: Memory Request
     value: 256Mi
+  - name: FILE_CACHE_DIR
+    description: Path to file cache
+    displayName: Directory to mount for file cache
+    required: true
+    value: "/var/lib/file-cache/data"
   - name: FILE_CACHE_VOLUME_CAPACITY
     description: Volume space available for File Cache
     displayName: File Cache Volume Capacity (use M or G, not Mi or Gi)

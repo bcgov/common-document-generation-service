@@ -27,6 +27,13 @@
     "bodyLimit": "SERVER_BODYLIMIT",
     "logLevel": "SERVER_LOGLEVEL",
     "morganFormat": "SERVER_MORGANFORMAT",
-    "port": "SERVER_PORT"
+    "port": "SERVER_PORT",
+    "cacheDir": "CACHE_DIR",
+    "cacheSize": "CACHE_SIZE"
+  },
+  "carbone": {
+    "cacheDir": "CACHE_DIR",
+    "cacheSize": "CACHE_SIZE",
+    "uploadSize": "UPLOAD_FILE_SIZE"
   }
 }
