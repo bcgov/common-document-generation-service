@@ -12,9 +12,17 @@ const clientId = config.get('keycloak.clientId');
 
 const _CACHE_DIR = process.env.CACHE_DIR || '/tmp/carbone-files';
 const _DEFAULT_CACHE_SIZE = bytes.parse('50MB');
-let _CACHE_SIZE = bytes.parse(process.env.CACHE_SIZE);
-if (_CACHE_SIZE === undefined || isNaN(_CACHE_SIZE)) {
-  _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
+//ugh, translating between openshift configurations for PVC and bytes parsing.... :|
+let _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
+if (process.env.CACHE_SIZE) {
+  if (process.env.CACHE_SIZE.toUpperCase().endsWith('B')) {
+    _CACHE_SIZE =  bytes.parse(process.env.CACHE_SIZE) ;
+  } else {
+    _CACHE_SIZE =  bytes.parse(`${process.env.CACHE_SIZE}B`) ;
+  }
+  if (_CACHE_SIZE === undefined || isNaN(_CACHE_SIZE)) {
+    _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
+  }
 }
 if (_CACHE_SIZE < _DEFAULT_CACHE_SIZE) {
   log.warn('carboneCopy.middleware', `Cache size (${bytes.format(_CACHE_SIZE, {unit: 'MB'})}) is smaller than default (${bytes.format(_DEFAULT_CACHE_SIZE, {unit: 'MB'})}), check environment variable CACHE_SIZE (${process.env.CACHE_SIZE}).`);

@@ -224,9 +224,9 @@ parameters:
     value: 256Mi
   - name: FILE_CACHE_VOLUME_CAPACITY
     description: Volume space available for File Cache
-    displayName: File Cache Volume Capacity (use MB or GB)
+    displayName: File Cache Volume Capacity (use M or G, not Mi or Gi)
     required: true
-    value: 2GB
+    value: 2G
   - name: FILE_CACHE_PERSISTENT_VOLUME_CLASS
     description: The storage class of the volume
     displayName: Persistent Volume Class name
