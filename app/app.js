@@ -83,7 +83,7 @@ app.get('/api-spec.yaml', (req, res) => {
   req.url = `${carboneBasePath}/api-spec.yaml`;
   app.handle(req, res);
 });
-app.use(carboneBasePath, carboneCopyMiddleware.operation(carboneBasePath), carboneCopyMiddleware.security, carboneCopyApi.routes());
+app.use(carboneBasePath, carboneCopyMiddleware.operation(carboneBasePath), carboneCopyMiddleware.security, carboneCopyMiddleware.cacheCleanup, carboneCopyApi.routes());
 
 // Root level Router
 app.use(/(\/api)?/, apiRouter);
