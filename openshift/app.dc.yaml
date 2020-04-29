@@ -56,6 +56,10 @@ objects:
             deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
             role: app
         spec:
+          volumes:
+            - name: file-cache-${JOB_NAME}-data
+              persistentVolumeClaim:
+                claimName: file-cache-${JOB_NAME}
           containers:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
               imagePullPolicy: IfNotPresent
@@ -125,10 +129,6 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-            - volumes:
-              - name: file-cache-${JOB_NAME}-data
-                persistentVolumeClaim:
-                  claimName: file-cache-${JOB_NAME}
       test: false
       triggers:
         - type: ConfigChange
