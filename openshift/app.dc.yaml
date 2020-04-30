@@ -133,8 +133,6 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-                - configMapRef:
-                    name: cdogs-carbone-config
       test: false
       triggers:
         - type: ConfigChange
@@ -153,7 +151,7 @@ objects:
       name: file-cache-${JOB_NAME}
     spec:
       accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
       storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:
