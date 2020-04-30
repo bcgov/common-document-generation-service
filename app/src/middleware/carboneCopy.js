@@ -1,12 +1,29 @@
+const bytes = require('bytes');
 const config = require('config');
 const log = require('npmlog');
 const moment = require('moment');
 const morgan = require('morgan');
 const path = require('path');
 
+const fileCacheUtils = require('../components/fileCacheUtils');
 const keycloak = require('../components/keycloak');
 
 const clientId = config.get('keycloak.clientId');
+
+const _CACHE_DIR = config.get('carbone.cacheDir');
+const _DEFAULT_CACHE_SIZE = bytes.parse('25MB');
+const _MIN_CACHE_SIZE = bytes(config.get('carbone.uploadSize'));
+const configuredCacheSize = config.get('carbone.cacheSize');
+let _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
+if (configuredCacheSize) {
+  _CACHE_SIZE =  bytes.parse(configuredCacheSize);
+  if (_CACHE_SIZE === undefined || isNaN(_CACHE_SIZE)) {
+    _CACHE_SIZE = _DEFAULT_CACHE_SIZE;
+  }
+}
+if (_CACHE_SIZE < _DEFAULT_CACHE_SIZE) {
+  log.warn('carboneCopy.middleware', `Cache size (${bytes.format(_CACHE_SIZE, {unit: 'MB'})}) is smaller than default (${bytes.format(_DEFAULT_CACHE_SIZE, {unit: 'MB'})}), check environment variable CACHE_SIZE (${configuredCacheSize}).`);
+}
 
 const operations = Object.freeze([
   {method: 'POST', regex: /\/template$/, name: 'UPLOAD_TEMPLATE', isGenerator: false},
@@ -239,6 +256,27 @@ const operation = basePath => {
   };
 };
 
+const cacheCleanup = (req, res, next) => {
+  try {
+    // 90% of configured cache storage, with enough room for a max upload...
+    const freeSpace = ((_CACHE_SIZE * 0.9) - _MIN_CACHE_SIZE);
+    const cacheSpace = Math.max(freeSpace, _MIN_CACHE_SIZE);
+    let storedFiles = fileCacheUtils.getAllFiles(_CACHE_DIR);
+    let storedSize = fileCacheUtils.getTotalSize(storedFiles);
+    while (storedSize >= cacheSpace) {
+      // let's start purging...
+      if (fileCacheUtils.removeOldest(storedFiles, _CACHE_DIR)) {
+        storedFiles = fileCacheUtils.getAllFiles(_CACHE_DIR);
+        storedSize = fileCacheUtils.getTotalSize(storedFiles);
+      }
+    }
+  } catch(e) {
+    log.error('carboneCopy.cacheCleanup', e.message);
+  }
+  next();
+};
+
 module.exports.initializeApiTracker = initializeApiTracker;
 module.exports.operation = operation;
 module.exports.security = security;
+module.exports.cacheCleanup = cacheCleanup;
