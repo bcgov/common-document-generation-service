@@ -151,7 +151,7 @@ objects:
       name: file-cache-${JOB_NAME}
     spec:
       accessModes:
-        - ReadWriteMany
+        - ReadWriteOnce
       storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:
