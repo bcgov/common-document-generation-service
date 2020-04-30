@@ -57,9 +57,9 @@ objects:
             role: app
         spec:
           volumes:
-            - name: file-cache-${JOB_NAME}-data
+            - name: file-cache-rwm-${JOB_NAME}-data
               persistentVolumeClaim:
-                claimName: file-cache-${JOB_NAME}
+                claimName: file-cache-rwm-${JOB_NAME}
           containers:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
               imagePullPolicy: IfNotPresent
@@ -96,7 +96,7 @@ objects:
                   memory: "${MEMORY_LIMIT}"
               volumeMounts:
                 - mountPath: "${FILE_CACHE_DIR}"
-                  name: file-cache-${JOB_NAME}-data
+                  name: file-cache-rwm-${JOB_NAME}-data
               env:
                 - name: NODE_ENV
                   value: production
@@ -133,8 +133,6 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
-                - configMapRef:
-                    name: cdogs-carbone-config
       test: false
       triggers:
         - type: ConfigChange
@@ -150,10 +148,10 @@ objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: file-cache-${JOB_NAME}
+      name: file-cache-rwm-${JOB_NAME}
     spec:
       accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
       storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:

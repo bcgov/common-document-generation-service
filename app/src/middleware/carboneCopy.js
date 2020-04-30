@@ -256,20 +256,9 @@ const operation = basePath => {
   };
 };
 
-const cacheCleanup = (req, res, next) => {
+const cacheCleanup = async (req, res, next) => {
   try {
-    // 90% of configured cache storage, with enough room for a max upload...
-    const freeSpace = ((_CACHE_SIZE * 0.9) - _MIN_CACHE_SIZE);
-    const cacheSpace = Math.max(freeSpace, _MIN_CACHE_SIZE);
-    let storedFiles = fileCacheUtils.getAllFiles(_CACHE_DIR);
-    let storedSize = fileCacheUtils.getTotalSize(storedFiles);
-    while (storedSize >= cacheSpace) {
-      // let's start purging...
-      if (fileCacheUtils.removeOldest(storedFiles, _CACHE_DIR)) {
-        storedFiles = fileCacheUtils.getAllFiles(_CACHE_DIR);
-        storedSize = fileCacheUtils.getTotalSize(storedFiles);
-      }
-    }
+    await fileCacheUtils.cacheCleanup(_CACHE_DIR, _CACHE_SIZE, _MIN_CACHE_SIZE);
   } catch(e) {
     log.error('carboneCopy.cacheCleanup', e.message);
   }
