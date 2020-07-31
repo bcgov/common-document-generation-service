@@ -98,18 +98,19 @@ const apiTrackerParse = (msg) => {
     };
 
     const extended = {};
-    if (parts.length === 11) {
+    if (parts.length === 12) {
       extended.context = {
         keyCount: Number.parseInt(parts[6])
       };
       extended.content = {
         fileType: parts[7],
-        encodingType: parts[8],
-        size: Number.parseInt(parts[9])
+        existingTemplate: parts[8],
+        encodingType: parts[9],
+        size: Number.parseInt(parts[10])
       };
       extended.output = {
         fileType: parts[5],
-        size: '-' !== parts[10] ? Number.parseInt(parts[10]) : undefined
+        size: '-' !== parts[11] ? Number.parseInt(parts[11]) : undefined
       };
     }
 
@@ -177,7 +178,7 @@ const initializeApiTracker = (app, basePath) => {
     try {
 
       //console.log('req.body',Object.keys(req.body));
-      console.log('existingTemplate', req.body.template.content);
+      //console.log('existingTemplate', req.body.template.content);
 
       return req.body.template.content;
     } catch (e) {
