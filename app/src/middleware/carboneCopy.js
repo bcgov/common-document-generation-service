@@ -44,22 +44,18 @@ const getOperation = (req) => {
         result.isTrackable = true;
         result.isGenerator = o.isGenerator;
 
-        // if operation name is 'GENERATE_FROM_TEMPLATE' (using an existing tenmplate), get template hash
-        // if(o.name == 'GENERATE_FROM_TEMPLATE'){
-        //   result.existingTemplateFileType = req.body.template.fileType;
-        // }
-        // else{
-        //   result.existingTemplateFileType = null;
-        // }
-
-        //console.log('keys',Object.keys(req.body));
-        //console.log('ok', Object.keys(req.body.template));
-
+        // if generating from existing template then add the file hash to operation object
+        if(o.name == 'GENERATE_FROM_TEMPLATE'){
+          // split url
+          const split = req.url.split('/');
+          result._existingTemplate = split[4];
+        }
+        else{
+          result._existingTemplate = null;
+        }
       }
     }
   });
-
-  //console.log(result);
 
   return result;
 };
@@ -73,6 +69,7 @@ const apiTracker = async (req, res, next) => {
   if (operation && operation.isTrackable) {
     req._ts = moment.utc().valueOf();
     req._op = operation.name;
+    req._existingTemplate = operation._existingTemplate;
   }
   next();
 };
@@ -176,11 +173,10 @@ const initializeApiTracker = (app, basePath) => {
 
   morgan.token('existingTemplate', req => {
     try {
-
-      //console.log('req.body',Object.keys(req.body));
-      //console.log('existingTemplate', req.body.template.content);
-
-      return req.body.template.content;
+      // if using existing template return the hash else return '-'
+      const existingTemplate = req._existingTemplate ? req._existingTemplate : '-';
+      return existingTemplate;
+      // TODO: get file type of existing template!
     } catch (e) {
       return '-';
     }
