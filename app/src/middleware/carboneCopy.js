@@ -43,15 +43,29 @@ const getOperation = (req) => {
         result.name = o.name;
         result.isTrackable = true;
         result.isGenerator = o.isGenerator;
+
+        // if operation name is 'GENERATE_FROM_TEMPLATE' (using an existing tenmplate), get template hash
+        // if(o.name == 'GENERATE_FROM_TEMPLATE'){
+        //   result.existingTemplateFileType = req.body.template.fileType;
+        // }
+        // else{
+        //   result.existingTemplateFileType = null;
+        // }
+
+        //console.log('keys',Object.keys(req.body));
+        //console.log('ok', Object.keys(req.body.template));
+
       }
     }
   });
+
+  //console.log(result);
 
   return result;
 };
 
 const apiFormat = ':op :azp :ts :status :response-time';
-const generatorApiFormat = `${apiFormat} :outputFileType :contextKeyCount :contentFileType :contentEncodingType :contentSize :res[content-length]`;
+const generatorApiFormat = `${apiFormat} :outputFileType :contextKeyCount :contentFileType :existingTemplate :contentEncodingType :contentSize :res[content-length]`;
 
 const apiTracker = async (req, res, next) => {
   const operation = req._carboneOp;
@@ -154,6 +168,18 @@ const initializeApiTracker = (app, basePath) => {
   morgan.token('contentFileType', req => {
     try {
       return req.body.template.fileType;
+    } catch (e) {
+      return '-';
+    }
+  });
+
+  morgan.token('existingTemplate', req => {
+    try {
+
+      //console.log('req.body',Object.keys(req.body));
+      console.log('existingTemplate', req.body.template.content);
+
+      return req.body.template.content;
     } catch (e) {
       return '-';
     }
