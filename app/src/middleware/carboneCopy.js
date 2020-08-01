@@ -1,5 +1,6 @@
 const bytes = require('bytes');
 const config = require('config');
+const fs = require('fs-extra');
 const log = require('npmlog');
 const moment = require('moment');
 const morgan = require('morgan');
@@ -44,11 +45,29 @@ const getOperation = (req) => {
         result.isTrackable = true;
         result.isGenerator = o.isGenerator;
 
-        // if generating from existing template then add the file hash to operation object
+        // if generating from existing template
         if(o.name == 'GENERATE_FROM_TEMPLATE'){
-          // split url
+          // get file hash
           const split = req.url.split('/');
-          result._existingTemplate = split[4];
+          const hash = split[4];
+          // add the file hash to operation object
+          result._existingTemplate = hash;
+          // get file extension from server cache
+          var existingTemplateFileType = null;
+          const getDirectories =
+          fs.readdirSync(_CACHE_DIR, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => dirent.name);
+          getDirectories.forEach(dir => {
+            if(dir == hash){
+              fs.readdirSync(_CACHE_DIR + '/' + dir).forEach(file => {
+                // add extension to operation object
+                existingTemplateFileType = file.split('.').pop();
+              });
+            }
+          });
+
+          result._existingTemplateFileType = existingTemplateFileType;
         }
         else{
           result._existingTemplate = null;
@@ -165,7 +184,10 @@ const initializeApiTracker = (app, basePath) => {
 
   morgan.token('contentFileType', req => {
     try {
-      return req.body.template.fileType;
+
+      const contentFileType = req._existingTemplateFileType ? req._existingTemplateFileType : req.body.template.fileType;
+
+      return contentFileType;
     } catch (e) {
       return '-';
     }
@@ -176,7 +198,6 @@ const initializeApiTracker = (app, basePath) => {
       // if using existing template return the hash else return '-'
       const existingTemplate = req._existingTemplate ? req._existingTemplate : '-';
       return existingTemplate;
-      // TODO: get file type of existing template!
     } catch (e) {
       return '-';
     }
