@@ -156,7 +156,7 @@ const initializeApiTracker = (app, basePath) => {
   morgan.token('contentFileType', req => {
     try {
       if (req._op == 'GENERATE_FROM_TEMPLATE') {
-        // get file hash
+        // get file hash from request url
         const split = req.url.split('/');
         const hash = split[2];
         // check file cache for existing templates
