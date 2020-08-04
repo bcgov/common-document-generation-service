@@ -1,6 +1,6 @@
 const bytes = require('bytes');
 const config = require('config');
-const fs = require('fs-extra');
+const FileCache = require('@bcgov/file-cache');
 const log = require('npmlog');
 const moment = require('moment');
 const morgan = require('morgan');
@@ -44,34 +44,6 @@ const getOperation = (req) => {
         result.name = o.name;
         result.isTrackable = true;
         result.isGenerator = o.isGenerator;
-
-        // if generating from existing template
-        if(o.name == 'GENERATE_FROM_TEMPLATE'){
-          // get file hash
-          const split = req.url.split('/');
-          const hash = split[4];
-          // add the file hash to operation object
-          result._existingTemplate = hash;
-          // get file extension from server cache
-          var existingTemplateFileType = null;
-          const getDirectories =
-          fs.readdirSync(_CACHE_DIR, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory())
-            .map(dirent => dirent.name);
-          getDirectories.forEach(dir => {
-            if(dir == hash){
-              fs.readdirSync(_CACHE_DIR + '/' + dir).forEach(file => {
-                // add extension to operation object
-                existingTemplateFileType = file.split('.').pop();
-              });
-            }
-          });
-
-          result._existingTemplateFileType = existingTemplateFileType;
-        }
-        else{
-          result._existingTemplate = null;
-        }
       }
     }
   });
@@ -88,7 +60,6 @@ const apiTracker = async (req, res, next) => {
   if (operation && operation.isTrackable) {
     req._ts = moment.utc().valueOf();
     req._op = operation.name;
-    req._existingTemplate = operation._existingTemplate;
   }
   next();
 };
@@ -184,10 +155,18 @@ const initializeApiTracker = (app, basePath) => {
 
   morgan.token('contentFileType', req => {
     try {
-
-      const contentFileType = req._existingTemplateFileType ? req._existingTemplateFileType : req.body.template.fileType;
-
-      return contentFileType;
+      if (req._op == 'GENERATE_FROM_TEMPLATE') {
+        // get file hash
+        const split = req.url.split('/');
+        const hash = split[2];
+        // check file cache for existing templates
+        const fileCache = new FileCache({ fileCachePath: _CACHE_DIR });
+        const findFileResult = fileCache.find(hash);
+        return findFileResult.ext;
+      }
+      else {
+        return req.body.template.fileType;
+      }
     } catch (e) {
       return '-';
     }
@@ -196,8 +175,14 @@ const initializeApiTracker = (app, basePath) => {
   morgan.token('existingTemplate', req => {
     try {
       // if using existing template return the hash else return '-'
-      const existingTemplate = req._existingTemplate ? req._existingTemplate : '-';
-      return existingTemplate;
+      if (req._op == 'GENERATE_FROM_TEMPLATE') {
+        // get file hash
+        const split = req.url.split('/');
+        return split[2];
+      }
+      else {
+        return '-';
+      }
     } catch (e) {
       return '-';
     }
