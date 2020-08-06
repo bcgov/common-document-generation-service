@@ -1,5 +1,6 @@
 const bytes = require('bytes');
 const config = require('config');
+const FileCache = require('@bcgov/file-cache');
 const log = require('npmlog');
 const moment = require('moment');
 const morgan = require('morgan');
@@ -51,7 +52,7 @@ const getOperation = (req) => {
 };
 
 const apiFormat = ':op :azp :ts :status :response-time';
-const generatorApiFormat = `${apiFormat} :outputFileType :contextKeyCount :contentFileType :contentEncodingType :contentSize :res[content-length]`;
+const generatorApiFormat = `${apiFormat} :outputFileType :contextKeyCount :contentFileType :existingTemplate :contentEncodingType :contentSize :res[content-length]`;
 
 const apiTracker = async (req, res, next) => {
   const operation = req._carboneOp;
@@ -84,18 +85,19 @@ const apiTrackerParse = (msg) => {
     };
 
     const extended = {};
-    if (parts.length === 11) {
+    if (parts.length === 12) {
       extended.context = {
         keyCount: Number.parseInt(parts[6])
       };
       extended.content = {
         fileType: parts[7],
-        encodingType: parts[8],
-        size: Number.parseInt(parts[9])
+        existingTemplate: parts[8],
+        encodingType: parts[9],
+        size: Number.parseInt(parts[10])
       };
       extended.output = {
         fileType: parts[5],
-        size: '-' !== parts[10] ? Number.parseInt(parts[10]) : undefined
+        size: '-' !== parts[11] ? Number.parseInt(parts[11]) : undefined
       };
     }
 
@@ -153,7 +155,34 @@ const initializeApiTracker = (app, basePath) => {
 
   morgan.token('contentFileType', req => {
     try {
-      return req.body.template.fileType;
+      if (req._op == 'GENERATE_FROM_TEMPLATE') {
+        // get file hash from request url
+        const split = req.url.split('/');
+        const hash = split[2];
+        // check file cache for existing templates
+        const fileCache = new FileCache({ fileCachePath: _CACHE_DIR });
+        const findFileResult = fileCache.find(hash);
+        return findFileResult.ext;
+      }
+      else {
+        return req.body.template.fileType;
+      }
+    } catch (e) {
+      return '-';
+    }
+  });
+
+  morgan.token('existingTemplate', req => {
+    try {
+      // if using existing template return the hash else return '-'
+      if (req._op == 'GENERATE_FROM_TEMPLATE') {
+        // get file hash
+        const split = req.url.split('/');
+        return split[2];
+      }
+      else {
+        return '-';
+      }
     } catch (e) {
       return '-';
     }

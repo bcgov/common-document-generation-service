@@ -56,7 +56,7 @@ if (process.env.NODE_ENV !== 'test') {
 // Use Keycloak OIDC Middleware
 app.use(keycloak.middleware());
 
-// GetOK Base API Directory
+// CDOGS Base API Directory
 apiRouter.get('/', (_req, res) => {
   if (state.isShutdown) {
     throw new Error('Server shutting down');
