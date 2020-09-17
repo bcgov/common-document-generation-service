@@ -7,32 +7,32 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-  - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: "${APP_NAME}-${JOB_NAME}-sa-deployer-to-k8s-api-${NAMESPACE}"
-    spec:
-      description: |
-        Allow deployer pods to talk to the internal K8S api
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "@app:k8s:serviceaccountname=deployer"
-      destination:
-        - - int:network=internal-cluster-api-endpoint
-  - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: "${APP_NAME}-app-${JOB_NAME}-pods-to-egress-${NAMESPACE}"
-    spec:
-      description: |
-        Allow pods to open connections to the internet
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "app=${APP_NAME}-${JOB_NAME}"
-          - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
-          - role=app
-      destination:
-        - - ext:network=any
+  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  #   kind: NetworkSecurityPolicy
+  #   metadata:
+  #     name: "${APP_NAME}-${JOB_NAME}-sa-deployer-to-k8s-api-${NAMESPACE}"
+  #   spec:
+  #     description: |
+  #       Allow deployer pods to talk to the internal K8S api
+  #     source:
+  #       - - "$namespace=${NAMESPACE}"
+  #         - "@app:k8s:serviceaccountname=deployer"
+  #     destination:
+  #       - - int:network=internal-cluster-api-endpoint
+  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  #   kind: NetworkSecurityPolicy
+  #   metadata:
+  #     name: "${APP_NAME}-app-${JOB_NAME}-pods-to-egress-${NAMESPACE}"
+  #   spec:
+  #     description: |
+  #       Allow pods to open connections to the internet
+  #     source:
+  #       - - "$namespace=${NAMESPACE}"
+  #         - "app=${APP_NAME}-${JOB_NAME}"
+  #         - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
+  #         - role=app
+  #     destination:
+  #       - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -60,6 +60,17 @@ objects:
             - name: file-cache-rwm-${JOB_NAME}-data
               persistentVolumeClaim:
                 claimName: file-cache-rwm-${JOB_NAME}
+            # log file volume
+            - name: log-storage
+              emptyDir: {}
+            # fluent-bit config file
+            - name: fluent-bit-config
+              configMap:
+                name: fluent-bit-config
+            # fluent-bit TLS (enable for TLS)
+            # - name: fluent-bit-tls
+            #   secret:
+            #     secretName: fluent-bit-tls
           containers:
             - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
               imagePullPolicy: IfNotPresent
@@ -73,7 +84,13 @@ objects:
                 periodSeconds: 60
                 successThreshold: 1
                 timeoutSeconds: 1
-              name: "${APP_NAME}-app-${JOB_NAME}"
+              name: app
+              command:
+                - /bin/sh
+              args:
+                - -c
+                # start node app and pipe stdout logs to a log file /var/log/app.log
+                - "npm run start 2>&1 | tee /var/log/app.log"
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -97,6 +114,9 @@ objects:
               volumeMounts:
                 - mountPath: "${FILE_CACHE_DIR}"
                   name: file-cache-rwm-${JOB_NAME}-data
+                # mount log file location
+                - name: log-storage
+                  mountPath: /var/log
               env:
                 - name: NODE_ENV
                   value: production
@@ -133,13 +153,61 @@ objects:
                     name: cdogs-server-config
                 - configMapRef:
                     name: cdogs-common-service-config
+            # Fluent-bit sidecar
+            - image: fluent/fluent-bit:1.5
+              imagePullPolicy: Always
+              name: fluent-bit
+              resources:
+                requests:
+                  cpu: "${LOGGING_CPU_REQUEST}"
+                  memory: "${LOGGING_MEMORY_REQUEST}"
+                limits:
+                  cpu: "${LOGGING_CPU_LIMIT}"
+                  memory: "${LOGGING_MEMORY_LIMIT}"
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 60
+                successThreshold: 1
+                timeoutSeconds: 1
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              volumeMounts:
+                # mount log file location
+                - name: log-storage
+                  mountPath: /var/log
+                # mount fluent-bit config file
+                - name: fluent-bit-config
+                  mountPath: /fluent-bit/etc/
+              # TLS cert for connecting to fluentd (enable for TLS)
+              # - mountPath: /fluent-bit/ssl
+              #   name: fluent-bit-tls
+              ports:
+                - containerPort: 2020
+                  name: metrics
+                  protocol: TCP
+                - containerPort: 80
+                  name: http-plugin
+                  protocol: TCP
       test: false
       triggers:
         - type: ConfigChange
         - imageChangeParams:
             automatic: true
             containerNames:
-              - "${APP_NAME}-app-${JOB_NAME}"
+              - app
             from:
               kind: ImageStreamTag
               name: "${REPO_NAME}-app:${JOB_NAME}"
@@ -155,7 +223,7 @@ objects:
       storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
       resources:
         requests:
-          storage: '${FILE_CACHE_VOLUME_CAPACITY}'
+          storage: "${FILE_CACHE_VOLUME_CAPACITY}"
   - apiVersion: v1
     kind: Service
     metadata:
@@ -249,3 +317,21 @@ parameters:
     displayName: Persistent Volume Class name
     required: false
     value: netapp-file-standard
+
+  # parameters for logging sidecar
+  - name: LOGGING_CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 100m
+  - name: LOGGING_CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 10m
+  - name: LOGGING_MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 64Mi
+  - name: LOGGING_MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 16Mi
