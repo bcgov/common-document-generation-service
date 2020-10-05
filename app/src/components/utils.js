@@ -1,4 +1,4 @@
-const {v4: uuidv4} = require('uuid');
+const uuidv4 = require('uuid/v4');
 
 const utils = {
   /** Returns a pretty JSON representation of an object
