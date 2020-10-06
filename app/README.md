@@ -1,9 +1,10 @@
 # Common Document Generation Service
 
-CDOGS - A hosted service to merge sets of data into document templates.   
+CDOGS - A hosted service to merge sets of data into document templates.
 
-### Open API Spec
-* [/api/v2](https://cdogs-master-idcqvl-prod.pathfinder.gov.bc.ca/api/v2/docs) 
+## Open API Spec
+
+* [/api/v2](https://cdogs-master-idcqvl-prod.pathfinder.gov.bc.ca/api/v2/docs)
 
 ## Application
 
@@ -29,12 +30,11 @@ Logging
 
 Templating, Conversion and File Caching
 
-* [carbone-copy-api](https://www.npmjs.com/package/@bcgov/carbone-copy-api) - An express API over [Carbone](https://carbone.io) and provides file caching. We created this library in order to foster reuse.  
+* [carbone-copy-api](https://www.npmjs.com/package/@bcgov/carbone-copy-api) - An express API over [Carbone](https://carbone.io) and provides file caching. We created this library in order to foster reuse.
 
 Docker Image
 
-* [bcgovimages/alpine-node-libreoffice:v1.0.0]() - a base image with node 12 and LibreOffice™ installed.  LibreOffice™ is used for the file conversions.  
-
+* [bcgovimages/alpine-node-libreoffice:v1.0.0](https://hub.docker.com/r/bcgovimages/alpine-node-libreoffice) - a base image with node 12 and LibreOffice™ installed.  LibreOffice™ is used for the file conversions.
 
 ## Quickstart Guide
 
@@ -101,17 +101,18 @@ npm run lint
 
 ## API Usage
 
-This API is defined and described in OpenAPI 3.0 specification.  
+This API is defined and described in OpenAPI 3.0 specification.
 When the API is running, you should be able to view the specification through ReDoc at <http://localhost:3000/api/v2/docs> (assuming you are running this microservice locally). Otherwise, the general API can usually be found on [github](https://github.com/bcgov/common-services-team-library/tree/master/npm/carbone-copy-api/docs).
 
 ### General Design
 
 The `/template/render` endpoint request body is composed of 3 main parts.
-1. The set of **data**, an object containing the set of replacement variables to merge into the template.  This can be an array of objects.  
-2. **options**, an object to override default behaviours.  Callers should be setting: convertTo = (output file type), reportName = (output file name), and overwrite=true.  
+
+1. The set of **data**, an object containing the set of replacement variables to merge into the template.  This can be an array of objects.
+2. **options**, an object to override default behaviours.  Callers should be setting: convertTo = (output file type), reportName = (output file name), and overwrite=true.
 3. The document **template**, currently only accepts this as a base64 encoding.
 
-```
+``` json
 {
   "data": {
     "firstName": "Jane",
@@ -130,13 +131,14 @@ The `/template/render` endpoint request body is composed of 3 main parts.
   }
 }
 ```
+
 The functionality of this endpoint is relatively simple, being that it functions mostly as a pass-through to the Carbone library to do the generation logic.  Templates and rendered reports are written to disk and can fetched or deleted through the api.  Refer to the [carbone-copy-api](https://github.com/bcgov/common-services-team-library/tree/master/npm/carbone-copy-api/docs) documentation.
 
 The templating engine is XML-agnostic. It means the template engine works on any valid XML-based documents, not only XML-documents created by Microsoft Office™, LibreOffice™ or OpenOffice™.
 
 #### Concepts
 
-In order to provide template substitution of variables into the supplied document, we have to pass in a **data**  object.  The data object is a free-form JSON object which consists of key-value pairs. The purpose is to provide a key-value mapping between an inline variable in the template document and the intended merged document output after the values are replaced.  **data** can be an array of JSON objects.  
+In order to provide template substitution of variables into the supplied document, we have to pass in a **data**  object.  The data object is a free-form JSON object which consists of key-value pairs. The purpose is to provide a key-value mapping between an inline variable in the template document and the intended merged document output after the values are replaced.  **data** can be an array of JSON objects.
 
 Carbone can behave as a glorified string-replacement engine, or more complex conditional or iterative logic can be built into the template variables. See below sections for documentation.
 In the event the Context object has extra variables that are not used in the template document, nothing happens. You can expect to see blanks where no value was substituted.
@@ -222,8 +224,8 @@ You can expect the template engine to yield the following:
 
 See the Carbone Repetition documentation for the much more complex examples
 
-
 #### File Name
+
 The `options` object in the request body contains an optional `reportName` field. This field will serve as the requested file name for the resultant merged document.
 If not supplied, a random UUID (such as 6a2f41a3-c54c-fce8-32d2-0324e1c32e22) will serve as the placeholder.
 
@@ -257,10 +259,11 @@ An example request is shown below:
 This will yield a resultant file in the response named
 `office_contact_Dx1997.pdf`
 
-
 #### Further templating functionality
 
 The templating engine in Carbone has a lot of power, refer to the Carbone documentation
-- https://carbone.io/documentation.html#substitutions
-- https://carbone.io/documentation.html#repetitions
-- https://carbone.io/documentation.html#formatters
+
+* <https://carbone.io/documentation.html#substitutions>
+* <https://carbone.io/documentation.html#repetitions>
+* <https://carbone.io/documentation.html#formatters>
+* <https://carbone.io/documentation.html#translations>
