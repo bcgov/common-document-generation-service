@@ -2,27 +2,20 @@
 apiVersion: v1
 kind: Template
 labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: jenkins
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
   app: "${APP_NAME}-${JOB_NAME}"
   template: "${REPO_NAME}-app-dc-template"
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+  # - apiVersion: security.devops.gov.bc.ca/v1alpha1
   #   kind: NetworkSecurityPolicy
   #   metadata:
-  #     name: "${APP_NAME}-${JOB_NAME}-sa-deployer-to-k8s-api-${NAMESPACE}"
-  #   spec:
-  #     description: |
-  #       Allow deployer pods to talk to the internal K8S api
-  #     source:
-  #       - - "$namespace=${NAMESPACE}"
-  #         - "@app:k8s:serviceaccountname=deployer"
-  #     destination:
-  #       - - int:network=internal-cluster-api-endpoint
-  # - apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
-  #   kind: NetworkSecurityPolicy
-  #   metadata:
-  #     name: "${APP_NAME}-app-${JOB_NAME}-pods-to-egress-${NAMESPACE}"
+  #     name: "${APP_NAME}-app-${JOB_NAME}-egress-internet"
   #   spec:
   #     description: |
   #       Allow pods to open connections to the internet
