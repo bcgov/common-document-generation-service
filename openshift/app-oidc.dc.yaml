@@ -1,0 +1,316 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: jenkins
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "${REPO_NAME}-app-dc-template"
+metadata:
+  name: "${REPO_NAME}-app-dc"
+objects:
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      replicas: 2
+      revisionHistoryLimit: 10
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
+      strategy:
+        type: Rolling
+        resources: {}
+        rollingParams:
+          timeoutSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-${JOB_NAME}"
+            deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+            role: app
+        spec:
+          volumes:
+            - name: file-cache-rwm-${JOB_NAME}-data
+              persistentVolumeClaim:
+                claimName: file-cache-rwm-master
+            # log file volume
+            - name: log-storage
+              emptyDir: {}
+            # fluent-bit config file
+            - name: fluent-bit-config
+              configMap:
+                name: fluent-bit-config
+            # fluent-bit TLS (enable for TLS)
+            # - name: fluent-bit-tls
+            #   secret:
+            #     secretName: fluent-bit-tls
+          containers:
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:master
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 3000
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 60
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: app
+              command:
+                - /bin/sh
+              args:
+                - -c
+                # start node app and pipe stdout logs to a log file /var/log/app.log
+                - "npm run start 2>&1 | tee /var/log/app.log"
+              ports:
+                - containerPort: 3000
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 3000
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: "${CPU_REQUEST}"
+                  memory: "${MEMORY_REQUEST}"
+                limits:
+                  cpu: "${CPU_LIMIT}"
+                  memory: "${MEMORY_LIMIT}"
+              volumeMounts:
+                - mountPath: "${FILE_CACHE_DIR}"
+                  name: file-cache-rwm-${JOB_NAME}-data
+                # mount log file location
+                - name: log-storage
+                  mountPath: /var/log
+              env:
+                - name: NODE_ENV
+                  value: production
+                - name: KC_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: cdogs-keycloak-secret
+                - name: KC_CLIENTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: cdogs-keycloak-secret
+                - name: CMNSRV_CLIENTID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: cdogs-common-service-secret
+                - name: CMNSRV_CLIENTSECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: cdogs-common-service-secret
+                - name: CACHE_DIR
+                  value: "${FILE_CACHE_DIR}"
+                - name: CACHE_SIZE
+                  value: "${FILE_CACHE_VOLUME_CAPACITY_BYTES}"
+                - name: UPLOAD_FILE_SIZE
+                  value: "${FILE_CACHE_MAX_FILE_SIZE}"
+              envFrom:
+                - configMapRef:
+                    name: cdogs-keycloak-config-oidc
+                - configMapRef:
+                    name: cdogs-server-config
+                - configMapRef:
+                    name: cdogs-common-service-config
+            # Fluent-bit sidecar
+            - image: fluent/fluent-bit:1.5
+              imagePullPolicy: Always
+              name: fluent-bit
+              resources:
+                requests:
+                  cpu: "${LOGGING_CPU_REQUEST}"
+                  memory: "${LOGGING_MEMORY_REQUEST}"
+                limits:
+                  cpu: "${LOGGING_CPU_LIMIT}"
+                  memory: "${LOGGING_MEMORY_LIMIT}"
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 60
+                successThreshold: 1
+                timeoutSeconds: 1
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              volumeMounts:
+                # mount log file location
+                - name: log-storage
+                  mountPath: /var/log
+                # mount fluent-bit config file
+                - name: fluent-bit-config
+                  mountPath: /fluent-bit/etc/
+              # TLS cert for connecting to fluentd (enable for TLS)
+              # - mountPath: /fluent-bit/ssl
+              #   name: fluent-bit-tls
+              ports:
+                - containerPort: 2020
+                  name: metrics
+                  protocol: TCP
+                - containerPort: 80
+                  name: http-plugin
+                  protocol: TCP
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              name: "${REPO_NAME}-app:master"
+              namespace: "${NAMESPACE}"
+          type: ImageChange
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: file-cache-rwm-master
+    spec:
+      accessModes:
+        - ReadWriteMany
+      storageClassName: ${FILE_CACHE_PERSISTENT_VOLUME_CLASS}
+      resources:
+        requests:
+          storage: "${FILE_CACHE_VOLUME_CAPACITY}"
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      ports:
+        - name: 3000-tcp
+          port: 3000
+          protocol: TCP
+          targetPort: 3000
+      selector:
+        app: "${APP_NAME}-${JOB_NAME}"
+        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      host: "${HOST_ROUTE}"
+      path: /
+      port:
+        targetPort: 3000-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${APP_NAME}-app-${JOB_NAME}"
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: HOST_ROUTE
+    description: The host the route will use to expose service outside cluster
+    displayName: Host route
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. '9f0fbe-dev')
+    displayName: Target Namespace
+    required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 1000m
+  - name: CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 100m
+  - name: MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 1Gi
+  - name: MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 256Mi
+  - name: FILE_CACHE_DIR
+    description: Path to file cache
+    displayName: Directory to mount for file cache
+    required: true
+    value: "/var/lib/file-cache/data"
+  - name: FILE_CACHE_VOLUME_CAPACITY
+    description: Volume space available for File Cache
+    displayName: File Cache Volume Capacity (use M or G, not Mi or Gi)
+    required: true
+    value: 2G
+  - name: FILE_CACHE_VOLUME_CAPACITY_BYTES
+    description: Volume space available for File Cache in npm bytes parseable format
+    displayName: File Cache Volume Capacity Bytes in npm bytes parseable format (use MB or GB, not Mi or Gi).  Must match File Cache Volume Capacity
+    required: true
+    value: 2GB
+  - name: FILE_CACHE_MAX_FILE_SIZE
+    description: Set a maximum file size to store in cache.
+    displayName: Set a maximum file size to store in cache, cache should always leave this space free to handle request.  Use MB or GB or B - parseable by npm bytes library.
+    required: true
+    value: 25MB
+  - name: FILE_CACHE_PERSISTENT_VOLUME_CLASS
+    description: The storage class of the volume
+    displayName: Persistent Volume Class name
+    required: false
+    value: netapp-file-standard
+
+  # parameters for logging sidecar
+  - name: LOGGING_CPU_LIMIT
+    description: Limit Peak CPU per pod (in millicores ex. 1000m)
+    displayName: CPU Limit
+    value: 100m
+  - name: LOGGING_CPU_REQUEST
+    description: Requested CPU per pod (in millicores ex. 500m)
+    displayName: CPU Request
+    value: 10m
+  - name: LOGGING_MEMORY_LIMIT
+    description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    displayName: Memory Limit
+    value: 64Mi
+  - name: LOGGING_MEMORY_REQUEST
+    description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    displayName: Memory Request
+    value: 16Mi
