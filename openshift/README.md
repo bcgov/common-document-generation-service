@@ -8,9 +8,19 @@ Our builds and deployments are orchestrated with Jenkins as part of the devops t
 
 There are some requirements in the target Openshift namespace/project which are **outside** of the CI/CD pipeline process. This application requires that a few Secrets as well as Config Maps be already present in the environment before it is able to function as intended. Otherwise the Jenkins pipeline will fail the deployment by design.
 
-In order to prepare an environment, you will need to ensure that all of the following configmaps and secrets are populated. This is achieved by executing the following commands as a project administrator of the targeted environment. Note that this must be repeated on *each* of the target deployment namespace/projects (i.e. `dev`, `test` and `prod`) as that they are independent of each other. Deployment will fail otherwise. Refer to [custom-environment-variables](../app/config/custom-environment-variables.json) for the direct mapping of environment variables for the backend.
+### Add Deployer NSP to namespace
+
+As OCP4 requires explicit NSP rules to allow network traffic, we must ensure that k8s deployer pods are able to talk to the k8s API. This must be done in all of your deployment namespaces (dev, test, prod).
+
+``` sh
+export NAMESPACE=<YOURNAMESPACE>
+
+oc -n $NAMESPACE process -f nsp.yaml -p NAMESPACE=$NAMESPACE -o yaml | oc -n $NAMESPACE apply -f -
+```
 
 ### Config Maps
+
+In order to prepare an environment, you will need to ensure that all of the following configmaps and secrets are populated. This is achieved by executing the following commands as a project administrator of the targeted environment. Note that this must be repeated on *each* of the target deployment namespace/projects (i.e. `dev`, `test` and `prod`) as that they are independent of each other. Deployment will fail otherwise. Refer to [custom-environment-variables](../app/config/custom-environment-variables.json) for the direct mapping of environment variables for the backend.
 
 *Note: Replace anything in angle brackets with the appropriate value!*
 

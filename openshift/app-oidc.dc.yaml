@@ -12,20 +12,6 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-  # - apiVersion: security.devops.gov.bc.ca/v1alpha1
-  #   kind: NetworkSecurityPolicy
-  #   metadata:
-  #     name: "${APP_NAME}-app-${JOB_NAME}-egress-internet"
-  #   spec:
-  #     description: |
-  #       Allow pods to open connections to the internet
-  #     source:
-  #       - - "$namespace=${NAMESPACE}"
-  #         - "app=${APP_NAME}-${JOB_NAME}"
-  #         - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
-  #         - role=app
-  #     destination:
-  #       - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -52,7 +38,7 @@ objects:
           volumes:
             - name: file-cache-rwm-${JOB_NAME}-data
               persistentVolumeClaim:
-                claimName: file-cache-rwm-${JOB_NAME}
+                claimName: file-cache-rwm-master
             # log file volume
             - name: log-storage
               emptyDir: {}
@@ -65,7 +51,7 @@ objects:
             #   secret:
             #     secretName: fluent-bit-tls
           containers:
-            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
+            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:master
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
@@ -141,7 +127,7 @@ objects:
                   value: "${FILE_CACHE_MAX_FILE_SIZE}"
               envFrom:
                 - configMapRef:
-                    name: cdogs-keycloak-config
+                    name: cdogs-keycloak-config-oidc
                 - configMapRef:
                     name: cdogs-server-config
                 - configMapRef:
@@ -203,13 +189,13 @@ objects:
               - app
             from:
               kind: ImageStreamTag
-              name: "${REPO_NAME}-app:${JOB_NAME}"
+              name: "${REPO_NAME}-app:master"
               namespace: "${NAMESPACE}"
           type: ImageChange
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: file-cache-rwm-${JOB_NAME}
+      name: file-cache-rwm-master
     spec:
       accessModes:
         - ReadWriteMany
