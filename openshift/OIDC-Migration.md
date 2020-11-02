@@ -24,6 +24,17 @@ There will be four manifests that we will need to be duplicated with minor tweak
 * Config Map - We will create a temporary config map copy of the manifest where it has the keycloak server url.
 * Deployment Config - This template will be copied from the original, but with certain fields hard-coded to have `-oidc` instead of the dynamically defined one (usually ends up as `-master`). Care shall be taken to ensure that no more divergence than is absolutely necessary is done. The service will use the same image as the main master deployment, but leverage the alternative config map instead.
 
+```sh
+export NAMESPACE=<YOURNAMESPACE>
+export HOSTPATH=cdogs-<ENV>
+
+oc -n $NAMESPACE create configmap cdogs-keycloak-config-oidc \
+  --from-literal=KC_REALM=jbd6rnxw \
+  --from-literal=KC_SERVERURL=https://<ENV>.oidc.gov.bc.ca/auth
+
+oc -n $NAMESPACE process -f openshift/app-oidc.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=oidc -p NAMESPACE=$NAMESPACE -p APP_NAME=cdogs -p HOST_ROUTE=$HOSTPATH.pathfinder.gov.bc.ca -o yaml | oc -n $NAMESPACE apply -f -
+```
+
 #### Phase 1 Pipeline
 
 No changes to the Jenkins pipeline will need to be done at this time, as all the actions with the templates above can be manually created.
