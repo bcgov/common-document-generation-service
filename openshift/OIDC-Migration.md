@@ -10,7 +10,7 @@ Our migration strategy will have two phases. Phase 1 will be where we temporaril
 
 ### Phase 1
 
-Our main strategy during this period is to create a manual, parallel deploymenet of our service. This parallel deployment will accept traffic with OIDC JWTs, while we continue to support the original SSO JWTs in the original deployment. At bare minimum, we will require a parallel config map, route, service and deployment config created. A big note with these parallel resources:
+Our main strategy during this period is to create a manual, parallel deployment of our service. This parallel deployment will accept traffic with OIDC JWTs, while we continue to support the original SSO JWTs in the original deployment. At bare minimum, we will require a parallel config map, route, service and deployment config created. A big note with these parallel resources:
 
 1. The deployment config shall reuse as much existing infrastructure as feasibly possible. This means that it will attempt to use the same PVCs, DBs, and other supporting resources as the other service as to minimize unnecessary divergences such as split-braining.
 2. Openshift route paths are read-only after creation. This means that we are unable to on-the-fly change a path to listen to a different URL. To get around this, we will instead create another parallel route path with the intended changes. We will adopt and consolidate this new route instance in Phase 2.
