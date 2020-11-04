@@ -149,7 +149,7 @@ components:
     OpenID:
       type: openIdConnect
       openIdConnectUrl: >-
-        https://sso.pathfinder.gov.bc.ca/auth/realms/jbd6rnxw/.well-known/openid-configuration
+        https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/.well-known/openid-configuration
   schemas:
     BadRequest:
       allOf:
