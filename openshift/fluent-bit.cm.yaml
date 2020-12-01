@@ -31,13 +31,20 @@ objects:
           Name   tail
           Path   /var/log/*
           Tag    app
-          Parser apache
 
         [FILTER]
           # exclude kube probe logs from app logs
           name   grep
           match  app
           Exclude  agent kube*
+
+        [FILTER]
+          name parser
+          match app
+          Key_Name log
+          Parser apache
+          Reserve_Data On
+          Preserve_Key On
 
         [FILTER]
           # modify log entry to include more key/value pairs
