@@ -30,7 +30,7 @@
     "@bcgov/carbone-copy-api": "^2.1.1",
     "api-problem": "^6.1.4",
     "atob": "^2.1.2",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "axios-oauth-client": "^1.3.0",
     "axios-token-interceptor": "^0.2.0",
     "bytes": "^3.1.0",
