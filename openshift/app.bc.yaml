@@ -10,8 +10,6 @@ objects:
   - apiVersion: v1
     kind: ImageStream
     metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewBuild
       name: "${REPO_NAME}-app"
     spec:
       lookupPolicy:
@@ -19,8 +17,6 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewBuild
       name: "${REPO_NAME}-app-${JOB_NAME}"
     spec:
       completionDeadlineSeconds: 600
@@ -47,11 +43,10 @@ objects:
         type: Git
         dockerfile: |-
           FROM BuildConfig
-
-          # Install CDOGS
+          ENV NO_UPDATE_NOTIFIER=true
+          WORKDIR /opt/app-root/src
           COPY . .
           RUN npm ci
-
           EXPOSE 3000
           CMD ["npm", "run", "start"]
       strategy:

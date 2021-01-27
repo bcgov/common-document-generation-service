@@ -14,7 +14,6 @@ objects:
       namespace: ${NAMESPACE}
     data:
       # Configuration files: server, input, filters and output
-      # ======================================================
       fluent-bit.conf: |
         [SERVICE]
           Flush        5
