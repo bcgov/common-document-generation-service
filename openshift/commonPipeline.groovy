@@ -80,11 +80,12 @@ def runStageDeploy(String stageEnv, String projectEnv, String hostEnv, String pa
       createDeploymentStatus(projectEnv, 'PENDING', JOB_NAME, hostEnv, pathEnv)
 
       echo "Checking for ConfigMaps and Secrets in project ${openshift.project()}..."
-      if(!(openshift.selector('cm', "${APP_NAME}-frontend-config").exists() &&
-      openshift.selector('cm', "${APP_NAME}-sc-config").exists() &&
+      if(!(openshift.selector('cm', "${APP_NAME}-keycloak-config").exists() &&
       openshift.selector('cm', "${APP_NAME}-server-config").exists() &&
+      openshift.selector('cm', "${APP_NAME}-common-service-config").exists() &&
+      openshift.selector('cm', "fluent-bit-config").exists() &&
       openshift.selector('secret', "${APP_NAME}-keycloak-secret").exists() &&
-      openshift.selector('secret', "${APP_NAME}-sc-cs-secret").exists())) {
+      openshift.selector('secret', "${APP_NAME}-common-service-secret").exists())) {
         echo 'Some ConfigMaps and/or Secrets are missing. Please consult the openshift readme for details.'
         throw new Exception('Missing ConfigMaps and/or Secrets')
       }
@@ -133,7 +134,7 @@ def notifyStageStatus(String name, String status) {
 }
 
 // Create deployment status and pass to Jenkins-GitHub library
-def createDeploymentStatus(String environment, String status, String jobName, String hostEnv, String pathEnv='') {
+def createDeploymentStatus(String environment, String status, String jobName, String hostEnv, String pathEnv) {
   // def task = (JOB_BASE_NAME.startsWith('PR-')) ? "deploy:pull:${CHANGE_ID}" : "deploy:${jobName}"
   // def ghDeploymentId = new GitHubHelper().createDeployment(
   //   this,

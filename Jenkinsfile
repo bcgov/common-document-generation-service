@@ -29,7 +29,8 @@ pipeline {
     SOURCE_REPO_URL = "https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
 
     // ENV_HOST is the full domain without the path (ie. 'appname-dev.apps.silver.devops.gov.bc.ca')
-    DEV_HOST = "${APP_NAME}-dev${JOB_NAME.equalsIgnoreCase('master') ? '' : -JOB_NAME}.${APP_DOMAIN}"
+    INSTANCE = "${JOB_NAME.equalsIgnoreCase('master') ? '' : '-' + JOB_NAME}"
+    DEV_HOST = "${APP_NAME}-dev${INSTANCE}.${APP_DOMAIN}"
     TEST_HOST = "${APP_NAME}-test.${APP_DOMAIN}"
     PROD_HOST = "${APP_NAME}.${APP_DOMAIN}"
   }
@@ -98,17 +99,21 @@ pipeline {
       agent any
       steps {
         script {
-          commonPipeline.runStageDeploy('Dev', DEV_PROJECT, DEV_HOST)
+          commonPipeline.runStageDeploy('Dev', DEV_PROJECT, DEV_HOST, '')
         }
       }
       post {
         success {
-          commonPipeline.createDeploymentStatus(DEV_PROJECT, 'SUCCESS', DEV_HOST)
-          commonPipeline.notifyStageStatus('Deploy - Dev', 'SUCCESS')
+          script {
+            commonPipeline.createDeploymentStatus(DEV_PROJECT, 'SUCCESS', JOB_NAME, DEV_HOST, '')
+            commonPipeline.notifyStageStatus('Deploy - Dev', 'SUCCESS')
+          }
         }
         unsuccessful {
-          commonPipeline.createDeploymentStatus(DEV_PROJECT, 'FAILURE', DEV_HOST)
-          commonPipeline.notifyStageStatus('Deploy - Dev', 'FAILURE')
+          script {
+            commonPipeline.createDeploymentStatus(DEV_PROJECT, 'FAILURE', JOB_NAME, DEV_HOST, '')
+            commonPipeline.notifyStageStatus('Deploy - Dev', 'FAILURE')
+          }
         }
       }
     }
@@ -117,17 +122,21 @@ pipeline {
       agent any
       steps {
         script {
-          commonPipeline.runStageDeploy('Test', TEST_PROJECT, TEST_HOST)
+          commonPipeline.runStageDeploy('Test', TEST_PROJECT, TEST_HOST, '')
         }
       }
       post {
         success {
-          commonPipeline.createDeploymentStatus(TEST_PROJECT, 'SUCCESS', TEST_HOST)
-          commonPipeline.notifyStageStatus('Deploy - Test', 'SUCCESS')
+          script {
+            commonPipeline.createDeploymentStatus(TEST_PROJECT, 'SUCCESS', JOB_NAME, TEST_HOST, '')
+            commonPipeline.notifyStageStatus('Deploy - Test', 'SUCCESS')
+          }
         }
         unsuccessful {
-          commonPipeline.createDeploymentStatus(TEST_PROJECT, 'FAILURE', TEST_HOST)
-          commonPipeline.notifyStageStatus('Deploy - Test', 'FAILURE')
+          script {
+            commonPipeline.createDeploymentStatus(TEST_PROJECT, 'FAILURE', JOB_NAME, TEST_HOST, '')
+            commonPipeline.notifyStageStatus('Deploy - Test', 'FAILURE')
+          }
         }
       }
     }
@@ -136,17 +145,21 @@ pipeline {
       agent any
       steps {
         script {
-          commonPipeline.runStageDeploy('Prod', PROD_PROJECT, PROD_HOST)
+          commonPipeline.runStageDeploy('Prod', PROD_PROJECT, PROD_HOST, '')
         }
       }
       post {
         success {
-          commonPipeline.createDeploymentStatus(PROD_PROJECT, 'SUCCESS', PROD_HOST)
-          commonPipeline.notifyStageStatus('Deploy - Prod', 'SUCCESS')
+          script {
+            commonPipeline.createDeploymentStatus(PROD_PROJECT, 'SUCCESS', JOB_NAME, PROD_HOST, '')
+            commonPipeline.notifyStageStatus('Deploy - Prod', 'SUCCESS')
+          }
         }
         unsuccessful {
-          commonPipeline.createDeploymentStatus(PROD_PROJECT, 'FAILURE', PROD_HOST)
-          commonPipeline.notifyStageStatus('Deploy - Prod', 'FAILURE')
+          script {
+            commonPipeline.createDeploymentStatus(PROD_PROJECT, 'FAILURE', JOB_NAME, PROD_HOST, '')
+            commonPipeline.notifyStageStatus('Deploy - Prod', 'FAILURE')
+          }
         }
       }
     }
