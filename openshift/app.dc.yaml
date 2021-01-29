@@ -12,20 +12,20 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-  # - apiVersion: security.devops.gov.bc.ca/v1alpha1
-  #   kind: NetworkSecurityPolicy
-  #   metadata:
-  #     name: "${APP_NAME}-app-${JOB_NAME}-egress-internet"
-  #   spec:
-  #     description: |
-  #       Allow pods to open connections to the internet
-  #     source:
-  #       - - "$namespace=${NAMESPACE}"
-  #         - "app=${APP_NAME}-${JOB_NAME}"
-  #         - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
-  #         - role=app
-  #     destination:
-  #       - - ext:network=any
+  - kind: NetworkSecurityPolicy
+    apiVersion: security.devops.gov.bc.ca/v1alpha1
+    metadata:
+      name: "${APP_NAME}-app-${JOB_NAME}-egress-internet"
+    spec:
+      description: |
+        Allow pods to open connections to the internet
+      source:
+        - - "$namespace=${NAMESPACE}"
+          - "app=${APP_NAME}-${JOB_NAME}"
+          - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
+          - role=app
+      destination:
+        - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -49,54 +49,34 @@ objects:
             deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
             role: app
         spec:
-          volumes:
-            - name: file-cache-rwm-${JOB_NAME}-data
-              persistentVolumeClaim:
-                claimName: file-cache-rwm-${JOB_NAME}
-            # log file volume
-            - name: log-storage
-              emptyDir: {}
-            # fluent-bit config file
-            - name: fluent-bit-config
-              configMap:
-                name: fluent-bit-config
-            # fluent-bit TLS (enable for TLS)
-            # - name: fluent-bit-tls
-            #   secret:
-            #     secretName: fluent-bit-tls
           containers:
-            - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}
+            - name: app
+              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}"
               imagePullPolicy: IfNotPresent
-              livenessProbe:
-                failureThreshold: 3
-                httpGet:
-                  path: /
-                  port: 3000
-                  scheme: HTTP
-                initialDelaySeconds: 10
-                periodSeconds: 60
-                successThreshold: 1
-                timeoutSeconds: 1
-              name: app
               command:
                 - /bin/sh
               args:
                 - -c
-                # start node app and pipe stdout logs to a log file /var/log/app.log
                 - "npm run start 2>&1 | tee /var/log/app.log"
-              ports:
-                - containerPort: 3000
-                  protocol: TCP
-              readinessProbe:
-                failureThreshold: 3
+              livenessProbe:
                 httpGet:
                   path: /
                   port: 3000
                   scheme: HTTP
                 initialDelaySeconds: 10
-                periodSeconds: 10
-                successThreshold: 1
                 timeoutSeconds: 1
+                failureThreshold: 3
+              ports:
+                - containerPort: 3000
+                  protocol: TCP
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: 3000
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
               resources:
                 requests:
                   cpu: "${CPU_REQUEST}"
@@ -105,9 +85,8 @@ objects:
                   cpu: "${CPU_LIMIT}"
                   memory: "${MEMORY_LIMIT}"
               volumeMounts:
-                - mountPath: "${FILE_CACHE_DIR}"
-                  name: file-cache-rwm-${JOB_NAME}-data
-                # mount log file location
+                - name: file-cache-data
+                  mountPath: "${FILE_CACHE_DIR}"
                 - name: log-storage
                   mountPath: /var/log
               env:
@@ -147,46 +126,17 @@ objects:
                 - configMapRef:
                     name: cdogs-common-service-config
             # Fluent-bit sidecar
-            - image: fluent/fluent-bit:1.5
+            - name: fluent-bit
+              image: docker.io/fluent/fluent-bit:1.5
               imagePullPolicy: Always
-              name: fluent-bit
-              resources:
-                requests:
-                  cpu: "${LOGGING_CPU_REQUEST}"
-                  memory: "${LOGGING_MEMORY_REQUEST}"
-                limits:
-                  cpu: "${LOGGING_CPU_LIMIT}"
-                  memory: "${LOGGING_MEMORY_LIMIT}"
               livenessProbe:
-                failureThreshold: 3
                 httpGet:
                   path: /
                   port: 2020
                   scheme: HTTP
                 initialDelaySeconds: 10
-                periodSeconds: 60
-                successThreshold: 1
                 timeoutSeconds: 1
-              readinessProbe:
                 failureThreshold: 3
-                httpGet:
-                  path: /
-                  port: 2020
-                  scheme: HTTP
-                initialDelaySeconds: 10
-                periodSeconds: 10
-                successThreshold: 1
-                timeoutSeconds: 1
-              volumeMounts:
-                # mount log file location
-                - name: log-storage
-                  mountPath: /var/log
-                # mount fluent-bit config file
-                - name: fluent-bit-config
-                  mountPath: /fluent-bit/etc/
-              # TLS cert for connecting to fluentd (enable for TLS)
-              # - mountPath: /fluent-bit/ssl
-              #   name: fluent-bit-tls
               ports:
                 - containerPort: 2020
                   name: metrics
@@ -194,10 +144,50 @@ objects:
                 - containerPort: 80
                   name: http-plugin
                   protocol: TCP
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: 2020
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+              resources:
+                requests:
+                  cpu: "${LOGGING_CPU_REQUEST}"
+                  memory: "${LOGGING_MEMORY_REQUEST}"
+                limits:
+                  cpu: "${LOGGING_CPU_LIMIT}"
+                  memory: "${LOGGING_MEMORY_LIMIT}"
+              volumeMounts:
+                # mount log file location
+                - name: log-storage
+                  mountPath: /var/log
+                # mount fluent-bit config file
+                - name: fluent-bit-config
+                  mountPath: /fluent-bit/etc/
+                # TLS cert for connecting to fluentd (enable for TLS)
+                # - mountPath: /fluent-bit/ssl
+                #   name: fluent-bit-tls
+          volumes:
+            - name: file-cache-data
+              persistentVolumeClaim:
+                claimName: file-cache-data-${JOB_NAME}
+            - name: log-storage
+              emptyDir: {}
+            # fluent-bit config file
+            - name: fluent-bit-config
+              configMap:
+                name: fluent-bit-config
+            # fluent-bit TLS (enable for TLS)
+            # - name: fluent-bit-tls
+            #   secret:
+            #     secretName: fluent-bit-tls
       test: false
       triggers:
         - type: ConfigChange
-        - imageChangeParams:
+        - type: ImageChange
+          imageChangeParams:
             automatic: true
             containerNames:
               - app
@@ -205,11 +195,10 @@ objects:
               kind: ImageStreamTag
               name: "${REPO_NAME}-app:${JOB_NAME}"
               namespace: "${NAMESPACE}"
-          type: ImageChange
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: file-cache-rwm-${JOB_NAME}
+      name: file-cache-data-${JOB_NAME}
     spec:
       accessModes:
         - ReadWriteMany
@@ -261,6 +250,11 @@ parameters:
     description: Job identifier (i.e. 'pr-5' OR 'master')
     displayName: Job Branch Name
     required: true
+  - name: IMAGE_REGISTRY
+    description: The base OpenShift docker registry
+    displayName: Docker Image Registry
+    required: true
+    value: image-registry.openshift-image-registry.svc:5000
   - name: NAMESPACE
     description: Target namespace reference (i.e. '9f0fbe-dev')
     displayName: Target Namespace
@@ -276,7 +270,7 @@ parameters:
   - name: CPU_REQUEST
     description: Requested CPU per pod (in millicores ex. 500m)
     displayName: CPU Request
-    value: 100m
+    value: 50m
   - name: MEMORY_LIMIT
     description: Limit Peak Memory per pod (in gigabytes Gi or megabytes Mi ex. 2Gi)
     displayName: Memory Limit
@@ -310,7 +304,6 @@ parameters:
     displayName: Persistent Volume Class name
     required: false
     value: netapp-file-standard
-
   # parameters for logging sidecar
   - name: LOGGING_CPU_LIMIT
     description: Limit Peak CPU per pod (in millicores ex. 1000m)

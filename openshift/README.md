@@ -25,15 +25,17 @@ In order to prepare an environment, you will need to ensure that all of the foll
 *Note: Replace anything in angle brackets with the appropriate value!*
 
 ```sh
-oc create -n idcqvl-<env> configmap cdogs-keycloak-config \
+export NAMESPACE=<YOURNAMESPACE>
+
+oc create -n $NAMESPACE configmap cdogs-keycloak-config \
   --from-literal=KC_REALM=jbd6rnxw \
   --from-literal=KC_SERVERURL=https://dev.oidc.gov.bc.ca/auth
 ```
 
-*Note: Change KC_SERVERURL's sso-dev to sso-test or sso depending on the environment!*
+*Note: Change KC_SERVERURL's url appropriately depending on the environment!*
 
 ```sh
-oc create -n idcqvl-<env> configmap cdogs-server-config \
+oc create -n $NAMESPACE configmap cdogs-server-config \
   --from-literal=SERVER_ATTACHMENTLIMIT=20mb \
   --from-literal=SERVER_BODYLIMIT=100mb \
   --from-literal=SERVER_LOGLEVEL=info \
@@ -46,14 +48,16 @@ oc create -n idcqvl-<env> configmap cdogs-server-config \
 Replace anything in angle brackets with the appropriate value!
 
 ```sh
-oc create -n idcqvl-<env> secret generic cdogs-keycloak-secret \
+export NAMESPACE=<YOURNAMESPACE>
+
+oc create -n $NAMESPACE secret generic cdogs-keycloak-secret \
   --type=kubernetes.io/basic-auth \
   --from-literal=username=<username> \
   --from-literal=password=<password>
 ```
 
 ```sh
-oc create -n idcqvl-<env> secret generic cdogs-common-service-secret \
+oc create -n $NAMESPACE secret generic cdogs-common-service-secret \
   --type=kubernetes.io/basic-auth \
   --from-literal=username=<cdogs common service client id> \
   --from-literal=password=<cdogs common service client password>
@@ -85,29 +89,31 @@ Build configurations will emit and handle the chained builds or standard builds 
 The template can be manually invoked and deployed via Openshift CLI. For example:
 
 ```sh
-oc -n idcqvl-<env> process -f openshift/app.bc.yaml -p REPO_NAME=common-document-generation-service
- -p JOB_NAME=master -p SOURCE_REPO_URL=https://github.com/bcgov/common-document-generation-service.git -p SOURCE_REPO_REF=master -o yaml | oc -n idcqvl-<env> create -f -
+export NAMESPACE=<YOURNAMESPACE>
+
+oc -n $NAMESPACE process -f openshift/app.bc.yaml -p REPO_NAME=common-document-generation-service
+ -p JOB_NAME=master -p SOURCE_REPO_URL=https://github.com/bcgov/common-document-generation-service.git -p SOURCE_REPO_REF=master -o yaml | oc -n $NAMESPACE create -f -
 ```
 
 Note that these build configurations do not have any triggers defined. They will be invoked by the Jenkins pipeline, started manually in the console, or by an equivalent oc command for example:
 
 ```sh
-oc -n idcqvl-<env> start-build <buildname> --follow
+oc -n $NAMESPACE start-build <buildname> --follow
 ```
 
 Finally, we generally tag the resultant image so that the deployment config will know which exact image to use. This is also handled by the Jenkins pipeline. The equivalent oc command for example is:
 
 ```sh
-oc -n idcqvl-<env> tag <buildname>:latest <buildname>:master
+oc -n $NAMESPACE tag <buildname>:latest <buildname>:master
 ```
 
 *Note: Remember to swap out the bracketed values with the appropriate values!*
 
 #### Docker Strategy Background
 
-LibreOffice and its custom Python environment must be included as part of the container image in order for the application to support Carbone PDF conversion functionality. To achieve this, we elected to build and extend off of the widely used `mhart/alpine-node` image which contains the bare essentials for a Node application to run. The Alpine distribution of LibreOffice, Python, and supporting packages are then installed onto the base image.
+LibreOffice and its custom Python environment must be included as part of the container image in order for the application to support Carbone PDF conversion functionality. To achieve this, we elected to build and extend off of the official `node:lts-alpine` image which contains the bare essentials for a Node application to run. The Alpine distribution of LibreOffice, Python, and supporting packages are then installed onto the base image which is distributed as the `bcgovimages/alpine-node-libreoffice` on [DockerHub].
 
-Since the PDF conversion functionality depends on custom Python packages provided by LibreOffice, we need to apply a wrapper script around Python to ensure these packages are picked up. These things can be found under the `app/docker` directory. This is applied onto the image before we proceed with the standard npm installation process. Some background information can be found at this issue [here](https://github.com/Ideolys/carbone/issues/46).
+Since the PDF conversion functionality depends on custom Python packages provided by LibreOffice, we need to apply a wrapper script around Python to ensure these packages are picked up. These things can be found under the `app/docker` directory. This is applied onto the image before we proceed with the standard npm installation process. Some background information can be found at this issue [here](https://github.com/Ideolys/carbone/issues/46). The aformentioned Docker wrapper content is already included in the `bcgovimages/alpine-node-libreoffice` base image.
 
 ### Deployment Configurations
 
@@ -124,13 +130,15 @@ Deployment configurations will emit and handle the deployment lifecycles of runn
 The Jenkins pipeline will handle deployment invocation automatically. However should you need to run it manually, you can do so with the following for example:
 
 ```sh
-oc -n idcqvl-<env> process -f openshift/app.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=master -p NAMESPACE=idcqvl-<env> -p APP_NAME=cdogs -p HOST_ROUTE=cdogs-<env>.pathfinder.gov.bc.ca -o yaml | oc -n idcqvl-<env> apply -f -
+export NAMESPACE=<YOURNAMESPACE>
+
+oc -n $NAMESPACE process -f openshift/app.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=master -p NAMESPACE=$NAMESPACE -p APP_NAME=cdogs -p HOST_ROUTE=cdogs-<env>.pathfinder.gov.bc.ca -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 Due to the triggers that are set in the deploymentconfig, the deployment will begin automatically. However, you can deploy manually by use the following command for example:
 
 ```sh
-oc -n idcqvl-<env> rollout latest dc/<buildname>-master
+oc -n $NAMESPACE rollout latest dc/<buildname>-master
 ```
 
 *Note: Remember to swap out the bracketed values with the appropriate values!*
@@ -145,6 +153,7 @@ Additional steps for configuring the sidecar can be seen on the [wiki](https://g
 As of this time, we do not automatically clean up resources generated by a Pull Request once it has been accepted and merged in. This is still a manual process. Our PR deployments are all named in the format "pr-###", where the ### is the number of the specific PR. In order to clear all resources for a specific PR, run the following two commands to delete all relevant resources from the Openshift project (replacing `PRNUMBER` with the appropriate number):
 
 ```sh
-oc delete all,pvc -n idcqvl-dev --selector app=cdogs-pr-<PRNUMBER>
+export NAMESPACE=<YOURNAMESPACE>
 
+oc delete all,pvc -n $NAMESPACE --selector app=cdogs-pr-<PRNUMBER>
 ```
