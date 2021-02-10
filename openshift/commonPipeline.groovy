@@ -5,26 +5,6 @@ import bcgov.GitHubHelper
 // Pipeline Stages
 // ---------------
 
-// Run Tests
-// def runStageTests() {
-//   timeout(time: 10, unit: 'MINUTES') {
-//     dir('app') {
-//       try {
-//         echo 'Installing NPM Dependencies...'
-//         sh 'npm ci'
-
-//         echo 'Linting and Testing App...'
-//         sh 'npm run test'
-
-//         echo 'App Lint Checks and Tests passed'
-//       } catch (e) {
-//         echo 'App Lint Checks and Tests failed'
-//         throw e
-//       }
-//     }
-//   }
-// }
-
 // Build Images
 def runStageBuild() {
   openshift.withCluster() {
