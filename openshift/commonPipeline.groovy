@@ -77,17 +77,29 @@ def runStageDeploy(String stageEnv, String projectEnv, String hostEnv, String pa
         openshift.tag("${TOOLS_PROJECT}/${REPO_NAME}-app:${JOB_NAME}", "${REPO_NAME}-app:${JOB_NAME}")
 
         echo "Processing DeploymentConfig ${REPO_NAME}-app-${JOB_NAME}..."
-        def dcAppTemplate = openshift.process('-f',
-          'openshift/app.dc.yaml',
-          "REPO_NAME=${REPO_NAME}",
-          "JOB_NAME=${JOB_NAME}",
-          "NAMESPACE=${projectEnv}",
-          "APP_NAME=${APP_NAME}",
-          "HOST_ROUTE=${hostEnv}",
-          'FILE_CACHE_VOLUME_CAPACITY=21M',
-          'FILE_CACHE_VOLUME_CAPACITY_BYTES=21MB',
-          'FILE_CACHE_MAX_FILE_SIZE=10MB'
-        )
+        def dcAppTemplate
+        if(hostEnv.contains('pr-')) {
+          dcAppTemplate = openshift.process('-f',
+            'openshift/app.dc.yaml',
+            "REPO_NAME=${REPO_NAME}",
+            "JOB_NAME=${JOB_NAME}",
+            "NAMESPACE=${projectEnv}",
+            "APP_NAME=${APP_NAME}",
+            "HOST_ROUTE=${hostEnv}",
+            'FILE_CACHE_VOLUME_CAPACITY=21M',
+            'FILE_CACHE_VOLUME_CAPACITY_BYTES=21MB',
+            'FILE_CACHE_MAX_FILE_SIZE=10MB'
+          )
+        } else {
+          dcAppTemplate = openshift.process('-f',
+            'openshift/app.dc.yaml',
+            "REPO_NAME=${REPO_NAME}",
+            "JOB_NAME=${JOB_NAME}",
+            "NAMESPACE=${projectEnv}",
+            "APP_NAME=${APP_NAME}",
+            "HOST_ROUTE=${hostEnv}"
+          )
+        }
 
         echo "Applying ${REPO_NAME}-app-${JOB_NAME} Deployment..."
         def dcApp = openshift.apply(dcAppTemplate).narrow('dc')
