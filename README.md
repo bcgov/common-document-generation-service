@@ -1,5 +1,9 @@
 # Common Document Generation Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
+![Tests](https://github.com/bcgov/common-document-generation-service/workflows/Tests/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/maintainability)](https://codeclimate.com/github/bcgov/common-document-generation-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/test_coverage)](https://codeclimate.com/github/bcgov/common-document-generation-service/test_coverage)
+
 CDOGS - A common hosted service (API) for generating documents from templates, data documents, and assets
 
 To learn more about the **Common Services** available visit the [Common Services Showcase](https://bcgov.github.io/common-service-showcase/) page.
@@ -10,11 +14,11 @@ To learn more about the **Common Services** available visit the [Common Services
     app/                       - Node.js web API
     openshift/                 - OpenShift-deployment specific files
     CODE-OF-CONDUCT.md         - Code of Conduct
+    COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
     CONTRIBUTING.md            - Contributing Guidelines
     Jenkinsfile                - Top-level Pipeline
     Jenkinsfile.cicd           - Pull-Request Pipeline
     LICENSE                    - License
-    sonar-project.properties   - SonarQube Scanner settings
 
 ## Documentation
 
