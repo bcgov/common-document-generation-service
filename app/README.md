@@ -4,7 +4,7 @@ CDOGS - A hosted service to merge sets of data into document templates.
 
 ## Open API Spec
 
-* [/api/v2](https://cdogs.pathfinder.gov.bc.ca/api/v2/docs)
+* [/api/v2](https://cdogs.nrs.gov.bc.ca/api/v2/docs)
 
 ## Application
 
