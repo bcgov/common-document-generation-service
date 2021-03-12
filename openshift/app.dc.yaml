@@ -53,11 +53,6 @@ objects:
             - name: app
               image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:${JOB_NAME}"
               imagePullPolicy: IfNotPresent
-              command:
-                - /bin/sh
-              args:
-                - -c
-                - "npm run start 2>&1 | tee /var/log/app.log"
               livenessProbe:
                 httpGet:
                   path: /
@@ -118,6 +113,8 @@ objects:
                   value: "${FILE_CACHE_VOLUME_CAPACITY_BYTES}"
                 - name: UPLOAD_FILE_SIZE
                   value: "${FILE_CACHE_MAX_FILE_SIZE}"
+                - name: SERVER_LOGFILE
+                  value: "/var/log/app.log"
               envFrom:
                 - configMapRef:
                     name: cdogs-keycloak-config
