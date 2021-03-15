@@ -132,7 +132,7 @@ The Jenkins pipeline will handle deployment invocation automatically. However sh
 ```sh
 export NAMESPACE=<YOURNAMESPACE>
 
-oc -n $NAMESPACE process -f openshift/app.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=master -p NAMESPACE=$NAMESPACE -p APP_NAME=cdogs -p HOST_ROUTE=cdogs-<env>.pathfinder.gov.bc.ca -o yaml | oc -n $NAMESPACE apply -f -
+oc -n $NAMESPACE process -f openshift/app.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=master -p NAMESPACE=$NAMESPACE -p APP_NAME=cdogs -p HOST_ROUTE=cdogs-<env>.apps.silver.devops.gov.bc.ca -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 Due to the triggers that are set in the deploymentconfig, the deployment will begin automatically. However, you can deploy manually by use the following command for example:

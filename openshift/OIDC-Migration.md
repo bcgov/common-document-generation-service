@@ -32,7 +32,7 @@ oc -n $NAMESPACE create configmap cdogs-keycloak-config-oidc \
   --from-literal=KC_REALM=jbd6rnxw \
   --from-literal=KC_SERVERURL=https://<ENV>.oidc.gov.bc.ca/auth
 
-oc -n $NAMESPACE process -f openshift/app-oidc.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=oidc -p NAMESPACE=$NAMESPACE -p APP_NAME=cdogs -p HOST_ROUTE=$HOSTPATH.pathfinder.gov.bc.ca -o yaml | oc -n $NAMESPACE apply -f -
+oc -n $NAMESPACE process -f openshift/app-oidc.dc.yaml -p REPO_NAME=common-document-generation-service -p JOB_NAME=oidc -p NAMESPACE=$NAMESPACE -p APP_NAME=cdogs -p HOST_ROUTE=$HOSTPATH.apps.silver.devops.gov.bc.ca -o yaml | oc -n $NAMESPACE apply -f -
 ```
 
 #### Phase 1 Pipeline
