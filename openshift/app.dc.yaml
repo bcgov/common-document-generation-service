@@ -12,20 +12,6 @@ labels:
 metadata:
   name: "${REPO_NAME}-app-dc"
 objects:
-  - kind: NetworkSecurityPolicy
-    apiVersion: security.devops.gov.bc.ca/v1alpha1
-    metadata:
-      name: "${APP_NAME}-app-${JOB_NAME}-egress-internet"
-    spec:
-      description: |
-        Allow pods to open connections to the internet
-      source:
-        - - "$namespace=${NAMESPACE}"
-          - "app=${APP_NAME}-${JOB_NAME}"
-          - "deploymentconfig=${APP_NAME}-app-${JOB_NAME}"
-          - role=app
-      destination:
-        - - ext:network=any
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
