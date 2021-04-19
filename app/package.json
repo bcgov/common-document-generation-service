@@ -40,9 +40,9 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fs-extra": "^9.1.0",
-    "keycloak-connect": "^10.0.2",
+    "keycloak-connect": "^12.0.4",
     "lockfile": "^1.0.4",
-    "mime-types": "^2.1.29",
+    "mime-types": "^2.1.30",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "npmlog": "^4.1.2",
@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.19.0",
-    "eslint": "^7.22.0",
+    "eslint": "^7.24.0",
     "jest": "^26.6.3",
     "nodemon": "^2.0.7"
   },
