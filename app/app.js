@@ -22,7 +22,8 @@ const carboneBasePath = '/api/v2';
 
 const apiRouter = express.Router();
 const state = {
-  isShutdown: false
+  ready: false,
+  shutdown: false
 };
 
 const app = express();
@@ -75,26 +76,37 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(config.get('server.morganFormat'), morganOpts));
   // Initialize LibreOffice Factories
   carbone.set({ startFactory: true });
+  log.info('Carbone LibreOffice worker initialized');
+  state.ready = true;
+  log.info('Service ready to accept traffic');
 }
 
 // Use Keycloak OIDC Middleware
 app.use(keycloak.middleware());
 
+// Block requests until service is ready and mounted
+app.use((_req, res, next) => {
+  if (state.shutdown) {
+    new Problem(503, { details: 'Server is shutting down' }).send(res);
+  } else if (!state.ready) {
+    new Problem(503, { details: 'Server is not ready' }).send(res);
+  } else {
+    next();
+  }
+});
+
 // CDOGS Base API Directory
 apiRouter.get('/', (_req, res) => {
-  if (state.isShutdown) {
-    throw new Error('Server shutting down');
-  } else {
-    res.status(200).json({
-      endpoints: [
-        '/api/v1',
-        carboneBasePath
-      ],
-      versions: [
-        1
-      ]
-    });
-  }
+  res.status(200).json({
+    endpoints: [
+      '/api/v1',
+      '/api/v2'
+    ],
+    versions: [
+      1,
+      2
+    ]
+  });
 });
 
 // v1 Router
@@ -133,7 +145,7 @@ app.use((_req, res) => {
   new Problem(404).send(res);
 });
 
-// Prevent unhandled errors from crashing application
+// Prevent unhandled promise errors from crashing application
 process.on('unhandledRejection', err => {
   if (err && err.stack) {
     log.error(err.stack);
@@ -143,12 +155,31 @@ process.on('unhandledRejection', err => {
 // Graceful shutdown support
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
+process.on('SIGUSR1', shutdown);
+process.on('SIGUSR2', shutdown);
+process.on('exit', () => {
+  log.info('Exiting...');
+});
 
+/**
+ * @function shutdown
+ * Shuts down this application after at least 3 seconds.
+ */
 function shutdown() {
   log.info('Received kill signal. Shutting down...');
-  state.isShutdown = true;
-  // Wait 3 seconds before hard exiting
-  setTimeout(() => process.exit(), 5000);
+  // Wait 3 seconds before starting cleanup
+  if (!state.shutdown) setTimeout(cleanup, 3000);
+}
+
+/**
+ * @function cleanup
+ * Cleans up resources in this application.
+ */
+function cleanup() {
+  log.info('Service no longer accepting traffic');
+  state.shutdown = true;
+  // Wait 10 seconds max before hard exiting
+  setTimeout(() => process.exit(), 10000);
 }
 
 module.exports = app;
