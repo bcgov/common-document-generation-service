@@ -1,5 +1,5 @@
 ---
-openapi: 3.0.2
+openapi: 3.0.3
 info:
   version: 1.0.0
   title: Common Document Generation Service API
@@ -16,7 +16,8 @@ servers:
   - url: /api/v1
     description: This Server
 security:
-  - OpenID: []
+  - BearerAuth: []
+    OpenID: []
 paths:
   /health:
     get:
