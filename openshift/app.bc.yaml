@@ -58,7 +58,7 @@ objects:
               value: notice
           from:
             kind: DockerImage
-            name: docker.io/bcgovimages/alpine-node-libreoffice:v1.0.1
+            name: docker.io/bcgovimages/alpine-node-libreoffice:v1.0.2
         type: Docker
       successfulBuildsHistoryLimit: 3
 parameters:
