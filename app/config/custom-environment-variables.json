@@ -20,6 +20,7 @@
   "keycloak": {
     "clientId": "KC_CLIENTID",
     "clientSecret": "KC_CLIENTSECRET",
+    "publicKey": "KC_PUBLICKEY",
     "realm": "KC_REALM",
     "serverUrl": "KC_SERVERURL"
   },
