@@ -1,11 +1,11 @@
 const bytes = require('bytes');
 const config = require('config');
-const FileCache = require('@bcgov/file-cache');
 const log = require('npmlog');
 const moment = require('moment');
 const morgan = require('morgan');
 const path = require('path');
 
+const FileCache = require('../components/fileCache');
 const fileCacheUtils = require('../components/fileCacheUtils');
 const keycloak = require('../components/keycloak');
 

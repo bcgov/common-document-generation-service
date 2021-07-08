@@ -28,7 +28,6 @@
   "homepage": "https://bcgov.github.io/common-document-generation-service",
   "dependencies": {
     "@bcgov/carbone-copy-api": "^2.2.0",
-    "@bcgov/file-cache": "^1.0.5",
     "api-problem": "^7.0.2",
     "atob": "^2.1.2",
     "axios": "^0.21.1",
