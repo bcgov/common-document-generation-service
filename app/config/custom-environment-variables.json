@@ -1,17 +1,4 @@
 {
-  "clogs": {
-    "queue" : {
-      "batchTimeout" : "CLOGS_QUEUE_BATCHTIMEOUT",
-      "initialDelay" : "CLOGS_QUEUE_INITIAL_DELAY",
-      "maxBatchSize" : "CLOGS_QUEUE_MAXBATCHSIZE"
-    },
-    "http" : {
-      "apiUrl": "CLOGS_HTTP_APIURL"
-    },
-    "metadata" : {
-      "env": "CLOGS_METADATA_ENV"
-    }
-  },
   "cmnsrv": {
     "clientId": "CMNSRV_CLIENTID",
     "clientSecret": "CMNSRV_CLIENTSECRET",
