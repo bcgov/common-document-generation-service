@@ -16,6 +16,9 @@
   "carbone": {
     "cacheDir": "/tmp/carbone-files",
     "cacheSize": "2GB",
+    "formFieldName": "files",
+    "startCarbone": "true",
+    "uploadCount": "1",
     "uploadSize": "25MB"
   }
 }

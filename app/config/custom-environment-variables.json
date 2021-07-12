@@ -21,6 +21,9 @@
   "carbone": {
     "cacheDir": "CACHE_DIR",
     "cacheSize": "CACHE_SIZE",
+    "formFieldName": "UPLOAD_FIELD_NAME",
+    "startCarbone": "START_CARBONE",
+    "uploadCount": "UPLOAD_FILE_COUNT",
     "uploadSize": "UPLOAD_FILE_SIZE"
   }
 }
