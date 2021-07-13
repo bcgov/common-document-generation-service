@@ -16,7 +16,7 @@ const v1Router = require('./src/routes/v1');
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 const initializeApiTracker = require('./src/middleware/apiTracker');
 
-const carboneCopyApi = require('@bcgov/carbone-copy-api');
+const carboneCopyApi = require('./src/components/carboneCopyApi');
 const carboneCopyMiddleware = require('./src/middleware/carboneCopy');
 const carboneBasePath = '/api/v2';
 
