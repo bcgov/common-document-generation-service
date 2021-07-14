@@ -1,8 +1,4 @@
 {
-  "cmnsrv": {
-    "clientId": "CDOGS_SERVICE_CLIENT",
-    "tokenUrl": "https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token"
-  },
   "keycloak": {
     "realm": "jbd6rnxw",
     "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
