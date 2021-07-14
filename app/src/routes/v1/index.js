@@ -1,16 +1,18 @@
 const config = require('config');
 const router = require('express').Router();
-const path = require('path');
+const { dump } = require('js-yaml');
 
-const keycloak = require('../components/keycloak');
+const keycloak = require('../../components/keycloak');
+const { getDocHTML, getSpec } = require('../../docs');
 
-const docGenRouter = require('./v1/docGen');
-const fileTypesRouter = require('./v1/fileTypes');
-const healthRouter = require('./v1/health');
+const docGenRouter = require('./docGen');
+const fileTypesRouter = require('./fileTypes');
+const healthRouter = require('./health');
 
 const clientId = config.get('keycloak.clientId');
+const version = 'v1';
 
-/** Base v1 Responder */
+/** Base Responder */
 router.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
@@ -21,15 +23,20 @@ router.get('/', (_req, res) => {
   });
 });
 
-/** OpenAPI Docs */
-router.get('/docs', (_req, res) => {
-  const docs = require('../docs/docs');
-  res.send(docs.getDocHTML('v1'));
+/** OpenAPI JSON Spec */
+router.get('/api-spec.json', (_req, res) => {
+  res.status(200).json(getSpec(version));
 });
 
 /** OpenAPI YAML Spec */
 router.get('/api-spec.yaml', (_req, res) => {
-  res.sendFile(path.join(__dirname, '../docs/v1.api-spec.yaml'));
+  console.log(version);
+  res.status(200).type('application/yaml').send(dump(getSpec(version)));
+});
+
+/** OpenAPI Docs */
+router.get('/docs', (_req, res) => {
+  res.send(getDocHTML(version));
 });
 
 /** Doc Gen Router */

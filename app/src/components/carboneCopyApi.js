@@ -8,8 +8,6 @@ const telejson = require('telejson');
 const carboneRenderer = require('./carboneRender');
 const FileCache = require('./fileCache');
 const fileUpload = require('./upload');
-const validation = require('./validation');
-const { isString } = require('./utils');
 
 const CACHE_DIR = process.env.CACHE_DIR || '/tmp/carbone-files';
 const CONVERTER_FACTORY_TIMEOUT = process.env.CONVERTER_FACTORY_TIMEOUT || '60000';
@@ -28,7 +26,6 @@ const DEFAULT_OPTIONS = {
 };
 
 let fileCache;
-let mountPath = '/';
 
 const truthy = (name, obj = {}) => {
   const value = obj[name] || false;
@@ -136,124 +133,12 @@ const findAndRender = async (hash, req, res) => {
   }
 };
 
-router.post('/template', fileUpload.upload, async (req, res) => {
-  console.log('Template upload');
-
-  const result = await fileCache.move(req.file.path, req.file.originalname);
-  if (!result.success) {
-    return new Problem(result.errorType, {detail: result.errorMsg}).send(res);
-  } else {
-    res.setHeader('X-Template-Hash', result.hash);
-    return res.send(result.hash);
-  }
-});
-
-router.post('/template/render', validation.validateTemplate, async (req, res) => {
-  console.log('Template upload and render');
-
-  let template = {};
-  try {
-    template = {...req.body.template};
-    if (!template || !template.content) throw Error('Template content not provided.');
-    if (!template.fileType) throw Error('Template file type not provided.');
-    if (!template.encodingType) throw Error('Template encoding type not provided.');
-  } catch (e) {
-    return new Problem(400, {detail: e.message}).send(res);
-  }
-
-  // let the caller determine if they want to overwrite the template
-  //
-  const options = req.body.options || {};
-  // write to disk...
-  const content = await fileCache.write(template.content, template.fileType, template.encodingType, {overwrite: truthy('overwrite', options)});
-  if (!content.success) {
-    return new Problem(content.errorType, {detail: content.errorMsg}).send(res);
-  }
-
-  return await findAndRender(content.hash, req, res);
-});
-
-router.post('/template/:uid/render', validation.validateCarbone, async (req, res) => {
-  const hash = req.params.uid;
-  console.log(`Template render ${hash}.`);
-  return await findAndRender(hash, req, res);
-});
-
-router.get('/template/:uid', async (req, res) => {
-  const hash = req.params.uid;
-  const download = req.query.download !== undefined;
-  const hashHeaderName = 'X-Template-Hash';
-  console.log(`Get Template ${hash}. Download = ${download}`);
-  return await getFromCache(hash, hashHeaderName, download, false, res);
-});
-
-router.delete('/template/:uid', async (req, res) => {
-  const hash = req.params.uid;
-  const download = req.query.download !== undefined;
-  const hashHeaderName = 'X-Template-Hash';
-  console.log(`Delete template: ${hash}. Download = ${download}`);
-  return await getFromCache(hash, hashHeaderName, download, true, res);
-});
-
-router.get('/render/:uid', async (req, res) => {
-  const hash = req.params.uid;
-  const download = truthy('download', req.query);
-  const hashHeaderName = 'X-Report-Hash';
-  console.log(`Get Rendered report ${hash}. Download = ${download}`);
-  return await getFromCache(hash, hashHeaderName, download, false, res);
-});
-
-router.delete('/render/:uid', async (req, res) => {
-  const hash = req.params.uid;
-  const download = truthy('download', req.query);
-  const hashHeaderName = 'X-Report-Hash';
-  console.log(`Delete rendered report: ${hash}. Download = ${download}`);
-  return await getFromCache(hash, hashHeaderName, download, true, res);
-});
-
-router.get('/fileTypes', async (req, res) => {
-  console.log('Get fileTypes');
-  if (carboneRenderer.fileTypes instanceof Object) {
-    res.status(200).json({
-      dictionary: carboneRenderer.fileTypes
-    });
-  } else {
-    return new Problem(500, {detail: 'Unable to get file types dictionary'}).send(res);
-  }
-});
-
-router.get('/health', (_req, res) => {
-  res.sendStatus(200);
-});
-
-router.get('/docs', (_req, res) => {
-  const docs = require('./docs/docs');
-  res.send(docs.getDocHTML(mountPath, 'v1'));
-});
-
-router.get('/api-spec.yaml', (_req, res) => {
-  res.sendFile(path.join(__dirname, './docs/v1.api-spec.yaml'));
-});
-
-router.get('/', (_req, res) => {
-  res.status(200).json({
-    endpoints: [
-      {name: '/api-spec.yaml', operations: ['GET']},
-      {name: '/docs', operations: ['GET']},
-      {name: '/fileTypes', operations: ['GET']},
-      {name: '/health', operations: ['GET']},
-      {name: '/render/{id}', operations: ['GET', 'DELETE']},
-      {name: '/template', operations: ['POST']},
-      {name: '/template/render', operations: ['POST']},
-      {name: '/template/{id}', operations: ['GET', 'DELETE']},
-      {name: '/template/{id}/render', operations: ['POST']}
-    ]
-  });
-});
-
-
 let initialized = false;
 module.exports = {
+  // Temporary Exports
+  findAndRender: findAndRender,
+  getFromCache: getFromCache,
+  truthy: truthy,
 
   init(options) {
 
@@ -277,40 +162,4 @@ module.exports = {
     }
     return router;
   },
-
-  mount(app, path, options) {
-    if (!initialized) {
-      this.init(options);
-    }
-
-    // expressPath starts with a / ends without /
-    // mountPath ends with /
-    let expressPath = path || '/';
-    if (isString(expressPath)) {
-      if (!expressPath.startsWith('/')) {
-        expressPath = '/' + expressPath;
-      }
-      if (expressPath.length > 1) {
-        if (expressPath.endsWith('/')) {
-          mountPath = expressPath;
-          expressPath = expressPath.slice(0, -1);
-        } else {
-          mountPath = expressPath + '/';
-        }
-      } else {
-        mountPath = expressPath;
-      }
-    } else {
-      throw Error('Could not mount  copy-api, path parameter is not a string.');
-    }
-
-    try {
-      app.use(expressPath, router);
-    } catch (e) {
-      if (e && e.stack) {
-        console.log(e.stack);
-      }
-      throw Error(`Could not mount carbone-copy-api to express app at ${path}`);
-    }
-  }
 };

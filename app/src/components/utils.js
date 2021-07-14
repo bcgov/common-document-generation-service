@@ -26,16 +26,6 @@ const utils = {
   },
 
   /**
-   * @function isString
-   * Determines if an object is a string
-   * @param {object} obj Object to test
-   * @returns {boolean} True if string, false otherwise
-   */
-  isString: obj => {
-    return typeof obj === 'string' || Object.prototype.toString.call(obj) === '[object String]';
-  },
-
-  /**
    * @function prettyStringify
    * Returns a pretty JSON representation of an object
    * @param {object} obj A JSON Object

@@ -12,13 +12,14 @@ const Writable = require('stream').Writable;
 const keycloak = require('./src/components/keycloak');
 const utils = require('./src/components/utils');
 const v1Router = require('./src/routes/v1');
+const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 const initializeApiTracker = require('./src/middleware/apiTracker');
 
 const carboneCopyApi = require('./src/components/carboneCopyApi');
 const carboneCopyMiddleware = require('./src/middleware/carboneCopy');
-const carboneBasePath = '/api/v2';
+const carboneBasePath = '/api/v3';
 
 const apiRouter = express.Router();
 const state = {
@@ -111,6 +112,9 @@ apiRouter.get('/', (_req, res) => {
 
 // v1 Router
 apiRouter.use('/v1', v1Router);
+
+// v2 Router
+apiRouter.use('/v2', v2Router);
 
 // v2 - use carbone copy api..
 // we are using routes() so we can use middleware, so the relative path for carbone-copy-api yaml spec isn't set.
