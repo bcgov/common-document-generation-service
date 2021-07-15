@@ -1,10 +1,11 @@
 ---
-openapi: 3.0.2
+openapi: 3.0.3
 info:
-  version: 1.0.0
-  title: Carbone Copy API
+  version: 2.0.0
+  title: Common Document Generation Service API
   description: >-
-    Carbone Copy API for generating documents from templates, data documents, and assets
+    CDOGS - A common hosted service (API) for generating documents from
+    templates, data documents, and assets
   license:
     name: Apache 2.0
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
@@ -12,29 +13,12 @@ info:
     name: NR Common Service Showcase
     email: NR.CommonServiceShowcase@gov.bc.ca
 servers:
-  - url: /
+  - url: /api/v2
     description: This Server
 security:
   - BearerAuth: []
     OpenID: []
 paths:
-  /health:
-    get:
-      summary: Returns a health check.
-      description: >-
-        This endpoint is used to see if the API is up and running.
-      operationId: getHealth
-      tags:
-        - Health
-      responses:
-        "200":
-          description: Indicates API is running
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /fileTypes:
     get:
       summary: Returns a dictionary of supported input template file types and output file types.
@@ -50,6 +34,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /health:
+    get:
+      summary: Returns a health check.
+      description: >-
+        This endpoint is used to see if the API is up and running.
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Indicates API is running
         default:
           description: Unexpected error
           content:
@@ -433,10 +434,8 @@ components:
               type: string
       example:
         dictionary:
-          docx:
-            [docx, pdf]
-          xlsx:
-            [docx, pdf, xslx]
+          docx: [docx, pdf]
+          xlsx: [docx, pdf, xslx]
     InlineTemplateObject:
       required:
         - content

@@ -229,10 +229,8 @@ components:
             items:
               type: string
       example:
-        docx:
-          [docx, pdf]
-        xlsx:
-          [docx, pdf, xslx]
+        docx: [docx, pdf]
+        xlsx: [docx, pdf, xslx]
     NotFound:
       allOf:
         - $ref: "#/components/schemas/Problem"

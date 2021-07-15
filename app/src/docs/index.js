@@ -43,7 +43,21 @@ module.exports = {
     const rawSpec = fs.readFileSync(path.join(__dirname, `../docs/${version}.api-spec.yaml`), 'utf8');
     const spec = load(rawSpec);
     spec.servers[0].url = `/api/${version}`;
-    spec.components.securitySchemes.OpenID.openIdConnectUrl = `${config.get('keycloak.serverUrl')}/realms/${config.get('keycloak.realm')}/.well-known/openid-configuration`;
+
+    if (config.has('keycloak.enabled')) {
+      // Dynamically update OIDC endpoint url
+      spec.components.securitySchemes.OpenID.openIdConnectUrl = `${config.get('keycloak.serverUrl')}/realms/${config.get('keycloak.realm')}/.well-known/openid-configuration`;
+    } else {
+      // Drop all security clauses as keycloak is not enabled
+      delete spec.security;
+      delete spec.components.securitySchemes;
+      Object.keys(spec.paths).forEach((path) => {
+        Object.keys(path).forEach((method) => {
+          if (method.security) delete method.security;
+        });
+      });
+    }
+
     return spec;
   }
 };
