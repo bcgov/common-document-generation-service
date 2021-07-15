@@ -5,6 +5,7 @@ const healthRouter = require('./health');
 const renderRouter = require('./render');
 const templateRouter = require('./template');
 
+const { protect } = require('../../middleware/authorization');
 const { getDocs, getJsonSpec, getYamlSpec } = require('../../middleware/openapi');
 
 const version = 'v2';
@@ -37,15 +38,15 @@ router.get('/api-spec.yaml', getYamlSpec(version));
 router.get('/docs', getDocs(version));
 
 /** File Types Router */
-router.get('/fileTypes', fileTypesRouter);
+router.get('/fileTypes', protect(), fileTypesRouter);
 
 /** Health Router */
-router.use('/health', healthRouter);
+router.use('/health', protect(), healthRouter);
 
 /** Render Router */
-router.use('/render', renderRouter);
+router.use('/render', protect(), renderRouter);
 
 /** Template Router */
-router.use('/template', templateRouter);
+router.use('/template', protect(), templateRouter);
 
 module.exports = router;

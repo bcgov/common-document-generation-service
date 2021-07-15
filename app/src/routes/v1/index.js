@@ -1,12 +1,11 @@
 const config = require('config');
 const router = require('express').Router();
 
-const keycloak = require('../../components/keycloak');
-
 const docGenRouter = require('./docGen');
 const fileTypesRouter = require('./fileTypes');
 const healthRouter = require('./health');
 
+const { protect } = require('../../middleware/authorization');
 const { getDocs, getJsonSpec, getYamlSpec } = require('../../middleware/openapi');
 
 const clientId = config.get('keycloak.clientId');
@@ -33,12 +32,12 @@ router.get('/api-spec.yaml', getYamlSpec(version));
 router.get('/docs', getDocs(version));
 
 /** Doc Gen Router */
-router.use('/docGen', keycloak.protect(`${clientId}:GENERATOR`), docGenRouter);
+router.use('/docGen', protect(`${clientId}:GENERATOR`), docGenRouter);
 
 /** File Types Router */
-router.use('/fileTypes', keycloak.protect(), fileTypesRouter);
+router.use('/fileTypes', protect(), fileTypesRouter);
 
 /** Health Router */
-router.use('/health', keycloak.protect(), healthRouter);
+router.use('/health', protect(), healthRouter);
 
 module.exports = router;
