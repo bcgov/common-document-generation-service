@@ -1,12 +1,11 @@
 const router = require('express').Router();
-const { dump } = require('js-yaml');
-
-const { getDocHTML, getSpec } = require('../../docs');
 
 const fileTypesRouter = require('./fileTypes');
 const healthRouter = require('./health');
 const renderRouter = require('./render');
 const templateRouter = require('./template');
+
+const { getDocs, getJsonSpec, getYamlSpec } = require('../../middleware/openapi');
 
 const version = 'v2';
 
@@ -29,19 +28,13 @@ router.get('/', (_req, res) => {
 });
 
 /** OpenAPI JSON Spec */
-router.get('/api-spec.json', (_req, res) => {
-  res.status(200).json(getSpec(version));
-});
+router.get('/api-spec.json', getJsonSpec(version));
 
 /** OpenAPI YAML Spec */
-router.get('/api-spec.yaml', (_req, res) => {
-  res.status(200).type('application/yaml').send(dump(getSpec(version)));
-});
+router.get('/api-spec.yaml', getYamlSpec(version));
 
 /** OpenAPI Docs */
-router.get('/docs', (_req, res) => {
-  res.send(getDocHTML(version));
-});
+router.get('/docs', getDocs(version));
 
 /** File Types Router */
 router.get('/fileTypes', fileTypesRouter);
