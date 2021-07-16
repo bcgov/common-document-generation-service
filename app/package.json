@@ -1,7 +1,8 @@
 {
-  "name": "cdogs",
+  "name": "common-document-generation-service",
   "version": "2.0.0",
   "description": "CDOGS - A common document generation API",
+  "private": true,
   "scripts": {
     "build": "echo Nothing to build",
     "serve": "nodemon ./bin/www",
