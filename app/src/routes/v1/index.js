@@ -15,9 +15,12 @@ const version = 'v1';
 router.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
-      '/docGen',
-      '/fileTypes',
-      '/health'
+      { name: '/api-spec.json', operations: ['GET'] },
+      { name: '/api-spec.yaml', operations: ['GET'] },
+      { name: '/docs', operations: ['GET'] },
+      { name: '/docGen', operations: ['POST'] },
+      { name: '/fileTypes', operations: ['GET'] },
+      { name: '/health', operations: ['GET'] }
     ]
   });
 });

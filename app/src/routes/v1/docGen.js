@@ -1,16 +1,9 @@
+const Problem = require('api-problem');
 const docGenRouter = require('express').Router();
-const { validateDocGen } = require('../../middleware/validation');
-const docGenComponent = require('../../components/docGen');
-const log = require('npmlog');
 
 /** Document generation endpoint */
-docGenRouter.post('/', validateDocGen, async (req, res, next) => {
-  try {
-    await docGenComponent.generateDocument(req.body, res);
-  } catch (error) {
-    log.error(error);
-    next(error);
-  }
+docGenRouter.post('/', async (_req, res, next) => {
+  next(new Problem(410, { detail: 'Deprecated API. Please migrate to the v2 API.' }).send(res));
 });
 
 module.exports = docGenRouter;
