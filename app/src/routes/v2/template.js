@@ -1,9 +1,10 @@
 const Problem = require('api-problem');
 const templateRouter = require('express').Router();
 
-const { findAndRender, getFromCache, truthy } = require('../../components/carboneCopyApi');
+const { findAndRender, getFromCache } = require('../../components/carboneCopyApi');
 const FileCache = require('../../components/fileCache');
 const { upload } = require('../../components/upload');
+const { truthy } = require('../../components/utils');
 const { validateCarbone, validateTemplate } = require('../../components/validation');
 
 /** Returns the rendered report from cache */

@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 
-const utils = {
+module.exports = {
   /**
    * @function determineOutputReportName
    * For the DocGen component, determine what the outputted (response) filename should be based
@@ -32,7 +32,17 @@ const utils = {
    * @param {integer} indent Number of spaces to indent
    * @returns {string} A pretty printed string representation of `obj` with `indent` indentation
    */
-  prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent)
-};
+  prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
 
-module.exports = utils;
+  /**
+   * @function truthy
+   * Returns true if the element name in the object contains a truthy value
+   * @param {string} name The attribute name
+   * @param {object} obj The object to evaluate
+   * @returns {boolean} True if truthy, false otherwise
+   */
+  truthy: (name, obj = {}) => {
+    const value = obj[name] || false;
+    return (value === true || value === 'true' || value === '1' || value === 'yes' || value === 'y' || value === 't' || value === 1);
+  }
+};

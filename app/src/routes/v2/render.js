@@ -1,5 +1,6 @@
 const renderRouter = require('express').Router();
-const { getFromCache, truthy } = require('../../components/carboneCopyApi');
+const { getFromCache } = require('../../components/carboneCopyApi');
+const { truthy } = require('../../components/utils');
 
 /** Returns the rendered report from cache */
 renderRouter.get('/:uid', (req, res) => {
