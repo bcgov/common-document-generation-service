@@ -1,9 +1,7 @@
-const config = require('config');
-const log = require('npmlog');
-
+const { logHelper } = require('../../common/helper');
 const utils = require('../../../src/components/utils');
 
-log.level = config.get('server.logLevel');
+logHelper();
 
 describe('prettyStringify', () => {
   const obj = {
@@ -76,5 +74,47 @@ describe('determineOutputReportName', () => {
     };
     expect(utils.determineOutputReportName(template)).toMatch(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.docx/);
 
+  });
+});
+
+describe('truthy', () => {
+  it('should return false with invalid name', () => {
+    expect(utils.truthy({})).toBeFalsy();
+  });
+
+  it('should return false with non-existent name attribute', () => {
+    expect(utils.truthy('foo', {})).toBeFalsy();
+  });
+
+  it('should return false with falsy attribute', () => {
+    expect(utils.truthy('foo', { foo: false })).toBeFalsy();
+  });
+
+  it('should return true with boolean true', () => {
+    expect(utils.truthy('foo', { foo: true })).toBeTruthy();
+  });
+
+  it('should return true with string true', () => {
+    expect(utils.truthy('foo', { foo: 'true' })).toBeTruthy();
+  });
+
+  it('should return true with string one', () => {
+    expect(utils.truthy('foo', { foo: '1' })).toBeTruthy();
+  });
+
+  it('should return true with string yes', () => {
+    expect(utils.truthy('foo', { foo: 'yes' })).toBeTruthy();
+  });
+
+  it('should return true with string y', () => {
+    expect(utils.truthy('foo', { foo: 'y' })).toBeTruthy();
+  });
+
+  it('should return true with string t', () => {
+    expect(utils.truthy('foo', { foo: 't' })).toBeTruthy();
+  });
+
+  it('should return true with integer one', () => {
+    expect(utils.truthy('foo', { foo: 1 })).toBeTruthy();
   });
 });
