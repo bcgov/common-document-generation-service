@@ -17,6 +17,7 @@
   "carbone": {
     "cacheDir": "CACHE_DIR",
     "cacheSize": "CACHE_SIZE",
+    "converterFactoryTimeout": "CONVERTER_FACTORY_TIMEOUT",
     "formFieldName": "UPLOAD_FIELD_NAME",
     "startCarbone": "START_CARBONE",
     "uploadCount": "UPLOAD_FILE_COUNT",

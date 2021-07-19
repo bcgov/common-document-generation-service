@@ -6,7 +6,7 @@ const telejson = require('telejson');
 const tmp = require('tmp');
 const validator = require('validator');
 
-const fileTypes = require('./carboneRender').fileTypes;
+const { fileTypes } = require('./carboneRender');
 const maxFileSize = bytes.parse(config.get('carbone.uploadSize'));
 
 const models = {

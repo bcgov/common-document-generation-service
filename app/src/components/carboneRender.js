@@ -1,5 +1,7 @@
 const carbone = require('carbone');
+const config = require('config');
 const fs = require('fs-extra');
+const log = require('npmlog');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
@@ -7,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 // Carbone is a singleton and we cannot set formatters for each render call
 const DEFAULT_CARBONE_FORMATTERS = Object.freeze(Object.assign({}, carbone.formatters));
 
-const FILE_TYPES = Object.freeze({
+const fileTypes = Object.freeze({
   csv: ['csv', 'doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
   docx: ['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
   html: ['html', 'odt', 'pdf', 'rtf', 'txt'],
@@ -94,10 +96,22 @@ async function render(template, data = {}, options = {}, formatters = {}) {
   return result;
 }
 
-function startFactory(converterFactoryTimeout) {
-  carbone.set({ startFactory: true, converterFactoryTimeout: converterFactoryTimeout });
+function carboneSet() {
+  const options = {};
+  if (config.has('carbone.startCarbone')) {
+    options.startFactory = true;
+    log.info('Carbone LibreOffice worker initialized');
+  }
+  if (config.has('carbone.converterFactoryTimeout')) {
+    options.converterFactoryTimeout = config.get('carbone.converterFactoryTimeout');
+  }
+
+  carbone.set(options);
 }
 
-module.exports.fileTypes = FILE_TYPES;
-module.exports.render = render;
-module.exports.startFactory = startFactory;
+module.exports = {
+  carboneSet,
+  fileTypes: fileTypes,
+  render
+};
+

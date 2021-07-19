@@ -1,19 +1,20 @@
+const config = require('config');
 const mime = require('mime-types');
 const path = require('path');
 const Problem = require('api-problem');
 const telejson = require('telejson');
 
-const carboneRenderer = require('./carboneRender');
+const carboneRender = require('./carboneRender');
 const FileCache = require('./fileCache');
 const fileUpload = require('./upload');
 const { truthy } = require('./utils');
 
-const CACHE_DIR = process.env.CACHE_DIR || '/tmp/carbone-files';
-const CONVERTER_FACTORY_TIMEOUT = process.env.CONVERTER_FACTORY_TIMEOUT || '60000';
-const UPLOAD_FIELD_NAME = process.env.UPLOAD_FIELD_NAME || 'template';
-const UPLOAD_FILE_SIZE = process.env.UPLOAD_FILE_SIZE || '25MB';
-const UPLOAD_FILE_COUNT = process.env.UPLOAD_FILE_COUNT || '1';
-const START_CARBONE = process.env.START_CARBONE || 'true';
+const CACHE_DIR = config.get('carbone.cacheDir');
+const CONVERTER_FACTORY_TIMEOUT = config.get('carbone.converterFactoryTimeout');
+const UPLOAD_FIELD_NAME = config.get('carbone.formFieldName');
+const UPLOAD_FILE_SIZE = config.get('carbone.uploadSize');
+const UPLOAD_FILE_COUNT = config.get('carbone.uploadCount');
+const START_CARBONE = config.get('carbone.startCarbone');
 
 const DEFAULT_OPTIONS = {
   fileUploadsDir: CACHE_DIR,
@@ -28,17 +29,12 @@ let fileCache;
 
 module.exports = {
   init(options) {
-    let _options = DEFAULT_OPTIONS;
-    if (options) {
-      _options = { ..._options, ...options };
-    }
+    const _options = { ...DEFAULT_OPTIONS, ...options };
 
     fileCache = new FileCache({ fileCachePath: _options.fileUploadsDir });
     fileUpload.init();
 
-    if (truthy('startCarbone', _options)) {
-      carboneRenderer.startFactory(_options.converterFactoryTimeout);
-    }
+    carboneRender.carboneSet();
   },
 
   findAndRender: (hash, req, res) => {
@@ -120,7 +116,7 @@ module.exports = {
     } catch (e) {
     }
 
-    const output = await carboneRenderer.render(template.path, data, options, formatters);
+    const output = await carboneRender.render(template.path, data, options, formatters);
     if (output.success) {
       res.setHeader('Content-Disposition', `attachment; filename=${output.reportName}`);
       res.setHeader('Content-Transfer-Encoding', 'binary');
