@@ -9,16 +9,6 @@ const validator = require('validator');
 const fileTypes = require('./carboneRender').fileTypes;
 const maxFileSize = bytes.parse(config.get('carbone.uploadSize'));
 
-function handleValidationErrors(res, next, errors) {
-  if (errors && errors.length) {
-    return new Problem(422, {
-      detail: 'Validation failed',
-      errors: errors
-    }).send(res);
-  }
-  next();
-}
-
 const models = {
   carbone: {
     /** @function data must be an object or array */
@@ -57,7 +47,6 @@ const models = {
       }
       return true;
     }
-
   },
 
   /** @function template must be a non-null object */
@@ -129,7 +118,6 @@ const models = {
       }
       return true;
     }
-
   }
 };
 
@@ -230,12 +218,9 @@ const modelValidation = {
 const validatorUtils = {
   /** @function isInt */
   isInt: x => {
-    if (isNaN(x)) {
-      return false;
-    }
-    const num = parseFloat(x);
+    if (isNaN(x)) return false;
     // use modulus to determine if it is an int
-    return num % 1 === 0;
+    return parseFloat(x) % 1 === 0;
   },
 
   /** @function isString */
@@ -255,15 +240,25 @@ const validatorUtils = {
 };
 
 const middleware = {
-  async validateCarbone(req, res, next) {
-    const errors = await modelValidation.carbone(req.body);
-    handleValidationErrors(res, next, errors);
+  _handleValidationErrors(res, next, errors) {
+    if (errors && errors.length) {
+      return new Problem(422, {
+        detail: 'Validation failed',
+        errors: errors
+      }).send(res);
+    }
+    next();
   },
 
-  async validateTemplate(req, res, next) {
-    const errors = await modelValidation.template(req.body, maxFileSize);
-    handleValidationErrors(res, next, errors);
+  validateCarbone(req, res, next) {
+    const errors = modelValidation.carbone(req.body);
+    this._handleValidationErrors(res, next, errors);
+  },
+
+  validateTemplate(req, res, next) {
+    const errors = modelValidation.template(req.body, maxFileSize);
+    this._handleValidationErrors(res, next, errors);
   }
 };
 
-module.exports = middleware;
+module.exports = { models, modelValidation, validatorUtils, middleware };

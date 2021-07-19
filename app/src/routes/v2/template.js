@@ -5,7 +5,7 @@ const { findAndRender, getFromCache } = require('../../components/carboneCopyApi
 const FileCache = require('../../components/fileCache');
 const { upload } = require('../../components/upload');
 const { truthy } = require('../../components/utils');
-const { validateCarbone, validateTemplate } = require('../../components/validation');
+const { middleware } = require('../../components/validation');
 
 /** Returns the rendered report from cache */
 templateRouter.post('/template', upload, async (req, res) => {
@@ -20,7 +20,7 @@ templateRouter.post('/template', upload, async (req, res) => {
   }
 });
 
-templateRouter.post('/template/render', validateTemplate, async (req, res) => {
+templateRouter.post('/template/render', middleware.validateTemplate, async (req, res) => {
   console.log('Template upload and render');
 
   let template = {};
@@ -45,7 +45,7 @@ templateRouter.post('/template/render', validateTemplate, async (req, res) => {
   return await findAndRender(content.hash, req, res);
 });
 
-templateRouter.post('/template/:uid/render', validateCarbone, async (req, res) => {
+templateRouter.post('/template/:uid/render', middleware.validateCarbone, async (req, res) => {
   const hash = req.params.uid;
   console.log(`Template render ${hash}.`);
   return await findAndRender(hash, req, res);
