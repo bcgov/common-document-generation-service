@@ -77,7 +77,9 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Use Keycloak OIDC Middleware
-app.use(keycloak.middleware());
+if (config.has('keycloak.enabled')) {
+  app.use(keycloak.middleware());
+}
 
 // Block requests until service is ready and mounted
 app.use((_req, res, next) => {
