@@ -17,9 +17,6 @@ const v2Router = require('./src/routes/v2');
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 const initializeApiTracker = require('./src/middleware/apiTracker');
 
-const carboneCopyMiddleware = require('./src/middleware/carboneCopy');
-const carboneBasePath = '/api/v2';
-
 const apiRouter = express.Router();
 const state = {
   ready: false,
@@ -64,7 +61,6 @@ log.verbose('Config', utils.prettyStringify(config));
 if (process.env.NODE_ENV !== 'test') {
   app.use(authorizedParty);
   initializeApiTracker(app);
-  carboneCopyMiddleware.initializeApiTracker(app, carboneBasePath);
   // Add Morgan endpoint logging
   const morganOpts = {
     // Skip logging kube-probe requests
@@ -156,12 +152,12 @@ process.on('exit', () => {
 
 /**
  * @function shutdown
- * Shuts down this application after at least 3 seconds.
+ * Shuts down this application after at least 5 seconds.
  */
 function shutdown() {
   log.info('Received kill signal. Shutting down...');
-  // Wait 3 seconds before starting cleanup
-  if (!state.shutdown) setTimeout(cleanup, 3000);
+  // Wait 5 seconds before starting cleanup
+  if (!state.shutdown) setTimeout(cleanup, 5000);
 }
 
 /**

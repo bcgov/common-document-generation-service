@@ -1,3 +1,4 @@
+const config = require('config');
 const crypto = require('crypto');
 const fs = require('fs-extra');
 const os = require('os');
@@ -6,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 
 class FileCache {
   constructor(options) {
-    this._cachePath = (options && options.fileCachePath) || process.env.FILE_CACHE_PATH || fs.realpathSync(os.tmpdir());
+    this._cachePath = (options && options.fileCachePath) || config.get('carbone.cacheDir') || fs.realpathSync(os.tmpdir());
     // Ensure no trailing path separator
     if (this._cachePath.endsWith(path.sep)) {
       this._cachePath = this._cachePath.slice(0, -1);
