@@ -13,6 +13,11 @@ const fileCache = new FileCache();
 templateRouter.post('/', upload, async (req, res) => {
   console.log('Template upload');
 
+  if (!req.file) {
+    return new Problem(422, { detail: 'Template file is missing or malformed.' }).send(res);
+  }
+
+  // TODO: If `carbone.uploadCount` is greater than 1, check `req.files` array
   const result = await fileCache.move(req.file.path, req.file.originalname);
   if (!result.success) {
     return new Problem(result.errorType, { detail: result.errorMsg }).send(res);
@@ -36,7 +41,6 @@ templateRouter.post('/render', middleware.validateTemplate, async (req, res) => 
   }
 
   // let the caller determine if they want to overwrite the template
-  //
   const options = req.body.options || {};
   // write to disk...
   const content = await fileCache.write(template.content, template.fileType, template.encodingType, { overwrite: truthy('overwrite', options) });

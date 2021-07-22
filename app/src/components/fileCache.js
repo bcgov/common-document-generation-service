@@ -119,8 +119,11 @@ class FileCache {
     const hashPath = this._getHashPath(result.hash);
     if (fs.existsSync(hashPath)) {
       if (options.overwrite) {
-        await fs.remove(hashPath);
+        fs.removeSync(hashPath);
       } else {
+        // Remove temporary file from cache
+        fs.removeSync(source);
+
         result.errorType = 405;
         result.errorMsg = `File already cached. Hash '${result.hash}'.`;
         return result;
@@ -130,8 +133,8 @@ class FileCache {
     const dest = `${hashPath}${path.sep}${name}`;
     fs.ensureDirSync(hashPath);
     try {
-      await fs.move(source, dest, options);
-      result.success = await fs.existsSync(dest);
+      fs.moveSync(source, dest, options);
+      result.success = fs.existsSync(dest);
     } catch (e) {
       result.errorType = 500;
       result.errorMsg = 'Error moving file to cache.';

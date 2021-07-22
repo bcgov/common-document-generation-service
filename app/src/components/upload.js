@@ -13,48 +13,47 @@ const maxFileCount = parseInt(config.get('carbone.uploadCount'));
 let storage = undefined;
 let uploader = undefined;
 
-function init() {
-  try {
-    fs.ensureDirSync(fileUploadsDir);
-  } catch (e) {
-    console.warn(`Unable to use directory "${fileUploadsDir}". Falling back to default OS temp directory`);
-    fs.realpathSync(os.tmpdir());
-  }
-
-  if (!storage) {
-    storage = multer.diskStorage({
-      destination: (_req, _file, cb) => {
-        cb(null, fileUploadsDir);
-      }
-    });
-  }
-
-  // setup the multer
-  if (!uploader) {
-    if (maxFileCount > 1) {
-      uploader = multer({
-        storage: storage,
-        limits: { fileSize: maxFileSize, files: maxFileCount }
-      }).array(formFieldName);
-    } else {
-      // in case maxFileCount is negative, hard set to 1
-      uploader = multer({
-        storage: storage,
-        limits: { fileSize: maxFileSize, files: 1 }
-      }).single(formFieldName);
-    }
-  }
+// Upload directory checks
+try {
+  fs.ensureDirSync(fileUploadsDir);
+} catch (e) {
+  console.warn(`Unable to use directory "${fileUploadsDir}". Falling back to default OS temp directory`);
+  fs.realpathSync(os.tmpdir());
 }
 
-init();
+// Setup storage location
+if (!storage) {
+  storage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      cb(null, fileUploadsDir);
+    }
+  });
+}
+
+// Setup the multer
+if (!uploader) {
+  if (maxFileCount > 1) {
+    uploader = multer({
+      storage: storage,
+      limits: { fileSize: maxFileSize, files: maxFileCount }
+    }).array(formFieldName);
+  } else {
+    // In case maxFileCount is negative, hard set to 1
+    uploader = multer({
+      storage: storage,
+      limits: { fileSize: maxFileSize, files: 1 }
+    }).single(formFieldName);
+  }
+}
 
 module.exports = {
   upload(req, res, next) {
     if (!uploader) {
       return next(new Problem(500, 'File Upload middleware has not been configured.'));
     }
+
     uploader(req, res, (err) => {
-      // detect multer errors, send back nicer through the middleware stack...
+      // Detect multer errors, send back nicer through the middleware stack...
       if (err instanceof multer.MulterError) {
         switch (err.code) {
           case 'LIMIT_FILE_SIZE':
@@ -66,7 +65,7 @@ module.exports = {
           case 'LIMIT_UNEXPECTED_FILE':
             next(new Problem(400, 'Upload file error', { detail: 'Upload encountered an unexpected file' }));
             break;
-          // we don't expect that we will encounter these in our api/app, but here for completeness
+          // We don't expect that we will encounter these in our api/app, but here for completeness
           case 'LIMIT_PART_COUNT':
             next(new Problem(400, 'Upload file error', { detail: 'Upload rejected: upload form has too many parts' }));
             break;
