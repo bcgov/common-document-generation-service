@@ -6,8 +6,8 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 class FileCache {
-  constructor(options) {
-    this._cachePath = (options && options.fileCachePath) || config.get('carbone.cacheDir') || fs.realpathSync(os.tmpdir());
+  constructor() {
+    this._cachePath = config.has('carbone.cacheDir') ? config.get('carbone.cacheDir') : fs.realpathSync(os.tmpdir());
     // Ensure no trailing path separator
     if (this._cachePath.endsWith(path.sep)) {
       this._cachePath = this._cachePath.slice(0, -1);
@@ -152,7 +152,7 @@ class FileCache {
     return result;
   }
 
-  write(content, name, contentEncodingType = 'base64', options = { overwrite: false }) {
+  async write(content, name, contentEncodingType = 'base64', options = { overwrite: false }) {
     let result = { success: false, errorType: null, errorMsg: null, hash: null };
 
     if (!content) {
@@ -173,7 +173,7 @@ class FileCache {
       name: uuidv4(),
       ext: (name.startsWith('.') ? name : `.${name}`)
     }) : name;
-    result = this.moveSync(tmpFile, destFilename, options);
+    result = await this.move(tmpFile, destFilename, options);
     if (!result.success) {
       result.errorMsg = `Error writing content to cache. ${result.errorMsg}`;
     }

@@ -13,40 +13,42 @@ const maxFileCount = parseInt(config.get('carbone.uploadCount'));
 let storage = undefined;
 let uploader = undefined;
 
-module.exports = {
-  init() {
-    try {
-      fs.ensureDirSync(fileUploadsDir);
-    } catch (e) {
-      console.warn(`Unable to use directory "${fileUploadsDir}". Falling back to default OS temp directory`);
-      fs.realpathSync(os.tmpdir());
-    }
+function init() {
+  try {
+    fs.ensureDirSync(fileUploadsDir);
+  } catch (e) {
+    console.warn(`Unable to use directory "${fileUploadsDir}". Falling back to default OS temp directory`);
+    fs.realpathSync(os.tmpdir());
+  }
 
-    if (!storage) {
-      storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, fileUploadsDir);
-        }
-      });
-    }
-
-    // setup the multer
-    if (!uploader) {
-      if (maxFileCount > 1) {
-        uploader = multer({
-          storage: storage,
-          limits: { fileSize: maxFileSize, files: maxFileCount }
-        }).array(formFieldName);
-      } else {
-        // in case maxFileCount is negative, hard set to 1
-        uploader = multer({
-          storage: storage,
-          limits: { fileSize: maxFileSize, files: 1 }
-        }).single(formFieldName);
+  if (!storage) {
+    storage = multer.diskStorage({
+      destination: (_req, _file, cb) => {
+        cb(null, fileUploadsDir);
       }
-    }
-  },
+    });
+  }
 
+  // setup the multer
+  if (!uploader) {
+    if (maxFileCount > 1) {
+      uploader = multer({
+        storage: storage,
+        limits: { fileSize: maxFileSize, files: maxFileCount }
+      }).array(formFieldName);
+    } else {
+      // in case maxFileCount is negative, hard set to 1
+      uploader = multer({
+        storage: storage,
+        limits: { fileSize: maxFileSize, files: 1 }
+      }).single(formFieldName);
+    }
+  }
+}
+
+init();
+
+module.exports = {
   upload(req, res, next) {
     if (!uploader) {
       return next(new Problem(500, 'File Upload middleware has not been configured.'));

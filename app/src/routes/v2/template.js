@@ -7,11 +7,13 @@ const { upload } = require('../../components/upload');
 const { truthy } = require('../../components/utils');
 const { middleware } = require('../../components/validation');
 
+const fileCache = new FileCache();
+
 /** Returns the rendered report from cache */
-templateRouter.post('/template', upload, async (req, res) => {
+templateRouter.post('/', upload, async (req, res) => {
   console.log('Template upload');
 
-  const result = await FileCache.move(req.file.path, req.file.originalname);
+  const result = await fileCache.move(req.file.path, req.file.originalname);
   if (!result.success) {
     return new Problem(result.errorType, { detail: result.errorMsg }).send(res);
   } else {
@@ -20,7 +22,7 @@ templateRouter.post('/template', upload, async (req, res) => {
   }
 });
 
-templateRouter.post('/template/render', middleware.validateTemplate, async (req, res) => {
+templateRouter.post('/render', middleware.validateTemplate, async (req, res) => {
   console.log('Template upload and render');
 
   let template = {};
@@ -37,7 +39,7 @@ templateRouter.post('/template/render', middleware.validateTemplate, async (req,
   //
   const options = req.body.options || {};
   // write to disk...
-  const content = await FileCache.write(template.content, template.fileType, template.encodingType, { overwrite: truthy('overwrite', options) });
+  const content = await fileCache.write(template.content, template.fileType, template.encodingType, { overwrite: truthy('overwrite', options) });
   if (!content.success) {
     return new Problem(content.errorType, { detail: content.errorMsg }).send(res);
   }
@@ -45,13 +47,13 @@ templateRouter.post('/template/render', middleware.validateTemplate, async (req,
   return await findAndRender(content.hash, req, res);
 });
 
-templateRouter.post('/template/:uid/render', middleware.validateCarbone, async (req, res) => {
+templateRouter.post('/:uid/render', middleware.validateCarbone, async (req, res) => {
   const hash = req.params.uid;
   console.log(`Template render ${hash}.`);
   return await findAndRender(hash, req, res);
 });
 
-templateRouter.get('/template/:uid', async (req, res) => {
+templateRouter.get('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
@@ -59,7 +61,7 @@ templateRouter.get('/template/:uid', async (req, res) => {
   return await getFromCache(hash, hashHeaderName, download, false, res);
 });
 
-templateRouter.delete('/template/:uid', async (req, res) => {
+templateRouter.delete('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';

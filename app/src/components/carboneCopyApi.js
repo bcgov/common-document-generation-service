@@ -1,4 +1,3 @@
-const config = require('config');
 const mime = require('mime-types');
 const path = require('path');
 const Problem = require('api-problem');
@@ -6,34 +5,12 @@ const telejson = require('telejson');
 
 const carboneRender = require('./carboneRender');
 const FileCache = require('./fileCache');
-const fileUpload = require('./upload');
 const { truthy } = require('./utils');
 
-const CACHE_DIR = config.get('carbone.cacheDir');
-const CONVERTER_FACTORY_TIMEOUT = config.get('carbone.converterFactoryTimeout');
-const UPLOAD_FIELD_NAME = config.get('carbone.formFieldName');
-const UPLOAD_FILE_SIZE = config.get('carbone.uploadSize');
-const UPLOAD_FILE_COUNT = config.get('carbone.uploadCount');
-const START_CARBONE = config.get('carbone.startCarbone');
+const fileCache = new FileCache();
 
-const DEFAULT_OPTIONS = {
-  fileUploadsDir: CACHE_DIR,
-  maxFileCount: UPLOAD_FILE_COUNT,
-  maxFileSize: UPLOAD_FILE_SIZE,
-  formFieldName: UPLOAD_FIELD_NAME,
-  startCarbone: START_CARBONE,
-  converterFactoryTimeout: CONVERTER_FACTORY_TIMEOUT
-};
-
-let fileCache;
-
-module.exports = {
-  init(options) {
-    const _options = { ...DEFAULT_OPTIONS, ...options };
-
-    fileCache = new FileCache({ fileCachePath: _options.fileUploadsDir });
-    fileUpload.init();
-
+const carboneCopyApi = {
+  init() {
     carboneRender.carboneSet();
   },
 
@@ -42,7 +19,7 @@ module.exports = {
     if (!template.success) {
       return new Problem(template.errorType, { detail: template.errorMsg }).send(res);
     } else {
-      return this.renderTemplate(template, req, res);
+      return carboneCopyApi.renderTemplate(template, req, res);
     }
   },
 
@@ -138,3 +115,5 @@ module.exports = {
     }
   }
 };
+
+module.exports = carboneCopyApi;

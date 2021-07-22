@@ -252,12 +252,12 @@ const middleware = {
 
   validateCarbone(req, res, next) {
     const errors = modelValidation.carbone(req.body);
-    this._handleValidationErrors(res, next, errors);
+    middleware._handleValidationErrors(res, next, errors);
   },
 
   validateTemplate(req, res, next) {
     const errors = modelValidation.template(req.body, maxFileSize);
-    this._handleValidationErrors(res, next, errors);
+    middleware._handleValidationErrors(res, next, errors);
   }
 };
 
