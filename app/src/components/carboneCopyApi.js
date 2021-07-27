@@ -89,6 +89,7 @@ const carboneCopyApi = {
 
     try {
       formatters = telejson.parse(req.body.formatters);
+      // TODO: Consider adding warning message to log
       // eslint-disable-next-line no-empty
     } catch (e) {
     }
