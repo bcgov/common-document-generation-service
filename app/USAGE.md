@@ -118,10 +118,10 @@ Context
 ``` json
 {
   "cars" : [
-    {"brand" : "Lumeneo"},
-    {"brand" : "Tesla"  },
-    {"brand" : "Toyota" },
-    {"brand" : "Ford" }
+    { "brand": "Lumeneo" },
+    { "brand": "Tesla" },
+    { "brand": "Toyota" },
+    { "brand": "Ford" }
   ]
 }
 ```
