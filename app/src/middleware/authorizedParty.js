@@ -44,4 +44,4 @@ const authorizedPartyValidator = async (req, res, next) => {
   next();
 };
 
-module.exports = {authorizedParty, authorizedPartyValidator};
+module.exports = { authorizedParty, authorizedPartyValidator };

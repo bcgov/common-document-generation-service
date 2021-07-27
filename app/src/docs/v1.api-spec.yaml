@@ -2,9 +2,9 @@
 openapi: 3.0.3
 info:
   version: 1.0.0
-  title: Common Document Generation Service API
+  title: "[DEPRECATED] Common Document Generation Service API"
   description: >-
-    CDOGS - A common hosted service (API) for generating documents from
+    [DEPRECATED] CDOGS - A common hosted service (API) for generating documents from
     templates, data documents, and assets
   license:
     name: Apache 2.0
@@ -229,10 +229,8 @@ components:
             items:
               type: string
       example:
-        docx:
-          [docx, pdf]
-        xlsx:
-          [docx, pdf, xslx]
+        docx: [docx, pdf]
+        xlsx: [docx, pdf, xslx]
     NotFound:
       allOf:
         - $ref: "#/components/schemas/Problem"

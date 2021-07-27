@@ -83,16 +83,6 @@ objects:
                     secretKeyRef:
                       key: password
                       name: cdogs-keycloak-secret
-                - name: CMNSRV_CLIENTID
-                  valueFrom:
-                    secretKeyRef:
-                      key: username
-                      name: cdogs-common-service-secret
-                - name: CMNSRV_CLIENTSECRET
-                  valueFrom:
-                    secretKeyRef:
-                      key: password
-                      name: cdogs-common-service-secret
                 - name: CACHE_DIR
                   value: "${FILE_CACHE_DIR}"
                 - name: CACHE_SIZE

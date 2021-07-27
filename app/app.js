@@ -1,4 +1,3 @@
-const carbone = require('carbone');
 const compression = require('compression');
 const config = require('config');
 const cors = require('cors');
@@ -9,16 +8,14 @@ const morgan = require('morgan');
 const Problem = require('api-problem');
 const Writable = require('stream').Writable;
 
+const carboneCopyApi = require('./src/components/carboneCopyApi');
 const keycloak = require('./src/components/keycloak');
 const utils = require('./src/components/utils');
 const v1Router = require('./src/routes/v1');
+const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 const initializeApiTracker = require('./src/middleware/apiTracker');
-
-const carboneCopyApi = require('@bcgov/carbone-copy-api');
-const carboneCopyMiddleware = require('./src/middleware/carboneCopy');
-const carboneBasePath = '/api/v2';
 
 const apiRouter = express.Router();
 const state = {
@@ -64,7 +61,6 @@ log.verbose('Config', utils.prettyStringify(config));
 if (process.env.NODE_ENV !== 'test') {
   app.use(authorizedParty);
   initializeApiTracker(app);
-  carboneCopyMiddleware.initializeApiTracker(app, carboneBasePath);
   // Add Morgan endpoint logging
   const morganOpts = {
     // Skip logging kube-probe requests
@@ -74,15 +70,16 @@ if (process.env.NODE_ENV !== 'test') {
     morganOpts.stream = teeStream;
   }
   app.use(morgan(config.get('server.morganFormat'), morganOpts));
-  // Initialize LibreOffice Factories
-  carbone.set({ startFactory: true });
-  log.info('Carbone LibreOffice worker initialized');
+  // Initialize Carbone Copy Api
+  carboneCopyApi.init();
   state.ready = true;
   log.info('Service ready to accept traffic');
 }
 
 // Use Keycloak OIDC Middleware
-app.use(keycloak.middleware());
+if (config.has('keycloak.enabled')) {
+  app.use(keycloak.middleware());
+}
 
 // Block requests until service is ready and mounted
 app.use((_req, res, next) => {
@@ -112,14 +109,8 @@ apiRouter.get('/', (_req, res) => {
 // v1 Router
 apiRouter.use('/v1', v1Router);
 
-// v2 - use carbone copy api..
-// we are using routes() so we can use middleware, so the relative path for carbone-copy-api yaml spec isn't set.
-// call to carbone-copy-api /docs will call /api-spec.yaml, let's redirect the call to the correct url
-app.get('/api-spec.yaml', (req, res) => {
-  req.url = `${carboneBasePath}/api-spec.yaml`;
-  app.handle(req, res);
-});
-app.use(carboneBasePath, carboneCopyMiddleware.operation(carboneBasePath), carboneCopyMiddleware.security, carboneCopyMiddleware.cacheCleanup, carboneCopyApi.routes());
+// v2 Router
+apiRouter.use('/v2', v2Router);
 
 // Root level Router
 app.use(/(\/api)?/, apiRouter);
@@ -163,12 +154,12 @@ process.on('exit', () => {
 
 /**
  * @function shutdown
- * Shuts down this application after at least 3 seconds.
+ * Shuts down this application after at least 5 seconds.
  */
 function shutdown() {
   log.info('Received kill signal. Shutting down...');
-  // Wait 3 seconds before starting cleanup
-  if (!state.shutdown) setTimeout(cleanup, 3000);
+  // Wait 5 seconds before starting cleanup
+  if (!state.shutdown) setTimeout(cleanup, 5000);
 }
 
 /**

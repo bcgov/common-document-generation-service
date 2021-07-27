@@ -1,25 +1,8 @@
 {
-  "clogs": {
-    "queue" : {
-      "batchTimeout" : "CLOGS_QUEUE_BATCHTIMEOUT",
-      "initialDelay" : "CLOGS_QUEUE_INITIAL_DELAY",
-      "maxBatchSize" : "CLOGS_QUEUE_MAXBATCHSIZE"
-    },
-    "http" : {
-      "apiUrl": "CLOGS_HTTP_APIURL"
-    },
-    "metadata" : {
-      "env": "CLOGS_METADATA_ENV"
-    }
-  },
-  "cmnsrv": {
-    "clientId": "CMNSRV_CLIENTID",
-    "clientSecret": "CMNSRV_CLIENTSECRET",
-    "tokenUrl": "CMNSRV_TOKENURL"
-  },
   "keycloak": {
     "clientId": "KC_CLIENTID",
     "clientSecret": "KC_CLIENTSECRET",
+    "enabled": "KC_ENABLED",
     "publicKey": "KC_PUBLICKEY",
     "realm": "KC_REALM",
     "serverUrl": "KC_SERVERURL"
@@ -34,6 +17,10 @@
   "carbone": {
     "cacheDir": "CACHE_DIR",
     "cacheSize": "CACHE_SIZE",
+    "converterFactoryTimeout": "CONVERTER_FACTORY_TIMEOUT",
+    "formFieldName": "UPLOAD_FIELD_NAME",
+    "startCarbone": "START_CARBONE",
+    "uploadCount": "UPLOAD_FILE_COUNT",
     "uploadSize": "UPLOAD_FILE_SIZE"
   }
 }
