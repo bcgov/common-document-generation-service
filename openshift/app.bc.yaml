@@ -41,16 +41,9 @@ objects:
           ref: "${SOURCE_REPO_REF}"
           uri: "${SOURCE_REPO_URL}"
         type: Git
-        dockerfile: |-
-          FROM BuildConfig
-          ENV NO_UPDATE_NOTIFIER=true
-          WORKDIR /opt/app-root/src
-          COPY . .
-          RUN npm ci
-          EXPOSE 3000
-          CMD ["npm", "run", "start"]
       strategy:
         dockerStrategy:
+          dockerfilePath: Dockerfile
           env:
             - name: BUILD_LOGLEVEL
               value: "2"

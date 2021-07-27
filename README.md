@@ -4,6 +4,10 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/maintainability)](https://codeclimate.com/github/bcgov/common-document-generation-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/test_coverage)](https://codeclimate.com/github/bcgov/common-document-generation-service/test_coverage)
 
+[![version](https://img.shields.io/docker/v/bcgovimages/common-document-generation-service.svg?sort=semver)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
+[![pulls](https://img.shields.io/docker/pulls/bcgovimages/common-document-generation-service.svg)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
+[![size](https://img.shields.io/docker/image-size/bcgovimages/common-document-generation-service.svg)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
+
 CDOGS - A common hosted service (API) for generating documents from templates, data documents, and assets
 
 To learn more about the **Common Services** available visit the [Common Services Showcase](https://bcgov.github.io/common-service-showcase/) page.
@@ -11,7 +15,11 @@ To learn more about the **Common Services** available visit the [Common Services
 ## Directory Structure
 
     .github/                   - PR and Issue templates
-    app/                       - Node.js web API
+    app/                       - Application Root
+    ├── docker/                - Auxillary support scripts for LibreOffice Python wrapper
+    ├── src/                   - Node.js backend web application
+    ├── tests/                 - Node.js backend web application tests
+    └── Dockerfile             - Docker image specification
     openshift/                 - OpenShift-deployment specific files
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
@@ -24,7 +32,8 @@ To learn more about the **Common Services** available visit the [Common Services
 
 * [Application Readme](app/README.md)
 * [Openshift Readme](openshift/README.md)
-* [Showcase Team Roadmap](https://github.com/bcgov/nr-get-token/wiki/Product-Roadmap)
+* [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
+* [Product Roadmap](https://github.com/bcgov/nr-get-token/wiki/Product-Roadmap)
 
 ## Getting Help or Reporting an Issue
 

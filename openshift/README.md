@@ -28,6 +28,8 @@ In order to prepare an environment, you will need to ensure that all of the foll
 export NAMESPACE=<YOURNAMESPACE>
 
 oc create -n $NAMESPACE configmap cdogs-keycloak-config \
+  --from-literal=KC_ENABLED=true \
+  --from-literal=KC_PUBLICKEY=<MIIBIjANB...> \
   --from-literal=KC_REALM=jbd6rnxw \
   --from-literal=KC_SERVERURL=https://dev.oidc.gov.bc.ca/auth
 ```
@@ -36,7 +38,6 @@ oc create -n $NAMESPACE configmap cdogs-keycloak-config \
 
 ```sh
 oc create -n $NAMESPACE configmap cdogs-server-config \
-  --from-literal=SERVER_ATTACHMENTLIMIT=20mb \
   --from-literal=SERVER_BODYLIMIT=100mb \
   --from-literal=SERVER_LOGLEVEL=info \
   --from-literal=SERVER_MORGANFORMAT=combined \
@@ -54,13 +55,6 @@ oc create -n $NAMESPACE secret generic cdogs-keycloak-secret \
   --type=kubernetes.io/basic-auth \
   --from-literal=username=<username> \
   --from-literal=password=<password>
-```
-
-```sh
-oc create -n $NAMESPACE secret generic cdogs-common-service-secret \
-  --type=kubernetes.io/basic-auth \
-  --from-literal=username=<cdogs common service client id> \
-  --from-literal=password=<cdogs common service client password>
 ```
 
 ## Build Config & Deployment

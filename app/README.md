@@ -1,269 +1,165 @@
-# Common Document Generation Service
+# Common Document Generation Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
-CDOGS - A hosted service to merge sets of data into document templates.
+![Tests](https://github.com/bcgov/common-document-generation-service/workflows/Tests/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/maintainability)](https://codeclimate.com/github/bcgov/common-document-generation-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/test_coverage)](https://codeclimate.com/github/bcgov/common-document-generation-service/test_coverage)
 
-## Open API Spec
+[![version](https://img.shields.io/docker/v/bcgovimages/common-document-generation-service.svg?sort=semver)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
+[![pulls](https://img.shields.io/docker/pulls/bcgovimages/common-document-generation-service.svg)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
+[![size](https://img.shields.io/docker/image-size/bcgovimages/common-document-generation-service.svg)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
 
-* [/api/v2](https://cdogs.nrs.gov.bc.ca/api/v2/docs)
+CDOGS - A common hosted service (API) for generating documents from templates, data documents, and assets
 
-## Application
+To learn more about the **Common Services** available visit the [Common Services Showcase](https://bcgov.github.io/common-service-showcase/) page.
 
-The application is a node server which serves the Common Document Generation Service API. It uses the following dependencies from NPM:
+## Table of Contents
 
-Authentication & Password Management
+- [OpenAPI Specification](#openapi-specification)
+- [Environment Variables](#environment-variables)
+  - [Carbone Variables](#carbone-variables)
+  - [Keycloak Variables](#keycloak-variables)
+  - [Server Variables](#server-variables)
+- [Quick Start](#quick-start)
+  - [Docker](#docker)
+  - [Local Machine](#local-machine)
+- [License](#license)
 
-* [keycloak-connect](https://www.npmjs.com/package/keycloak-connect) - Node adapter for Keycloak OIDC
+## OpenAPI Specification
 
-Networking
+This API is defined and described in OpenAPI 3.0 specification.
 
-* [api-problem](https://www.npmjs.com/package/api-problem) - RFC 7807 problem details
-* [express](https://www.npmjs.com/package/express) - Server middleware
+When the API is running, you should be able to view the specification through ReDoc at <http://localhost:3000/api/v2/docs> (assuming you are running this microservice locally).
 
-Configuration
+The hosted CDOGS API can usually be found at <https://cdogs.nrs.gov.bc.ca/api/v2/docs>.
 
-* [config](https://www.npmjs.com/package/config) - organizes hierarchical configurations for your app deployments; handles environment variables, command line parameters and external sources.
+For more details on using CDOGS and its underlying Carbone library, take a look at the [Usage guide](/app/USAGE.md).
 
-Logging
+## Environment Variables
 
-* [morgan](https://www.npmjs.com/package/morgan) - HTTP request logger
-* [npmlog](https://www.npmjs.com/package/npmlog) - General log framework
+CDOGS behavior is highly customizable through Environment Variables. The following will provide you with the main settings that you should be aware of. However, the complete list of supported variables can be found under [/app/config/custom-environment-variables.json](config/custom-environment-variables.json). Reference the [NPM Config](https://www.npmjs.com/package/config) library for more details on how configuration is cascaded and managed.
 
-Templating, Conversion and File Caching
+### Carbone Variables
 
-* [carbone-copy-api](https://www.npmjs.com/package/@bcgov/carbone-copy-api) - An express API over [Carbone](https://carbone.io) and provides file caching. We created this library in order to foster reuse.
+The following variables alter the behavior of Carbone and its caching behavior.
 
-Docker Image
+| Config Var | Env Var | Default | Notes |
+| --- | --- | --- | --- |
+| `cacheDir` | `CACHE_DIR` | `/tmp/carbone-files` | This is the root location to read/write files. Error will be thrown if directory does not exist and cannot be created. Will attempt to fall back to operating system temp file location. |
+| `cacheSize` | `CACHE_SIZE` | `2GB` | The maximum size of the `cacheDir` directory. Oldest timestamped files will be cycled out to make room for new files. Uses the [bytes](https://www.npmjs.com/package/bytes) library for parsing values. |
+| `converterFactoryTimeout` | `CONVERTER_FACTORY_TIMEOUT` | `60000` | Maximum amount of time (in milliseconds) that Carbone will use to convert files before timing out. |
+| `formFieldName` | `UPLOAD_FIELD_NAME` | `template` | Field name for multipart form data upload when uploading templates via /template api. |
+| `startCarbone` | `START_CARBONE` | `true` | If true, then the carbone converter will be started on application start. This will ensure that the first call to /render will not incur the overhead of starting the converter. |
+| `uploadCount` | `UPLOAD_FILE_COUNT` | `1` | Limit the number of files uploaded per call.  Default is 1; not recommended to use any other value. |
+| `uploadSize` | `UPLOAD_FILE_SIZE` | `25MB` | Limit size of template files. Uses the [bytes](https://www.npmjs.com/package/bytes) library for parsing values. |
 
-* [bcgovimages/alpine-node-libreoffice:v1.0.0](https://hub.docker.com/r/bcgovimages/alpine-node-libreoffice) - a base image with node 12 and LibreOffice™ installed.  LibreOffice™ is used for the file conversions.
+### Keycloak Variables
 
-## Quickstart Guide
+The following variables alter CDOGS authentication behavior. By default, if `KC_ENABLED` is left unset/undefined, CDOGS will run in unauthenticated mode, ignoring the rest of the Keycloak environment variables. Should you want CDOGS to require authentication, you will need to set `KC_ENABLED` to `true`.
 
-In order for the application to run correctly, you will need to ensure that the following have been addressed:
+| Config Var | Env Var | Default | Notes |
+| --- | --- | --- | --- |
+| `clientId` | `KC_CLIENTID` |  | Keycloak client id for CDOGS |
+| `clientSecret` | `KC_CLIENTSECRET` |  | Keycloak client secret for CDOGS |
+| `enabled` | `KC_ENABLED` |  | Whether to run CDOGS in unauthenticated or Keycloak protected mode |
+| `publicKey` | `KC_PUBLICKEY` | | If specified, verify all incoming JWT signatures off of the provided public key |
+| `realm` | `KC_REALM` | `jbd6rnxw` | Keycloak realm for CDOGS |
+| `serverUrl` | `KC_SERVERURL` | `https://dev.oidc.gov.bc.ca/auth` | Keycloak server url for CDOGS authentication |
 
-1. All node dependencies have been installed and resolved
-2. Environment configurations have been set up
-3. LibreOffice™ is installed
+### Server Variables
 
-### Install
+The following variables alter the general Express application behavior. For most situations, the defaults should be sufficient.
 
-As this is a Node application, please ensure that you have all dependencies installed as needed. This can be done by running `npm install`.
+| Config Var | Env Var | Default | Notes |
+| --- | --- | --- | --- |
+| `bodyLimit` | `SERVER_BODYLIMIT` | `100mb` | Maximum request body length that CDOGS will accept |
+| `logFile` | `SERVER_LOGFILE` | | If defined, will attempt to write log output to |
+| `logLevel` | `SERVER_LOGLEVEL` | `info` | The log level/verbosity to report at |
+| `morganFormat` | `SERVER_MORGANFORMAT` | `dev` | The morgan format to log http level requests in. Options: `dev` and `combined` |
+| `port` | `SERVER_PORT` | `3000` | The port that CDOGS application will bind to |
 
-### Configuration
+## Quick Start
+
+The following sections provide you a quick way to get CDOGS set up and running.
+
+### Docker
+
+This section assumes you have a recent version of Docker available to work with on your environment. Make sure to have an understanding of what environment variables are passed into the application before proceeding.
+
+Get CDOGS image (change latest tag to specific version if needed):
+
+```sh
+docker pull bcgovimages/common-document-generation-service:latest
+```
+
+Run CDOGS in unauthenticated mode
+
+```sh
+docker run -it --rm -p 3000:3000 bcgovimages/common-document-generation-service:latest
+```
+
+Run CDOGS in Keycloak protected mode (replace environment values as necessary)
+
+```sh
+docker run -it --rm -p 3000:3000 -e KC_CLIENTID=<id> -e KC_CLIENTSECRET=<secret> -e KC_ENABLED=true -e KC_PUBLICKEY=<publickey> -e KC_REALM=<realm> -e KC_SERVERURL=<url> bcgovimages/common-document-generation-service:latest
+```
+
+For more dedicated deployments of CDOGS in a Docker environment, make sure to consider using persistent volumes for the cache directories.
+
+### Local Machine
+
+This section assumes you have a recent version of Node.js (12.x or higher) and LibreOffice™ (6.3.4.x or higher) installed. Make sure to have an understanding of what environment variables are passed into the application before proceeding.
+
+#### Configuration
 
 Configuration management is done using the [config](https://www.npmjs.com/package/config) library. There are two ways to configure:
 
-1. Look at [custom-environment-variables.json](/app/config/custom-environment-variables.json) and ensure you have the environment variables locally set.
-2. Create a `local.json` file in the config folder. This file should never be added to source control.
-3. Consider creating a `local-test.json` file in the config folder if you want to use different configurations while running unit tests.
+1. Look at [custom-environment-variables.json](/app/config/custom-environment-variables.json) and ensure you have the environment variables locally set. Create a `local.json` file in the config folder. This file should never be added to source control. Consider creating a `local-test.json` file in the config folder if you want to use different configurations while running unit tests.
+2. Look at [custom-environment-variables.json](/app/config/custom-environment-variables.json) and use explicit environment variables in your environment as mentioned [above](#environment-variables) to configure your application behavior.
 
 For more details, please consult the config library [documentation](https://github.com/lorenwest/node-config/wiki/Configuration-Files).
 
-#### Environment Variables
+#### Common Commands
 
-| Environment Variable | Description |
-| --- | --- |
-| `KC_CLIENTID` | Keycloak Client username |
-| `KC_CLIENTSECRET` | Keycloak Client password |
-| `KC_REALM` | Associated Keycloak realm |
-| `KC_SERVERURL` | Base authentication url for Keycloak |
-| `SERVER_BODYLIMIT` | Maximum body length the API will accept |
-| `SERVER_LOGLEVEL` | Server log verbosity. Options: `silly`, `verbose`, `debug`, `info`, `warn`, `error` |
-| `SERVER_MORGANFORMAT` | Morgan format style. Options: `dev`, `combined` |
-| `SERVER_PORT` | Port server is listening to |
+Install node dependencies with either `npm ci` or `npm install`.
 
-## Commands
-
-After addressing the prerequisites, the following are common commands that are used for this application.
-
-### Run the server with hot-reloads for development
+Run the server with hot-reloading for development
 
 ``` sh
 npm run serve
 ```
 
-### Run the server
+Run the server without hot-reloading
 
 ``` sh
 npm run start
 ```
 
-### Run your tests
+Run your tests
 
 ``` sh
 npm run test
 ```
 
-### Lints files
+Lint the codebase
 
 ``` sh
 npm run lint
 ```
 
-## API Usage
+## License
 
-This API is defined and described in OpenAPI 3.0 specification.
-When the API is running, you should be able to view the specification through ReDoc at <http://localhost:3000/api/v2/docs> (assuming you are running this microservice locally). Otherwise, the general API can usually be found on [github](https://github.com/bcgov/common-services-team-library/tree/master/npm/carbone-copy-api/docs).
+```txt
+Copyright 2019 Province of British Columbia
 
-### General Design
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-The `/template/render` endpoint request body is composed of 3 main parts.
+    http://www.apache.org/licenses/LICENSE-2.0
 
-1. The set of **data**, an object containing the set of replacement variables to merge into the template.  This can be an array of objects.
-2. **options**, an object to override default behaviours.  Callers should be setting: convertTo = (output file type), reportName = (output file name), and overwrite=true.
-3. The document **template**, currently only accepts this as a base64 encoding.
-
-``` json
-{
-  "data": {
-    "firstName": "Jane",
-    "lastName": "Smith",
-    "title": "CEO"
-  },
-  "options": {
-    "convertTo": "pdf",
-    "reportName": "{d.firstName}-{d.lastName}.docx",
-    "overwrite": "true"
-  },
-  "template": {
-    "fileType": "docx",
-    "encodingType": "base64",
-    "content": "base64 encoded content..."
-  }
-}
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
-
-The functionality of this endpoint is relatively simple, being that it functions mostly as a pass-through to the Carbone library to do the generation logic.  Templates and rendered reports are written to disk and can fetched or deleted through the api.  Refer to the [carbone-copy-api](https://github.com/bcgov/common-services-team-library/tree/master/npm/carbone-copy-api/docs) documentation.
-
-The templating engine is XML-agnostic. It means the template engine works on any valid XML-based documents, not only XML-documents created by Microsoft Office™, LibreOffice™ or OpenOffice™.
-
-#### Concepts
-
-In order to provide template substitution of variables into the supplied document, we have to pass in a **data**  object.  The data object is a free-form JSON object which consists of key-value pairs. The purpose is to provide a key-value mapping between an inline variable in the template document and the intended merged document output after the values are replaced.  **data** can be an array of JSON objects.
-
-Carbone can behave as a glorified string-replacement engine, or more complex conditional or iterative logic can be built into the template variables. See below sections for documentation.
-In the event the Context object has extra variables that are not used in the template document, nothing happens. You can expect to see blanks where no value was substituted.
-
-### Templating
-
-We currently leverage the Carbone JS library for variable replacement into document templates. Carbone finds all markers `{}` in your document (xlsx, odt, docx, ...) and replaces these markers by Context variables representing the data. According to the syntax of your markers, you can make a number of complex operations if desired, further documentation below describes this more.
-
-The convention of having "d." before variable names from the Context (d for "data") is used by the templating engine.
-
-As repetitions (loops of arrays) are a core component of the templating engine, the data object in the request body can be an array, or contain arrays.
-
-#### [Variable Substitution](https://carbone.io/documentation.html#substitutions)
-
-The Carbone templating engine allows variables to be in-line displayed through the use of double curly braces. Suppose you wanted a variable `foo` to be displayed. You can do so by adding the following into a document template:
-
-``` sh
-{{d.foo}}
-```
-
-Nested objects in the Context are supported. You can lookup properties that have dots in them just like you would in Javascript. Suppose for example you have the following context object and template string:
-
-Context
-
-``` json
-{
-  "something": {
-    "greeting": "Hello",
-    "target": "World"
-  },
-  "someone": "user"
-}
-```
-
-Template document
-
-``` sh
-"My template is: {{d.something.greeting}} {{d.someone}} content {{d.something.target }}"
-```
-
-You can expect the template engine to yield the following:
-
-``` sh
-"My template is: Hello user content World"
-```
-
-#### [Repetitions](https://carbone.io/documentation.html#repetitions)
-
-Carbone can repeat a section (rows, title, pages...) of the document.
-
-We don't need to describe where the repetition starts and ends, we just need to design a "repetition example" in the template using the reserved key word i and i+1. Carbone will find automatically the pattern to repeat using the first row (i) as an example. The second row (i+1) is removed before rendering the result.
-
-For the simplest example, suppose you have the following context object and template document:
-
-Context
-
-``` json
-{
-  "cars" : [
-    {"brand" : "Lumeneo"},
-    {"brand" : "Tesla"  },
-    {"brand" : "Toyota" },
-    {"brand" : "Ford" }
-  ]
-}
-```
-
-Template document
-
-| Cars                  |
-| --------------------- |
-| {d.cars[i].brand}     |
-| {d.cars[i+1].brand}   |
-
-You can expect the template engine to yield the following:
-
-| Cars                  |
-| --------------------- |
-| Lumeneo    |
-| Tesla   |
-| Toyota   |
-| Ford   |
-
-See the Carbone Repetition documentation for the much more complex examples
-
-#### File Name
-
-The `options` object in the request body contains an optional `reportName` field. This field will serve as the requested file name for the resultant merged document.
-If not supplied, a random UUID (such as 6a2f41a3-c54c-fce8-32d2-0324e1c32e22) will serve as the placeholder.
-
-You can template the output file name in the same manner as the contents.
-
-An example request is shown below:
-
-``` json
-{
-  "data": [
-    {
-      "office": {
-        "id": "Dx1997",
-        "location": "Hello",
-        "phone": "World"
-      },
-      "contact": "Bob"
-    }],
-  "options" : {
-    "convertTo": "pdf",
-    "reportName": "office_contact_{d.office.id}.docx",
-  },
-  "template": {
-    "content": "<encoded file here>",
-    "encodingType": "base64",
-    "fileType": "docx"
-  }
-}
-```
-
-This will yield a resultant file in the response named
-`office_contact_Dx1997.pdf`
-
-#### Further templating functionality
-
-The templating engine in Carbone has a lot of power, refer to the Carbone documentation
-
-* <https://carbone.io/documentation.html#substitutions>
-* <https://carbone.io/documentation.html#repetitions>
-* <https://carbone.io/documentation.html#formatters>
-* <https://carbone.io/documentation.html#translations>

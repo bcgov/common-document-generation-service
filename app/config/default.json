@@ -5,7 +5,7 @@
   },
   "server": {
     "bodyLimit": "100mb",
-    "logLevel": "debug",
+    "logLevel": "info",
     "morganFormat": "dev",
     "port": "3000"
   },
