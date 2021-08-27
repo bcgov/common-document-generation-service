@@ -13,10 +13,16 @@ jobs:
     defaults:
       run:
         working-directory: app
+    outputs:
+      HAS_DOCKER_SECRETS: ${{ steps.check-secrets.outputs.HAS_DOCKER_SECRETS }}
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Check Workflow Secrets
+        id: check-secrets
+        run: |
+          echo "::set-output name=HAS_DOCKER_SECRETS::${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}"
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag common-document-generation-service:$(date +%s)
   docker-publish:
@@ -26,7 +32,7 @@ jobs:
       run:
         working-directory: app
     timeout-minutes: 10
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && needs.docker-build.outputs.HAS_DOCKER_SECRETS == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -51,7 +57,7 @@ jobs:
       - name: Build and Push to DockerHub
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: app
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
