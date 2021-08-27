@@ -1,8 +1,12 @@
 ---
 name: Docker Image CI
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
 jobs:
   docker-build:
     runs-on: ubuntu-latest
@@ -11,6 +15,45 @@ jobs:
         working-directory: app
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag common-document-generation-service:$(date +%s)
+  docker-publish:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    timeout-minutes: 10
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: bcgovimages/common-document-generation-service
+          # Creates tags based off of branch names and semver tags
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+          # Always updates the 'latest' tag
+          flavor: |
+            latest=true
+      - name: Build and Push to DockerHub
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Inspect Docker Image
+        run: docker image inspect bcgovimages/common-document-generation-service:latest
