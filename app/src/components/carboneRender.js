@@ -3,6 +3,7 @@ const config = require('config');
 const fs = require('fs-extra');
 const log = require('npmlog');
 const path = require('path');
+const utils = require('./utils');
 const { v4: uuidv4 } = require('uuid');
 
 // Initialize carbone formatters and add a marker to indicate defaults...
@@ -89,7 +90,7 @@ async function render(template, data = {}, options = {}, formatters = {}) {
     result.reportName = renderResult.reportName;
     result.success = true;
   } catch (e) {
-    result.errorType = 500;
+    result.errorType = utils.determineCarboneErrorCode(e.message);
     result.errorMsg = `Could not render template. ${e.message}`;
   }
   resetFormatters(reset);

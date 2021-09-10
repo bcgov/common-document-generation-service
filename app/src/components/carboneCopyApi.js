@@ -112,7 +112,12 @@ const carboneCopyApi = {
 
       return res.send(output.report);
     } else {
-      return new Problem(output.errorType, { detail: output.errorMsg }).send(res);
+      if (output.errorType === 422) {
+        // Format template syntax errors to be the same as our validation errors
+        return new Problem(output.errorType, { detail: 'Error in supplied template', errors: [{ message: output.errorMsg }] }).send(res);
+      } else {
+        return new Problem(output.errorType, { detail: output.errorMsg }).send(res);
+      }
     }
   }
 };

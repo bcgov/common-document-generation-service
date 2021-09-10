@@ -3,6 +3,27 @@ const utils = require('../../../src/components/utils');
 
 logHelper();
 
+describe('determineCarboneErrorCode', () => {
+  it('should return a 422 for expected error strings', () => {
+    expect(utils.determineCarboneErrorCode('Formatter \\"convDe\\" does not exist. Do you mean \\"convDate\\"?"')).toEqual(422);
+    expect(utils.determineCarboneErrorCode('Error: formatter "ifEkual" DOES NOT exist. Do you mean "ifEqual"?')).toEqual(422);
+    expect(utils.determineCarboneErrorCode('Error: Cannot access parent object in "d.site...name" (too high)')).toEqual(422);
+    expect(utils.determineCarboneErrorCode('cannot access parent object in whatever')).toEqual(422);
+    expect(utils.determineCarboneErrorCode('Missing at least one showBegin or hideBegin')).toEqual(422);
+    expect(utils.determineCarboneErrorCode('missing at least one showEnd or hideEnd')).toEqual(422);
+  });
+
+  it('should return a 500 for anything else', () => {
+    expect(utils.determineCarboneErrorCode('XML not valid')).toEqual(500);
+    expect(utils.determineCarboneErrorCode('')).toEqual(500);
+    expect(utils.determineCarboneErrorCode('   ')).toEqual(500);
+    expect(utils.determineCarboneErrorCode(null)).toEqual(500);
+    expect(utils.determineCarboneErrorCode(undefined)).toEqual(500);
+    expect(utils.determineCarboneErrorCode([])).toEqual(500);
+    expect(utils.determineCarboneErrorCode({})).toEqual(500);
+  });
+});
+
 describe('prettyStringify', () => {
   const obj = {
     foo: 'bar'
