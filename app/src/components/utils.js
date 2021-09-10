@@ -1,6 +1,27 @@
 const { v4: uuidv4 } = require('uuid');
+const log = require('npmlog');
 
 module.exports = {
+
+  /**
+   * @function determineCarboneErrorCode
+   * We want to return 422s if the template has a user error in it's construction.
+   * Carbone doesn't throw specific errors in this case, so we'll do a best-effort of
+   * determining if it should be a 422 or not (keep doing a 500 in any other case)
+   * @param {err} String The thrown exception from Carbone
+   * @returns {integer} The output filename for the response
+   */
+  determineCarboneErrorCode: err => {
+    try {
+      if (err && /formatter .*does not exist|missing at least one|cannot access parent object in/gmi.test(err))
+        return 422;
+    } catch (e) {
+      // Safety here, this method should never cause any unhandled exception since it's an error code determiner
+      log.warn(`Error while determining carbone error code: ${e}`);
+    }
+    return 500;
+  },
+
   /**
    * @function determineOutputReportName
    * For the DocGen component, determine what the outputted (response) filename should be based
