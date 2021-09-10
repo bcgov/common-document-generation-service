@@ -4,13 +4,13 @@ const log = require('npmlog');
 module.exports = {
 
   /**
-  * @function determineCarboneErrorCode
-  * We want to return 422s if the template has a user error in it's construction.
-  * Carbone doesn't throw specific errors in this case, so we'll do a best-effort of
-  * determining if it should be a 422 or not (keep doing a 500 in any other case)
-  * @param {err} String The thrown exception from Carbone
-  * @returns {integer} The output filename for the response
-  */
+   * @function determineCarboneErrorCode
+   * We want to return 422s if the template has a user error in it's construction.
+   * Carbone doesn't throw specific errors in this case, so we'll do a best-effort of
+   * determining if it should be a 422 or not (keep doing a 500 in any other case)
+   * @param {err} String The thrown exception from Carbone
+   * @returns {integer} The output filename for the response
+   */
   determineCarboneErrorCode: err => {
     try {
       if (err && /formatter .*does not exist|missing at least one|cannot access parent object in/gmi.test(err))
