@@ -30,11 +30,11 @@
   "dependencies": {
     "api-problem": "^7.0.2",
     "atob": "^2.1.2",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "axios-oauth-client": "^1.4.3",
     "axios-token-interceptor": "^0.2.0",
     "bytes": "^3.1.0",
-    "carbone": "^3.1.0",
+    "carbone": "^3.2.3",
     "compression": "^1.7.4",
     "config": "^3.3.6",
     "cors": "^2.8.5",
