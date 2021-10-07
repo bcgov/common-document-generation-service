@@ -5,8 +5,7 @@
   },
   "server": {
     "bodyLimit": "100mb",
-    "logLevel": "info",
-    "morganFormat": "dev",
+    "logLevel": "http",
     "port": "3000"
   },
   "carbone": {

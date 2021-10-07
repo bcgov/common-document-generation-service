@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const log = require('./log')(module.filename);
 
 class FileCache {
   constructor() {
@@ -16,6 +17,7 @@ class FileCache {
     try {
       fs.ensureDirSync(this._cachePath);
     } catch (e) {
+      log.error(`Could not access cache directory '${this._cachePath}'.`, { function: 'FileCache constructor', directory: this._cachePath });
       throw new Error(`Could not access cache directory '${this._cachePath}'.`);
     }
 
@@ -80,6 +82,7 @@ class FileCache {
       }
     } catch (e) {
       result.errorType = 500;
+      log.error(`Unknown error getting file for hash '${hash}'.`, { function: 'find' });
       result.errorMsg = `Unknown error getting file for hash '${hash}'.`;
       return result;
     }

@@ -1,7 +1,4 @@
-const { logHelper } = require('../../common/helper');
 const utils = require('../../../src/components/utils');
-
-logHelper();
 
 describe('determineCarboneErrorCode', () => {
   it('should return a 422 for expected error strings', () => {

@@ -1,8 +1,4 @@
-const helper = require('../../../common/helper');
-
 const { customValidators } = require('../../../../src/components/validation');
-
-helper.logHelper();
 
 // TODO: Refactor this to point to modelValidation contents
 describe.skip('customValidators.docGen', () => {

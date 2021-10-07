@@ -1,9 +1,5 @@
-const helper = require('../../../common/helper');
-
 const { models } = require('../../../../src/components/validation');
 const { smallFile } = require('../../../fixtures/base64Files');
-
-helper.logHelper();
 
 describe('carbone.data', () => {
   it('should return true on object', () => {
