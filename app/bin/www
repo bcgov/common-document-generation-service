@@ -5,9 +5,9 @@
  */
 const config = require('config');
 const http = require('http');
-const log = require('npmlog');
 
 const app = require('../app');
+const log = require('../src/components/log')(module.filename);
 
 /**
  * Get port from environment and store in Express.

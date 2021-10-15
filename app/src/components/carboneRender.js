@@ -1,10 +1,11 @@
 const carbone = require('carbone');
 const config = require('config');
 const fs = require('fs-extra');
-const log = require('npmlog');
 const path = require('path');
-const utils = require('./utils');
 const { v4: uuidv4 } = require('uuid');
+
+const log = require('./log')(module.filename);
+const utils = require('./utils');
 
 // Initialize carbone formatters and add a marker to indicate defaults...
 // Carbone is a singleton and we cannot set formatters for each render call
@@ -92,6 +93,7 @@ async function render(template, data = {}, options = {}, formatters = {}) {
   } catch (e) {
     result.errorType = utils.determineCarboneErrorCode(e.message);
     result.errorMsg = `Could not render template. ${e.message}`;
+    log.warn(`Could not render template. ${e.message}`, { function: 'render' });
   }
   resetFormatters(reset);
   return result;
@@ -101,10 +103,11 @@ function carboneSet() {
   const options = {};
   if (config.has('carbone.startCarbone')) {
     options.startFactory = true;
-    log.info('Carbone LibreOffice worker initialized');
+    log.info('Carbone LibreOffice worker initialized', { function: 'carboneSet' });
   }
   if (config.has('carbone.converterFactoryTimeout')) {
     options.converterFactoryTimeout = config.get('carbone.converterFactoryTimeout');
+    log.info(`Carbone converterFactoryTimeout: ${config.get('carbone.converterFactoryTimeout')}`, { function: 'carboneSet' });
   }
 
   carbone.set(options);

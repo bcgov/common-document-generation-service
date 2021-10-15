@@ -1,6 +1,4 @@
-const config = require('config');
 const express = require('express');
-const log = require('npmlog');
 const Problem = require('api-problem');
 
 /** This class provides helper utilities that are commonly used in tests */
@@ -39,16 +37,6 @@ const helper = {
 
     return app;
   },
-
-  /**
-   * Configures an npmlog instance to have debug level logging and the right log level
-   */
-  logHelper: () => {
-    log.level = config.get('server.logLevel');
-    log.addLevel('debug', 1500, {
-      fg: 'cyan'
-    });
-  }
 };
 
 module.exports = helper;

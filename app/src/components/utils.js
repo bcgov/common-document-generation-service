@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const log = require('npmlog');
+const log = require('./log')(module.filename);
 
 module.exports = {
 
@@ -17,7 +17,8 @@ module.exports = {
         return 422;
     } catch (e) {
       // Safety here, this method should never cause any unhandled exception since it's an error code determiner
-      log.warn(`Error while determining carbone error code: ${e}`);
+      log.warn('Error while determining carbone error code: ${e}', { function: 'determineCarboneErrorCode' });
+
     }
     return 500;
   },

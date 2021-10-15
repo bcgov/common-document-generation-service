@@ -3,6 +3,7 @@ const path = require('path');
 const Problem = require('api-problem');
 const telejson = require('telejson');
 
+const log = require('./log')(module.filename);
 const carboneRender = require('./carboneRender');
 const FileCache = require('./fileCache');
 const { truthy } = require('./utils');
@@ -17,7 +18,7 @@ const carboneCopyApi = {
   findAndRender: (hash, req, res) => {
     const template = fileCache.find(hash);
     if (!template.success) {
-      return new Problem(template.errorType, { detail: template.errorMsg }).send(res);
+      new Problem(template.errorType, { detail: template.errorMsg }).send(res);
     } else {
       return carboneCopyApi.renderTemplate(template, req, res);
     }
@@ -51,6 +52,7 @@ const carboneCopyApi = {
       res.setHeader('Content-Transfer-Encoding', 'binary');
       res.setHeader('Content-Type', mime.contentType(path.extname(file.name)));
       res.setHeader('Content-Length', cached.length);
+      log.info('Template found', { function: 'getFromCache' });
       return res.send(cached);
     } else {
       return res.sendStatus(200);
@@ -109,7 +111,7 @@ const carboneCopyApi = {
           res.setHeader('X-Report-Hash', rendered.hash);
         }
       }
-
+      log.info('Template rendered', { function: 'renderTemplate' });
       return res.send(output.report);
     } else {
       const errOutput = { detail: output.errorMsg };
