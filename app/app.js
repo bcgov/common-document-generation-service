@@ -52,7 +52,10 @@ if (process.env.NODE_ENV !== 'test') {
 
 // Use Keycloak OIDC Middleware
 if (config.has('keycloak.enabled')) {
+  log.info('Running in authenticated mode');
   app.use(keycloak.middleware());
+} else {
+  log.info('Running in public mode');
 }
 
 // Block requests until service is ready and mounted
