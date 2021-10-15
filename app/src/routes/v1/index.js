@@ -8,7 +8,7 @@ const healthRouter = require('./health');
 const { protect } = require('../../middleware/authorization');
 const { getDocs, getJsonSpec, getYamlSpec } = require('../../middleware/openapi');
 
-const clientId = config.get('keycloak.clientId');
+const clientId = config.has('keycloak.enabled') ? config.get('keycloak.clientId') : '';
 const version = 'v1';
 
 /** Base Responder */
