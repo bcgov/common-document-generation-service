@@ -19,7 +19,8 @@ const fileTypes = Object.freeze({
   pptx: ['odt', 'pdf', 'pptx', 'ppt'],
   rtf: ['docx', 'pdf'],
   txt: ['doc', 'docx', 'html', 'odt', 'pdf', 'rtf', 'txt'],
-  xlsx: ['odt', 'pdf', 'rtf', 'txt', 'csv', 'xls', 'xlsx']
+  xlsx: ['odt', 'pdf', 'rtf', 'txt', 'csv', 'xls', 'xlsx'],
+  ods: ['ods', 'xlsx', 'xls', 'csv', 'pdf', 'txt']
 });
 
 function addFormatters(formatters) {
