@@ -1,6 +1,6 @@
 # Example usage of CDOGS
 
-If you want to use the KeyCloak Realm `jbd6rnxw` hosted by the Common Services Team (as used by this token endpoint `https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token`, you can request client setup with [GETOK](https://getok.nrs.gov.bc.ca/app/about)
+If you want to use the KeyCloak Realm `jbd6rnxw` hosted by the Common Services Team (as used by this token endpoint `https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token`), you can request client setup with [GETOK](https://getok.nrs.gov.bc.ca/app/about)
 
 ## Node
 
