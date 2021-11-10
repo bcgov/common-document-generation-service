@@ -4,7 +4,7 @@ If you want to use the KeyCloak Realm `jbd6rnxw` hosted by the Common Services T
 
 ## Node
 
-There is an example of using node.js in file `server.mjs`.
+There is an example of using node.js in file `server.js`.
 
 To run the example:
 
@@ -13,7 +13,7 @@ npm install
 ```
 
 ```
-CLIENT_ID="your_keycloak_client_id" CLIENT_SECRET="your_keycloak_client_secret" node server.mjs
+CLIENT_ID="your_keycloak_client_id" CLIENT_SECRET="your_keycloak_client_secret" node server.js
 ```
 
 ## Curl
