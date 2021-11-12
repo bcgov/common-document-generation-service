@@ -26,14 +26,14 @@ curl --request POST \
    --data-binary @- << EOF
 {
   "data": {
-      "firstName": "Joe",
-      "lastName": "Smith"
-    },
-    "options": {
-      "cacheReport": false,
-      "convertTo": "pdf",
-      "overwrite": true,
-      "reportName": "{d.firstName}_{d.lastName}.pdf"
-    }
+    "firstName": "Joe",
+    "lastName": "Smith"
+  },
+  "options": {
+    "cacheReport": false,
+    "convertTo": "pdf",
+    "overwrite": true,
+    "reportName": "{d.firstName}_{d.lastName}.pdf"
+  }
 }
 EOF
