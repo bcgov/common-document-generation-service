@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-# This sends data to CDOGS so that our template.txt can be rendered out to file test.pdf.
+# Examples below are using a locally running docker image without keycloak.
+
+# This uploads a template to CDOGS, caches it for later rendering, and returns a resulting template hash.
 template_hash=$(curl -v -F template=@template.txt http://localhost:3000/api/v2/template)
 
 echo "template_hash $template_hash"
