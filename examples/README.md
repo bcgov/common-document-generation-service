@@ -35,8 +35,20 @@ where authentication is required, there are some example bash scripts.
 
 ## CDOGS without auth
 
+### Quickstart
+
 ```sh
 > docker run -it --rm -p 3000:3000 bcgovimages/common-document-generation-service:latest
+```
+
+### Creating a volume to persist the document cache
+```sh
+> docker volume create carbone-cache
+# View details about your new volume
+> docker volume inspect carbone-cache
+# Start the CDOGS container with the new volume to persist the document cache.
+# /tmp/carbone-files is the default for CACHE_DIR
+> docker run -d -p 3000:3000 --name CDOGS -v carbone-cache:/tmp/carbone-files bcgovimages/common-document-generation-service:latest
 ```
 
 ## CDOGS with auth
