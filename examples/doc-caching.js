@@ -1,18 +1,18 @@
-import fetch from "node-fetch";
-import fs from "fs";
-import { fileFromSync } from "fetch-blob/from.js";
-import { FormData } from "formdata-polyfill/esm.min.js";
+import fetch from 'node-fetch';
+import fs from 'fs';
+import { fileFromSync } from 'fetch-blob/from.js';
+import { FormData } from 'formdata-polyfill/esm.min.js';
 
-const template = fileFromSync("./template.txt");
+const template = fileFromSync('./template.txt');
 const fd = new FormData();
 let templateHash;
 
-fd.append("template", template);
+fd.append('template', template);
 
 const cdogsTemplateCacheResponse = await fetch(
-  "http://localhost:3000/api/v2/template",
+  'http://localhost:3000/api/v2/template',
   {
-    method: "POST",
+    method: 'POST',
     body: fd,
   }
 );
@@ -49,19 +49,19 @@ if (cdogsTemplateCacheResponse.ok) {
 const cdogsRenderResponse = await fetch(
   `http://localhost:3000/api/v2/template/${templateHash}/render`,
   {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify({
       data: {
-        firstName: "Common",
-        lastName: "Services",
+        firstName: 'Common',
+        lastName: 'Services',
       },
       options: {
         cacheReport: false,
-        convertTo: "pdf",
+        convertTo: 'pdf',
       },
     }),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   }
 );
@@ -69,14 +69,13 @@ const cdogsRenderResponse = await fetch(
 const pdf = await cdogsRenderResponse.arrayBuffer();
 
 // saves a file test.pdf - the CDOGS output.
-fs.writeFileSync("test.pdf", Buffer.from(pdf), "binary");
-
+fs.writeFileSync('test.pdf', Buffer.from(pdf), 'binary');
 
 // Removing the template from the cache
 const cdogsTemplateDeleteResponse = await fetch(
   `http://localhost:3000/api/v2/template/${templateHash}`,
   {
-    method: "DELETE",
+    method: 'DELETE',
   }
 );
 
