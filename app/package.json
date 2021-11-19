@@ -50,7 +50,7 @@
     "telejson": "^5.3.3",
     "tmp": "^0.2.1",
     "uuid": "^8.3.2",
-    "validator": "^13.6.0",
+    "validator": "^13.7.0",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0"
   },
