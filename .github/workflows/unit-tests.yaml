@@ -14,9 +14,9 @@ jobs:
       fail-fast: true
       matrix:
         node-version:
-          - 10.x
           - 12.x
           - 14.x
+          - 16.x
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.node-version == '14.x'
+        if: matrix.node-version == '16.x'
         uses: actions/upload-artifact@v2
         with:
           name: coverage-app
