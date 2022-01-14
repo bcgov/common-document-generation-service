@@ -100,7 +100,7 @@ objects:
                     name: cdogs-common-service-config
             # Fluent-bit sidecar
             - name: fluent-bit
-              image: docker.io/fluent/fluent-bit:1.5
+              image: docker.io/fluent/fluent-bit:1.8
               imagePullPolicy: Always
               livenessProbe:
                 httpGet:
@@ -132,6 +132,17 @@ objects:
                 limits:
                   cpu: "${LOGGING_CPU_LIMIT}"
                   memory: "${LOGGING_MEMORY_LIMIT}"
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: "${APP_NAME}-aws-kinesis-secret"
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: "${APP_NAME}-aws-kinesis-secret"
               volumeMounts:
                 # mount log file location
                 - name: log-storage

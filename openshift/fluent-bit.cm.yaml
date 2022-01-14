@@ -30,6 +30,8 @@ objects:
           Name   tail
           Path   /var/log/*
           Tag    app
+          Offset_Key  logFileOffset
+          Path_Key    logFilePath
 
         [FILTER]
           # exclude kube probe logs from app logs
@@ -41,7 +43,7 @@ objects:
           name parser
           match app
           Key_Name log
-          Parser apache
+          Parser json
           Reserve_Data On
           Preserve_Key On
 
@@ -56,18 +58,60 @@ objects:
           # add namespace
           Record namespace ${NAMESPACE}
 
+        # copy to new record from 1Team's OpenSearch, giving it a new tag 'app.ecs'
+        [FILTER]
+          Name          rewrite_tag
+          Match         app
+          Rule          $level ^(.*)$ app.ecs true
+          Emitter_Name  re_emitted
+
+        # modify records to include more key/value pairs for output to AWS ElasticSearch
+        [FILTER]
+          Name    lua
+          Match   app.ecs
+          script  script.lua
+          call    ecsMap
+
+        # remove duplicate fields
+        [FILTER]
+          Name    modify
+          Match   app.ecs
+          Remove  hostname
+          Remove  ip
+          Remove  product
+          Remove  namespace
+
+        # send http level records (with tag: 'app.ecs') to AWS Kinesis Stream
         [OUTPUT]
-          #### send logs to fluentd:
-          # using http to fluentd running in a separate 'Monitoring' (ixhmbm-*) namespace (via a service)
+          Name kinesis_streams
+          Match  app.ecs
+          region ${AWS_DEFAULT_REGION}
+          stream ${AWS_KINESIS_STREAM}
+          time_key @timestamp
+          role_arn ${AWS_ROLE_ARN}
+
+        # send all records tagged with just 'app' to external fluentd service endpoint
+        [OUTPUT]
           Name    http
           Match   app
-          Host    ${LOGGING_HOST_NAME}
+          Host    ${FLUENTD}
           Port    80
-          Format json
+          Format  json
           # the URI becomes the Tag available in fluentd
-          URI /app
+          URI     /app
           # we can also send tag as a header
           #header_tag  app
+          format json_lines
+          json_date_key logStreamDate
+          json_date_format  iso8601
+
+        [OUTPUT]
+          # show all fluent-bit logs to standard output
+          Name   stdout
+          Match  *
+          Format json_lines
+          json_date_key logStreamDate
+          json_date_format  iso8601
 
           ### security:
           #tls                On
@@ -77,10 +121,6 @@ objects:
           #tls.crt_file      /fluent-bit/ssl/client.crt.pem
           #tls.key_file      /fluent-bit/ssl/client.key.pem
 
-        [OUTPUT]
-          ### show all logs in standard out
-          Name   stdout
-          Match  *
       parsers.conf: |
         [PARSER]
           Name   apache
@@ -88,6 +128,76 @@ objects:
           Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
           Time_Key time
           Time_Format %d/%b/%Y:%H:%M:%S %z
+
+          [PARSER]
+            Name             json
+            Format           json
+            Time_Key         timestamp
+            Time_Format      %Y-%m-%dT%H:%M:%S.%L %z
+            Decode_Field_as  escaped_utf8 log do_next
+            Decode_Field_as  json log
+
+
+      script.lua: |
+        --[[
+          returns: code, timestamp, record
+          where:
+          - code     : -1 record must be deleted
+                        0 record not modified, keep the original
+                        1 record was modified, replace timestamp and record.
+                        2 record was modified, replace record and keep timestamp.
+          - timestamp: Unix timestamp with precision (double)
+          - record   : Table with multiple key/val
+
+          Upon return if code == 1 (modified), then filter_lua plugin
+          will replace the original timestamp and record with the returned
+          values. If code == 0 the original record is kept otherwise if
+          code == -1, the original record will be deleted.
+        ]]
+
+        -- add extra ECS fields
+        function ecsMap(tag, timestamp, record)
+
+          -- map existing fields to a new variable
+          new_record = record
+
+          -- derive full environment (stage) name from namespace
+          -- see: https://www.lua.org/pil/20.3.html
+          _, _, part1, environmentAbbreviation = string.find(record["namespace"], "([a-zA-Z0-9_+-]+)-([a-zA-Z0-9_+-]+)")
+
+          environmentsArray = {
+            ["dev"] = "development",
+            ["test"] = "test",
+            ["prod"] = "production"
+          }
+
+          new_record["labels"] = {
+            ["env"] = environmentsArray[environmentAbbreviation]
+          }
+
+          -- add more ECS fields
+          new_record["event"] = {
+              ["module"] = "node.css",
+              ["dataset"] = "node.css." .. record["level"],
+              ["kind"] = "event",
+              ["type"] = record["level"],
+              ["category"] = "web"
+            }
+
+          new_record["agent"] = {
+              ["type"] = "fluentbit"
+          }
+
+          -- for chefs, the IP's are just k8s pods
+          new_record["clientIp"] = record["ip"]
+          new_record["hostIp"] = record["ip"]
+
+          -- return the transformed new record
+          return 2, timestamp, new_record
+
+        end
+
+
 parameters:
   - name: APP_NAME
     description: Application name
@@ -105,7 +215,19 @@ parameters:
     description: Target namespace reference (i.e. '9f0fbe-dev')
     displayName: Target Namespace
     required: true
-  - name: LOGGING_HOST_NAME
-    description: The hostname of our FLuentd service running further down the monitoring pipeline
-    displayName: Logging host name
+  - name: FLUENTD
+    description: The hostname of our Fluentd service running further down the monitoring pipeline
+    displayName: Fluentd host name
+    required: true
+  - name: AWS_DEFAULT_REGION
+    description: Default AWS region for Opensearch logging stack
+    displayName: AWS Default Region
+    required: true
+  - name: AWS_KINESIS_STREAM
+    description: AWS Kinesis Stream identifier
+    displayName: AWS Kinesis Stream
+    required: true
+  - name: AWS_ROLE_ARN
+    description: AWS OpenSearch/Kinesis Resource Name
+    displayName: AWS Role ARN
     required: true
