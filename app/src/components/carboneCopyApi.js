@@ -112,6 +112,7 @@ const carboneCopyApi = {
         }
       }
       log.info('Template rendered', { function: 'renderTemplate' });
+
       // log metrics
       log.verbose('Template rendered', { function: 'renderTemplate', metrics: { data: data, options: options, template: template } });
 
