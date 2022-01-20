@@ -208,6 +208,8 @@ objects:
     kind: Route
     metadata:
       name: "${APP_NAME}-app-${JOB_NAME}"
+    annotations:
+      haproxy.router.openshift.io/timeout: 60s
     spec:
       host: "${HOST_ROUTE}"
       path: /
