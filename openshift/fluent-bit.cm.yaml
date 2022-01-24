@@ -19,7 +19,7 @@ objects:
           Daemon       Off
           # define the log format (see additional config map key/value)
           Parsers_File  parsers.conf
-          Log_Level    debug
+          Log_Level    info
           HTTP_Server   On
           HTTP_Listen   0.0.0.0
           HTTP_Port     2020
@@ -93,7 +93,6 @@ objects:
           # we can also send tag as a header
           #header_tag  app
           json_date_key timestamp
-          json_date_format  iso860
 
           ### security:
           #tls                On
@@ -113,7 +112,6 @@ objects:
           Name             json
           Format           json
           Time_Key         timestamp
-          Time_Format      %YYYY-%MM-%DDT%HH:%mm:%ss.%SSS%Z
           Decode_Field_as  escaped_utf8 log do_next
           Decode_Field_as  json log
 
@@ -250,19 +248,15 @@ parameters:
     description: The hostname of our Fluentd service running further down the monitoring pipeline
     displayName: Fluentd host name
     required: false
-    default:
   - name: AWS_DEFAULT_REGION
     description: Default AWS region for Opensearch logging stack
     displayName: AWS Default Region
     required: false
-    default:
   - name: AWS_KINESIS_STREAM
     description: AWS Kinesis Stream identifier
     displayName: AWS Kinesis Stream
     required: false
-    default:
   - name: AWS_ROLE_ARN
     description: AWS OpenSearch/Kinesis Resource Name
     displayName: AWS Role ARN
     required: false
-    default:
