@@ -5,6 +5,7 @@ const Problem = require('api-problem');
 const telejson = require('telejson');
 const tmp = require('tmp');
 const validator = require('validator');
+const log = require('./log')(module.filename);
 
 const { fileTypes } = require('./carboneRender');
 const maxFileSize = bytes.parse(config.get('carbone.uploadSize'));
@@ -100,7 +101,7 @@ const models = {
         return stats.size <= attachmentLimit;
       } catch (e) {
         // Something wrong (disk i/o?), cannot verify file size
-        console.log(`Error validating file size. ${e.message}`);
+        log.error('Error validating file size', { function: 'size', error: e });
         return false;
       } finally {
         // Delete temp file

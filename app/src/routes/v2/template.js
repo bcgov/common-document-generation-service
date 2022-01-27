@@ -6,12 +6,13 @@ const FileCache = require('../../components/fileCache');
 const { upload } = require('../../components/upload');
 const { truthy } = require('../../components/utils');
 const { middleware } = require('../../components/validation');
+const log = require('../../components/log')(module.filename);
 
 const fileCache = new FileCache();
 
 /** Returns the rendered report from cache */
 templateRouter.post('/', upload, async (req, res) => {
-  console.log('Template upload');
+  log.info('Template upload');
 
   if (!req.file) {
     return new Problem(422, { detail: 'Template file is missing or malformed.' }).send(res);
@@ -28,7 +29,7 @@ templateRouter.post('/', upload, async (req, res) => {
 });
 
 templateRouter.post('/render', middleware.validateTemplate, async (req, res) => {
-  console.log('Template upload and render');
+  log.info('Template upload and render');
 
   let template = {};
   try {
@@ -53,7 +54,7 @@ templateRouter.post('/render', middleware.validateTemplate, async (req, res) => 
 
 templateRouter.post('/:uid/render', middleware.validateCarbone, async (req, res) => {
   const hash = req.params.uid;
-  console.log(`Template render ${hash}.`);
+  log.info('Template render', { hash: hash });
   return await findAndRender(hash, req, res);
 });
 
@@ -61,7 +62,7 @@ templateRouter.get('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
-  console.log(`Get Template ${hash}. Download = ${download}`);
+  log.info('Get Template', { hash: hash, download: download });
   return await getFromCache(hash, hashHeaderName, download, false, res);
 });
 
@@ -69,7 +70,7 @@ templateRouter.delete('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
-  console.log(`Delete template: ${hash}. Download = ${download}`);
+  log.info('Delete Template', { hash: hash, download: download });
   return await getFromCache(hash, hashHeaderName, download, true, res);
 });
 

@@ -1,13 +1,15 @@
 const renderRouter = require('express').Router();
 const { getFromCache } = require('../../components/carboneCopyApi');
 const { truthy } = require('../../components/utils');
+const log = require('../../components/log')(module.filename);
 
 /** Returns the rendered report from cache */
 renderRouter.get('/:uid', (req, res) => {
   const hash = req.params.uid;
   const download = truthy('download', req.query);
   const hashHeaderName = 'X-Report-Hash';
-  console.log(`Get Rendered report ${hash}. Download = ${download}`);
+  log.info('Get rendered report', { hash: hash, download: download });
+
   return getFromCache(hash, hashHeaderName, download, false, res);
 });
 
@@ -16,7 +18,8 @@ renderRouter.delete('/:uid', (req, res) => {
   const hash = req.params.uid;
   const download = truthy('download', req.query);
   const hashHeaderName = 'X-Report-Hash';
-  console.log(`Delete rendered report: ${hash}. Download = ${download}`);
+  log.info('Delete rendered report', { hash: hash, download: download });
+
   return getFromCache(hash, hashHeaderName, download, true, res);
 });
 
