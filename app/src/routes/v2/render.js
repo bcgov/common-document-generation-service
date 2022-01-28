@@ -8,7 +8,7 @@ renderRouter.get('/:uid', (req, res) => {
   const hash = req.params.uid;
   const download = truthy('download', req.query);
   const hashHeaderName = 'X-Report-Hash';
-  log.info('Get rendered report', { hash: hash, download: download });
+  log.verbose('Get rendered report', { hash: hash, download: download });
 
   return getFromCache(hash, hashHeaderName, download, false, res);
 });
@@ -18,7 +18,7 @@ renderRouter.delete('/:uid', (req, res) => {
   const hash = req.params.uid;
   const download = truthy('download', req.query);
   const hashHeaderName = 'X-Report-Hash';
-  log.info('Delete rendered report', { hash: hash, download: download });
+  log.verbose('Delete rendered report', { hash: hash, download: download });
 
   return getFromCache(hash, hashHeaderName, download, true, res);
 });

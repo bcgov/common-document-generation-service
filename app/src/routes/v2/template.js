@@ -12,7 +12,7 @@ const fileCache = new FileCache();
 
 /** Returns the rendered report from cache */
 templateRouter.post('/', upload, async (req, res) => {
-  log.info('Template upload');
+  log.verbose('Template upload');
 
   if (!req.file) {
     return new Problem(422, { detail: 'Template file is missing or malformed.' }).send(res);
@@ -29,7 +29,7 @@ templateRouter.post('/', upload, async (req, res) => {
 });
 
 templateRouter.post('/render', middleware.validateTemplate, async (req, res) => {
-  log.info('Template upload and render');
+  log.verbose('Template upload and render');
 
   let template = {};
   try {
@@ -54,7 +54,7 @@ templateRouter.post('/render', middleware.validateTemplate, async (req, res) => 
 
 templateRouter.post('/:uid/render', middleware.validateCarbone, async (req, res) => {
   const hash = req.params.uid;
-  log.info('Template render', { hash: hash });
+  log.verbose('Template render', { hash: hash });
   return await findAndRender(hash, req, res);
 });
 
@@ -62,7 +62,7 @@ templateRouter.get('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
-  log.info('Get Template', { hash: hash, download: download });
+  log.verbose('Get Template', { hash: hash, download: download });
   return await getFromCache(hash, hashHeaderName, download, false, res);
 });
 
@@ -70,7 +70,7 @@ templateRouter.delete('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
-  log.info('Delete Template', { hash: hash, download: download });
+  log.verbose('Delete Template', { hash: hash, download: download });
   return await getFromCache(hash, hashHeaderName, download, true, res);
 });
 
