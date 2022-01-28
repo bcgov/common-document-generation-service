@@ -92,9 +92,9 @@ async function render(template, data = {}, options = {}, formatters = {}) {
     result.reportName = renderResult.reportName;
     result.success = true;
   } catch (e) {
-    result.errorType = utils.determineCarboneErrorCode(e.message);
-    result.errorMsg = `Could not render template. ${e.message}`;
-    log.warn(`Could not render template. ${e.message}`, { function: 'render' });
+    result.errorType = utils.determineCarboneErrorCode(e);
+    result.errorMsg = `Could not render template. ${e}`;
+    log.warn('Could not render template', { function: 'render', error: e });
   }
   resetFormatters(reset);
   return result;
