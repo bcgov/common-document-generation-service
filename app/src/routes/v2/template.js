@@ -21,7 +21,7 @@ templateRouter.post('/', upload, async (req, res) => {
   // TODO: If `carbone.uploadCount` is greater than 1, check `req.files` array
   const result = await fileCache.move(req.file.path, req.file.originalname);
   if (!result.success) {
-    return new Problem(result.errorType, { detail: result.errorMsg }).send(res);
+    return new Problem(result.errorType, { detail: result.errorMsg, hash: result.hash }).send(res);
   } else {
     res.setHeader('X-Template-Hash', result.hash);
     return res.send(result.hash);

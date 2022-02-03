@@ -129,6 +129,7 @@ class FileCache {
 
         result.errorType = 405;
         result.errorMsg = `File already cached. Hash '${result.hash}'.`;
+        result.hash = result.hash;
         return result;
       }
     }
