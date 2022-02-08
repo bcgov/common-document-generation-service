@@ -159,7 +159,38 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
         "405":
-          $ref: "#/components/responses/MethodNotAllowed"
+          description: Template already cached
+          content:
+            application/json:
+              schema:
+                  type: object
+                  required:
+                    - type
+                    - title
+                    - status
+                    - detail
+                    - hash
+                  properties:
+                    type:
+                      type: string
+                      description: "What type of problem, link to explanation of problem"
+                      example: https://httpstatuses.com/405
+                    title:
+                      type: string
+                      description: "Title of problem, generally the Http Status Code"
+                      example: Method Not Allowed
+                    status:
+                      type: string
+                      description: The Http Status code
+                      example: 405
+                    detail:
+                      type: string
+                      description: Short description of why this problem was raised.
+                      example: File already cached. Hash '742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855'.
+                    hash:
+                      type: string
+                      description: UUID for template cached on server.
+                      example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
         default:
