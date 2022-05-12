@@ -1,4 +1,4 @@
-FROM docker.io/bcgovimages/alpine-node-libreoffice:1.0.6
+FROM docker.io/bcgovimages/alpine-node-libreoffice:1.0.7
 
 ARG APP_ROOT=/opt/app-root/src
 ENV NO_UPDATE_NOTIFIER=true \
