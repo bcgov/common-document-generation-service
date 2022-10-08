@@ -11,6 +11,6 @@ module.exports = new Keycloak({}, {
   secret: config.has('keycloak.clientSecret') ? config.get('keycloak.clientSecret') : undefined,
   serverUrl: config.get('keycloak.serverUrl'),
   'ssl-required': 'external',
-  'use-resource-role-mappings': true,
+  'use-resource-role-mappings': false,
   'verify-token-audience': true
 });
