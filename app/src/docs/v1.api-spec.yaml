@@ -87,9 +87,6 @@ paths:
       operationId: postDocGen
       tags:
         - DocGen
-      security:
-        - OpenID:
-            - GENERATOR
       requestBody:
         description: Fields required to generate a document
         required: true

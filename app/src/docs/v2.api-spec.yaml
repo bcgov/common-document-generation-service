@@ -141,7 +141,8 @@ paths:
               type: object
               properties:
                 template:
-                  type: binary
+                  type: string
+                  format: binary
       responses:
         "200":
           description: Returns the supplied document with variables merged in
