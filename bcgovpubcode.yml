@@ -1,0 +1,44 @@
+---
+data_management_roles:
+  data_custodian: Fraser Marshall
+  product_owner: Sharolyn Hurley
+product_external_dependencies:
+  identity_authorization:
+    - Custom-Keycloak
+  notification_standard: []
+product_information:
+  api_specifications:
+    - https://cdogs.api.gov.bc.ca/api/v2/docs
+  business_capabilities_custom: Rich document templating support,Merge complex datasets
+  business_capabilities_standard:
+    - Other
+  ministry:
+    - Water, Land and Resource Stewardship
+  product_acronym: CDOGS
+  product_description: >-
+    Hosted API service to Leverage your structured datasets and your business
+    templates to automatically populate printable documents, spreadsheets,
+    presentations, or PDFs
+  product_name: Common Document Generation Service
+  product_status: stable
+  product_urls:
+    - https://api.gov.bc.ca/devportal/api-directory/3181?preview=false
+  program_area: NRIDS
+product_technology_information:
+  backend_frameworks:
+    - name: Express
+      version: 4.18.2
+    - name: Other
+      version: Carbone
+  backend_languages_version:
+    - name: JavaScript
+      version: ecmaVersion 9 / es2018
+  ci_cd_tools:
+    - Jenkins
+  data_storage_platforms:
+    - Other
+  data_storage_platforms_custom: PVC Cache
+  frontend_languages: []
+  hosting_platforms:
+    - Private-Cloud-Openshift
+version: 1
