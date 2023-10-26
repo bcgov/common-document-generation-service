@@ -19,9 +19,9 @@ jobs:
       fail-fast: true
       matrix:
         node-version:
-          - 14.x
-          - 16.x
-          - 18.x
+          - '16.x'
+          - '18.x'
+          - '20.x'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -53,14 +53,14 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.node-version == '18.x'
+        if: matrix.node-version == '20.x'
         uses: actions/upload-artifact@v3
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
           retention-days: 1
       - name: Monitor Coverage
-        if: "matrix.node-version == '18.x' && ! github.event.pull_request.head.repo.fork"
+        if: "matrix.node-version == '20.x' && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update
