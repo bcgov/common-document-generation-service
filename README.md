@@ -28,6 +28,7 @@ bcgovpubcode.yml           - BCGov public code asset tracking
 CODE-OF-CONDUCT.md         - Code of Conduct
 COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
 CONTRIBUTING.md            - Contributing Guidelines
+Dockerfile                 - Dockerfile Image definition
 Jenkinsfile                - Top-level Pipeline
 Jenkinsfile.cicd           - Pull-Request Pipeline
 LICENSE                    - License

@@ -1,0 +1,85 @@
+{{ $kcSecretName := printf "%s-%s" (include "cdogs.fullname" .) "keycloak" }}
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ include "cdogs.fullname" . }}
+  labels:
+    {{- include "cdogs.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 10
+  selector:
+    {{- include "cdogs.selectorLabels" . | nindent 4 }}
+  strategy:
+    resources: {}
+    rollingParams:
+      timeoutSeconds: 600
+    type: Rolling
+  template:
+    metadata:
+      labels: {{ include "cdogs.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "cdogs.serviceAccountName" . }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: app
+          {{- with .Values.securityContext }}
+          securityContext: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}/{{ .Chart.Name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: {{ .Values.route.path }}
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: {{ .Values.route.path }}
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: NODE_ENV
+              value: production
+            {{- if .Values.config.configMap.KC_ENABLED }}
+            - name: KC_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ include "cdogs.configname" . }}-keycloak
+            - name: KC_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ include "cdogs.configname" . }}-keycloak
+            {{- end }}
+            {{- if and .Values.fluentBit.enabled }}
+            - name: SERVER_LOGFILE
+              value: "/var/log/app.log"
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "cdogs.configname" . }}-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - type: ConfigChange
