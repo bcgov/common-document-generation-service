@@ -1,0 +1,145 @@
+# Default values for cdogs.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: docker.io/bcgovimages
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ~
+
+# -- Specify docker-registry secret names as an array
+imagePullSecrets: []
+# -- String to partially override fullname
+nameOverride: ~
+# -- String to fully override fullname
+fullnameOverride: ~
+
+# DeploymentConfig pre-hook failure behavior
+failurePolicy: Retry
+
+# -- Annotations for cdogs pods
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+autoscaling:
+  # -- Specifies whether the Horizontal Pod Autoscaler should be created
+  enabled: false
+
+  # -- behavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively).
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 30
+  minReplicas: 2
+  maxReplicas: 16
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  enabled: false
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ~
+
+networkPolicy:
+  # -- Specifies whether a network policy should be created
+  enabled: true
+
+service:
+  type: ClusterIP
+  port: 3000
+  portName: http
+
+route:
+  # -- Specifies whether a route should be created
+  enabled: true
+  # -- Annotations to add to the route
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  # path: /
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  wildcardPolicy: None
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+config:
+  # Set to true if you want to let Helm manage and overwrite your configmaps.
+  enabled: false
+
+  # -- This should be set to true if and only if you require configmaps and secrets to be release
+  # scoped. In the event you want all instances in the same namespace to share a similar
+  # configuration, this should be set to false
+  releaseScoped: false
+
+  # -- These values will be wholesale added to the configmap as is; refer to the cdogs
+  # documentation for what each of these values mean and whether you need them defined.
+  # Ensure that all values are represented explicitly as strings, as non-string values will
+  # not translate over as expected into container environment variables.
+  # For configuration keys named `*_ENABLED`, either leave them commented/undefined, or set them
+  # to string value "true".
+  configMap:
+    # KC_ENABLED: "true"
+    KC_PUBLICKEY: ~
+    KC_REALM: ~
+    KC_SERVERURL: ~
+
+    SERVER_BODYLIMIT: 100mb
+    SERVER_LOGLEVEL: http
+    SERVER_PORT: "3000"
+
+    CACHE_DIR: "/tmp/carbone-files"
+    CACHE_SIZE: 2GB
+    CONVERTER_FACTORY_TIMEOUT: "60000"
+    START_CARBONE: "true"
+    UPLOAD_FIELD_NAME: template
+    UPLOAD_FILE_COUNT: "1"
+    UPLOAD_FILE_SIZE: 25MB
+
+# Modify the following variables if you need to acquire secret values from a custom-named resource
+keycloakSecretOverride:
+  username: ~
+  password: ~

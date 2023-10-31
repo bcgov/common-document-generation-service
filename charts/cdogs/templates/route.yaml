@@ -1,0 +1,28 @@
+{{- if .Values.route.enabled -}}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "cdogs.fullname" . }}
+  labels:
+    {{- include "cdogs.labels" . | nindent 4 }}
+  {{- with .Values.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  {{- if .Values.route.path }}
+  path: {{ .Values.route.path }}
+  {{- end }}
+  port:
+    targetPort: {{ .Values.service.portName }}
+  tls:
+    insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecureEdgeTerminationPolicy }}
+    termination: {{ .Values.route.tls.termination }}
+  to:
+    kind: Service
+    name: {{ include "cdogs.fullname" . }}
+    weight: 100
+  wildcardPolicy: {{ .Values.route.wildcardPolicy }}
+{{- end }}

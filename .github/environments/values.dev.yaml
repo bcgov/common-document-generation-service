@@ -1,0 +1,21 @@
+---
+config:
+  enabled: true
+  configMap:
+    KC_ENABLED: "true"
+    KC_PUBLICKEY: >-
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsmuiI3bzde2avKEZd8P/ivnUFL9JxwfykQ9eC6qULkkALW4Nj+m0rH+yTuWTWPwZsYyICtWXbQui6Yh+EP0+bTeDzeDaD1oSUgqC4c9EySs64sGPQLE3sHllwONo8AegNQSiPw+KHE2Rf3ky61KuQHOhrszHKq1qT71ct5iPK9oeZ4vkr6A0XfNNOzih6Jp+XrmNmU85+ssNJ7Oy9plwxHBC73Ff3Jw8UF2dRPPLOJT3oAtYJYD4uuQebPq3bKv2n8iQftLG80l1frM1iG/jddoKItSYBRYsi4Mc65gGgkfsTQGk+Up0SULpO/nIASHWLSYNZOTiqAqMgkWQ+Ga9vQIDAQAB
+    KC_REALM: comsvcauth
+    KC_SERVERURL: "https://dev.loginproxy.gov.bc.ca/auth"
+
+    SERVER_BODYLIMIT: 100mb
+    SERVER_LOGLEVEL: http
+    SERVER_PORT: "3000"
+
+    CACHE_DIR: "/tmp/carbone-files"
+    CACHE_SIZE: 2GB
+    CONVERTER_FACTORY_TIMEOUT: "60000"
+    START_CARBONE: "true"
+    UPLOAD_FIELD_NAME: template
+    UPLOAD_FILE_COUNT: "1"
+    UPLOAD_FILE_SIZE: 25MB

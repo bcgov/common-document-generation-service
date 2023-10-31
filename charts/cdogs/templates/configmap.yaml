@@ -1,0 +1,14 @@
+{{- if .Values.config.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  {{- if not .Values.config.releaseScoped }}
+  annotations:
+    "helm.sh/resource-policy": keep
+  {{- else }}
+  labels: {{ include "cdogs.labels" . | nindent 4 }}
+  {{- end }}
+  name: {{ include "cdogs.configname" . }}-config
+data: {{ toYaml .Values.config.configMap | nindent 2 }}
+{{- end }}
