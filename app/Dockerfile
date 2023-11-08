@@ -18,7 +18,9 @@ RUN wget https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/se
     rm -rf ./BcSansFont_Print && \
     fc-cache -f
 
-# NPM Permission Fix (already present in base image)
+# NPM Permission Fix
+RUN mkdir -p /.npm
+RUN chown -R 1001:0 /.npm
 
 # Install Application
 COPY . .
@@ -27,4 +29,4 @@ USER 1001
 RUN npm ci --omit=dev
 
 EXPOSE ${APP_PORT}
-CMD ["npm", "run", "start"]
+CMD ["node", "./bin/www"]
