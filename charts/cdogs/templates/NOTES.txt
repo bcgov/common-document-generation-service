@@ -1,5 +1,9 @@
 {{- $configMapName := printf "%s-%s" (include "cdogs.configname" .) "config" }}
 {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace $configMapName ) }}
+{{- $awsSecretName := printf "%s-%s" (include "cdogs.configname" .) "aws" }}
+{{- $awsSecret := (lookup "v1" "Secret" .Release.Namespace $awsSecretName ) }}
+{{- $kcSecretName := printf "%s-%s" (include "cdogs.configname" .) "keycloak" }}
+{{- $kcSecret := (lookup "v1" "Secret" .Release.Namespace $kcSecretName ) }}
 Get the application URL by running these commands:
 {{- if .Values.route.enabled }}
   http{{ if $.Values.route.tls }}s{{ end }}://{{ .Values.route.host }}{{ .Values.route.path }}
@@ -21,4 +25,12 @@ Get the application URL by running these commands:
 {{- if not $configMap }}
 
 Make sure that ConfigMap "{{ $configMapName }}" is defined in the namespace; the deployment will fail to run without it!
+{{- end }}
+{{- if and (not $awsSecret) (.Values.fluentBit.enabled) }}
+
+Make sure that Secret "{{ $awsSecretName }}" is defined in the namespace; the deployment will fail to run without it!
+{{- end }}
+{{- if and (not $kcSecret) (.Values.config.configMap.KC_ENABLED) }}
+
+Make sure that Secret "{{ $kcSecretName }}" is defined in the namespace; the deployment will fail to run without it!
 {{- end }}

@@ -84,7 +84,7 @@ route:
   enabled: true
   # -- Annotations to add to the route
   annotations:
-    {}
+    haproxy.router.openshift.io/timeout: 60s
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   host: chart-example.local
@@ -105,6 +105,12 @@ resources:
   requests:
     cpu: 50m
     memory: 256Mi
+
+persistentVolumeClaim:
+  # -- Specifies whether a persistent volume claim should be created
+  enabled: true
+  storageClassName: netapp-file-standard
+  storageSize: 2G
 
 config:
   # Set to true if you want to let Helm manage and overwrite your configmaps.
@@ -131,7 +137,7 @@ config:
     SERVER_LOGLEVEL: http
     SERVER_PORT: "3000"
 
-    CACHE_DIR: "/tmp/carbone-files"
+    CACHE_DIR: /var/lib/file-cache/data
     CACHE_SIZE: 2GB
     CONVERTER_FACTORY_TIMEOUT: "60000"
     START_CARBONE: "true"
@@ -140,6 +146,41 @@ config:
     UPLOAD_FILE_SIZE: 25MB
 
 # Modify the following variables if you need to acquire secret values from a custom-named resource
+awsSecretOverride:
+  username: ~
+  password: ~
 keycloakSecretOverride:
   username: ~
   password: ~
+
+fluentBit:
+  enabled: false
+
+  image:
+    name: fluent-bit
+    repository: docker.io/fluent
+    tag: "2.1.10"
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
+
+  route:
+    metrics:
+      path: /
+
+  service:
+    httpPlugin:
+      name: http-plugin
+      port: 80
+    metrics:
+      name: metrics
+      port: 2020

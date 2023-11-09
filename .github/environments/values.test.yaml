@@ -3,7 +3,8 @@ config:
   enabled: true
   configMap:
     KC_ENABLED: "true"
-    KC_PUBLICKEY: ~
+    KC_PUBLICKEY: >-
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1dLa3e2Q65cvzoKYdqSu/Qkoi5fbG9FF++u0TVm3461sS7uLo2aIviNXHrfzgu4RKnzoy51VXhAfeT58mGiAweJiRyILr0OtwbDEd/W9D4Y8FdWV37Ltmb4D1M0kCHPHo9wkl5aGZj0VFgExdFXenSDlNuglZpNuAVOwWTL7hX1Cc+5Z5hX8891fcxcdAF/GkDGcyIteHV04aeoCWEMak0gSpGsNUgEhn7FUHI6maqiaBdoyOWn0Jbw/JpqewcD9ZYFLzZTMuBssTXJt4ipTibeqbI/bAdCtxXLJgmpkyMSA/KQeHLmBPdq3ayctoDRpqVMHsnC31Hm7Fz8aDHKaDwIDAQAB
     KC_REALM: comsvcauth
     KC_SERVERURL: "https://test.loginproxy.gov.bc.ca/auth"
 
@@ -11,10 +12,13 @@ config:
     SERVER_LOGLEVEL: http
     SERVER_PORT: "3000"
 
-    CACHE_DIR: "/tmp/carbone-files"
+    CACHE_DIR: "/var/lib/file-cache/data"
     CACHE_SIZE: 2GB
     CONVERTER_FACTORY_TIMEOUT: "60000"
     START_CARBONE: "true"
     UPLOAD_FIELD_NAME: template
     UPLOAD_FILE_COUNT: "1"
     UPLOAD_FILE_SIZE: 25MB
+
+fluentBit:
+  enabled: true

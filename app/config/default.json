@@ -9,7 +9,7 @@
     "port": "3000"
   },
   "carbone": {
-    "cacheDir": "/tmp/carbone-files",
+    "cacheDir": "/var/lib/file-cache/data",
     "cacheSize": "2GB",
     "converterFactoryTimeout": "60000",
     "formFieldName": "template",
