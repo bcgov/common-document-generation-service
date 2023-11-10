@@ -156,6 +156,15 @@ keycloakSecretOverride:
 fluentBit:
   enabled: false
 
+  config:
+    aws:
+      defaultRegion: ca-central-1
+      kinesisStream: nress-prod-iit-logs
+      roleArn: ~
+    logHostname: fluentd-csst.apps.silver.devops.gov.bc.ca
+    namespace: ~
+    product: cdogs
+
   image:
     name: fluent-bit
     repository: docker.io/fluent

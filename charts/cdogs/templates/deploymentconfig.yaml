@@ -152,7 +152,7 @@ spec:
           emptyDir: {}
         - name: fluent-bit-config
           configMap:
-            name: fluent-bit-config
+            name: {{ include "cdogs.configname" . }}-fluent-bit
         {{- end }}
   test: false
   triggers:

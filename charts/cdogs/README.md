@@ -35,6 +35,12 @@ Kubernetes: `>= 1.13.0`
 | config.enabled | bool | `false` |  |
 | config.releaseScoped | bool | `false` | This should be set to true if and only if you require configmaps and secrets to be release scoped. In the event you want all instances in the same namespace to share a similar configuration, this should be set to false |
 | failurePolicy | string | `"Retry"` |  |
+| fluentBit.config.aws.defaultRegion | string | `"ca-central-1"` |  |
+| fluentBit.config.aws.kinesisStream | string | `"nress-prod-iit-logs"` |  |
+| fluentBit.config.aws.roleArn | string | `nil` |  |
+| fluentBit.config.logHostname | string | `"fluentd-csst.apps.silver.devops.gov.bc.ca"` |  |
+| fluentBit.config.namespace | string | `nil` |  |
+| fluentBit.config.product | string | `"cdogs"` |  |
 | fluentBit.enabled | bool | `false` |  |
 | fluentBit.image.name | string | `"fluent-bit"` |  |
 | fluentBit.image.repository | string | `"docker.io/fluent"` |  |
