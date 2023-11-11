@@ -1,1 +1,6 @@
 ---
+persistentVolumeClaim:
+  enabled: false
+
+fluentBit:
+  enabled: false

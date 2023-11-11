@@ -45,7 +45,7 @@ runs:
       run: >-
         helm upgrade --install --atomic ${{ inputs.job_name }} ${{ inputs.app_name }}
         --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
-        --repo https://bcgov.github.io/common-object-management-service
+        --repo https://bcgov.github.io/common-document-generation-service
         --values ./.github/environments/values.${{ inputs.environment }}.yaml
         --set image.repository=ghcr.io/${{ github.repository_owner }}
         --set image.tag=sha-$(git rev-parse --short HEAD)

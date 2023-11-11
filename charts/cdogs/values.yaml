@@ -5,9 +5,11 @@
 replicaCount: 2
 
 image:
+  # -- Default image repository
   repository: docker.io/bcgovimages
+  # -- Default image pull policy
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: ~
 
 # -- Specify docker-registry secret names as an array
@@ -23,10 +25,12 @@ failurePolicy: Retry
 # -- Annotations for cdogs pods
 podAnnotations: {}
 
+# -- Privilege and access control settings
 podSecurityContext:
   {}
   # fsGroup: 2000
 
+# -- Privilege and access control settings
 securityContext:
   {}
   # capabilities:
@@ -75,8 +79,11 @@ networkPolicy:
   enabled: true
 
 service:
+  # -- Service type
   type: ClusterIP
+  # -- Service port
   port: 3000
+  # -- Service port name
   portName: http
 
 route:
@@ -84,7 +91,7 @@ route:
   enabled: true
   # -- Annotations to add to the route
   annotations:
-    {}
+    haproxy.router.openshift.io/timeout: 60s
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   host: chart-example.local
@@ -100,11 +107,23 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
+    # -- Limit Peak CPU (in millicores ex. 1000m)
     cpu: 1000m
+    # -- Limit Peak Memory (in gigabytes Gi or megabytes Mi ex. 2Gi)
     memory: 1Gi
   requests:
+    # -- Requested CPU (in millicores ex. 500m)
     cpu: 50m
+    # -- Requested Memory (in gigabytes Gi or megabytes Mi ex. 500Mi)
     memory: 256Mi
+
+persistentVolumeClaim:
+  # -- Specifies whether a persistent volume claim should be created
+  enabled: true
+  # -- Default storage class type
+  storageClassName: netapp-file-standard
+  # -- PVC Storage size (use M or G, not Mi or Gi)
+  storageSize: 2G
 
 config:
   # Set to true if you want to let Helm manage and overwrite your configmaps.
@@ -131,7 +150,7 @@ config:
     SERVER_LOGLEVEL: http
     SERVER_PORT: "3000"
 
-    CACHE_DIR: "/tmp/carbone-files"
+    CACHE_DIR: /var/lib/file-cache/data
     CACHE_SIZE: 2GB
     CONVERTER_FACTORY_TIMEOUT: "60000"
     START_CARBONE: "true"
@@ -140,6 +159,72 @@ config:
     UPLOAD_FILE_SIZE: 25MB
 
 # Modify the following variables if you need to acquire secret values from a custom-named resource
-keycloakSecretOverride:
+awsSecretOverride:
+  # -- AWS Kinesis username - used by fluent-bit
   username: ~
+  # -- AWS Kinesis password - used by fluent-bit
   password: ~
+keycloakSecretOverride:
+  # -- Keycloak username
+  username: ~
+  # -- Keycloak password
+  password: ~
+
+fluentBit:
+  # -- Specifies whether the fluent-bit logging sidecar should be enabled
+  enabled: false
+
+  config:
+    aws:
+      # -- AWS Kinesis default region
+      defaultRegion: ca-central-1
+      # -- AWS Kinesis stream name
+      kinesisStream: nress-prod-iit-logs
+      # -- AWS Kinesis role ARN
+      roleArn: ~
+    # -- Fluentd logging hostname endpoint
+    logHostname: fluentd-csst.apps.silver.devops.gov.bc.ca
+    # -- The openshift/k8s namespace identifier
+    namespace: ~
+    # -- The application/product name identifier
+    product: cdogs
+
+  image:
+    # -- Default image name
+    name: fluent-bit
+    # -- Default image repository
+    repository: docker.io/fluent
+    # -- Default image tag
+    tag: "2.1.10"
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      # -- Limit Peak CPU (in millicores ex. 1000m)
+      cpu: 100m
+      # -- Limit Peak Memory (in gigabytes Gi or megabytes Mi ex. 2Gi)
+      memory: 64Mi
+    requests:
+      # -- Requested CPU (in millicores ex. 500m)
+      cpu: 10m
+      # -- Requested Memory (in gigabytes Gi or megabytes Mi ex. 500Mi)
+      memory: 16Mi
+
+  route:
+    metrics:
+      path: /
+
+  service:
+    httpPlugin:
+      # -- HTTP Plugin service name
+      name: http-plugin
+      # -- HTTP Plugin service port
+      port: 80
+    metrics:
+      # -- Metrics service name
+      name: metrics
+      # -- Metrics service port
+      port: 2020

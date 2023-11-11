@@ -12,3 +12,223 @@ metadata:
   name: {{ include "cdogs.configname" . }}-config
 data: {{ toYaml .Values.config.configMap | nindent 2 }}
 {{- end }}
+{{- if .Values.fluentBit.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  {{- if not .Values.config.releaseScoped }}
+  annotations:
+    "helm.sh/resource-policy": keep
+  {{- else }}
+  labels: {{ include "cdogs.labels" . | nindent 4 }}
+  {{- end }}
+  name: {{ include "cdogs.configname" . }}-fluent-bit
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+      Flush         5
+      Daemon        Off
+      # define the log format (see additional config map key/value)
+      Parsers_File  parsers.conf
+      Log_Level     info
+      HTTP_Server   On
+      HTTP_Listen   0.0.0.0
+      HTTP_Port     2020
+
+    [INPUT]
+      # get logs from file written by node app (eg: CDOGS)
+      Name        tail
+      Path        /var/log/*
+      Tag         app
+      Offset_Key  logFileOffset
+      Path_Key    logFilePath
+
+    [FILTER]
+      # exclude kube probe logs from app logs
+      name     grep
+      match    app
+      Exclude  agent kube*
+
+    [FILTER]
+      name          parser
+      match         app
+      Key_Name      log
+      Parser        json
+      Reserve_Data  On
+      Preserve_Key  On
+
+    [FILTER]
+      # modify log entry to include more key/value pairs
+      name    record_modifier
+      match   app
+      # add pod name
+      Record  hostname ${HOSTNAME}
+      # add productname (eg: 'cdogs')
+      Record  product {{ .Values.fluentBit.config.product }}
+      # add namespace
+      Record  namespace {{ .Values.fluentBit.config.namespace }}
+
+    [FILTER]
+      Name          rewrite_tag
+      Match         app
+      Rule          $level ([a-zA-Z]*)$ $TAG.$level true
+      Emitter_Name  re_emitted
+
+    # for now just send out http level ('access') logs to AWS
+    [FILTER]
+      Name           lua
+      Match          app.*
+      script         script.lua
+      time_as_table  True
+      call           ecsMap
+
+    # Note: only currently sending 'access' (level: http) logs to AWS
+    # TODO: format 'metrics' logs to match a 'fingerprint' in Lambda
+    [OUTPUT]
+      Name      kinesis_streams
+      Match     app.http
+      region    {{ .Values.fluentBit.config.aws.defaultRegion }}
+      stream    {{ .Values.fluentBit.config.aws.kinesisStream }}
+      role_arn  {{ .Values.fluentBit.config.aws.roleArn }}
+      time_key  @timestamp
+
+    [OUTPUT]
+      #### send logs to fluentd:
+      Name           http
+      Match          app
+      Host           {{ .Values.fluentBit.config.logHostname }}
+      Port           80
+      Format         json
+      # the URI becomes the Tag available in fluentd
+      URI            /app
+      # we can also send tag as a header
+      #header_tag    app
+      json_date_key  timestamp
+
+      ### security:
+      #tls           On
+      #tls.debug     4
+      #tls.verify    On
+      #tls.ca_file   /fluent-bit/ssl/ca.crt.pem
+      #tls.crt_file  /fluent-bit/ssl/client.crt.pem
+      #tls.key_file  /fluent-bit/ssl/client.key.pem
+
+    [OUTPUT]
+      Name    stdout
+      Match   *
+      Format  json_lines
+
+  parsers.conf: |
+    [PARSER]
+      Name             json
+      Format           json
+      Time_Key         timestamp
+      Decode_Field_as  escaped_utf8 log do_next
+      Decode_Field_as  json log
+
+  script.lua: |
+    -- add extra ECS fields
+    function ecsMap(tag, timestamp, record)
+      -- map existing fields to a new variable
+      new_record = {}
+
+      -- derive full environment (stage) name from namespace
+      -- see: https://www.lua.org/pil/20.3.html
+      _, _, part1, environmentAbbreviation = string.find(record["namespace"], "([a-zA-Z0-9_+-]+)-([a-zA-Z0-9_+-]+)")
+
+      environmentsArray = {
+        ["localhost"] = "development",
+        ["dev"] = "development",
+        ["test"] = "test",
+        ["prod"] = "production"
+      }
+
+      -- get event.type from log.level
+      eventTypesArray = {
+        ["http"] = "access",
+        ["info"] = "info",
+        ["verbose"] = "metric"
+      }
+
+      ---- for all logs
+
+      new_record["ecs"] = {
+        ["version"] = "1.12"
+      }
+
+      new_record["log"] = {
+        ["file"] = {
+          ["path"] = record["logFilePath"]
+        },
+        ["level"] = record["level"]
+      }
+
+      new_record["service"] = {
+        ["environment"] = environmentsArray[environmentAbbreviation],
+        ["name"] = record["product"],
+        ["type"] = "node"
+      }
+
+      new_record["event"] = {
+        ["kind"] = "event",
+        ["category"] = "web",
+        ["original"] = record["message"],
+        ["duration"] = record["responseTime"],
+        ["sequence"] = record["logFileOffset"],
+        ["created"] = (os.date("!%Y-%m-%dT%H:%M:%S", timestamp["sec"]) .. '.' .. math.floor(timestamp["nsec"] / 1000000) .. 'Z')
+      }
+
+      new_record["agent"] = {
+        ["type"] = "fluentbit",
+        ["version"] = "1.8"
+      }
+
+      new_record["labels"] = {
+        ["project"] = record["product"]
+      }
+
+      new_record["host"] = {
+        ["hostname"] = record["hostname"],
+        ["ip"] = record["ip"],
+        ["name"] = record["namespace"]
+      }
+
+      new_record["user_agent"] = {
+        ["original"] = record["userAgent"]
+      }
+
+      new_record["source.user.id"] = record["azp"]
+
+      ---- access logs
+
+      if record["level"] == "http" then
+        new_record["event"]["type"] = eventTypesArray[record["level"]]
+        new_record["event"]["dataset"] = "express." .. eventTypesArray[record["level"]]
+        new_record["http"] = {
+          ["request"] = {
+            ["body"] = {
+              ["bytes"] = record["contentLength"]
+            },
+            ["method"] = record["method"],
+            ["referrer"] = record["path"]
+          },
+          ["response"] = {
+            ["status_code"] = record["statusCode"]
+          },
+          ["version"] = record["httpVersion"]
+        }
+      end
+
+      ---- metrics logs
+
+      -- if log contains a 'metrics' field
+      if record["metrics"] ~= nill then
+        new_record["metrics"] = record["metrics"]
+        new_record["event"]["type"] = eventTypesArray[record["level"]]
+      end
+
+      -- return the transformed new record
+      return 2, timestamp, new_record
+    end
+{{- end }}
