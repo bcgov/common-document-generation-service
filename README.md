@@ -21,16 +21,16 @@ To learn more about the **Common Services** available visit the [Common Services
 app/                       - Application Root
 ├── docker/                - Auxillary support scripts for LibreOffice Python wrapper
 ├── src/                   - Node.js backend web application
-├── tests/                 - Node.js backend web application tests
-└── Dockerfile             - Docker image specification
-openshift/                 - OpenShift-deployment specific files
+└── tests/                 - Node.js backend web application tests
+charts/                    - General Helm Charts
+└── cdogs/                 - CDOGS Helm Chart Repository
+    └── templates/         - COCDOGSS Helm Chart Template manifests
+examples/                  - Collection of scripts demonstrating CDOGS usage
 bcgovpubcode.yml           - BCGov public code asset tracking
 CODE-OF-CONDUCT.md         - Code of Conduct
 COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
 CONTRIBUTING.md            - Contributing Guidelines
 Dockerfile                 - Dockerfile Image definition
-Jenkinsfile                - Top-level Pipeline
-Jenkinsfile.cicd           - Pull-Request Pipeline
 LICENSE                    - License
 SECURITY.md                - Security Policy and Reporting
 ```
@@ -38,9 +38,9 @@ SECURITY.md                - Security Policy and Reporting
 ## Documentation
 
 * [Application Readme](app/README.md)
-* [Openshift Readme](openshift/README.md)
-* [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
-* [Product Roadmap](https://github.com/bcgov/nr-get-token/wiki/Product-Roadmap)
+* [API Specification](app/README.md#openapi-specification)
+* [Product Roadmap](https://github.com/bcgov/common-document-generation-service/wiki/Product-Roadmap)
+* [Product Wiki](https://github.com/bcgov/common-document-generation-service/wiki)
 * [Security Reporting](SECURITY.md)
 
 ## Getting Help or Reporting an Issue
