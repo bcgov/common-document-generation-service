@@ -1,8 +1,4 @@
 {
-  "keycloak": {
-    "realm": "jbd6rnxw",
-    "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
-  },
   "server": {
     "bodyLimit": "100mb",
     "logLevel": "http",
