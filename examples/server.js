@@ -11,7 +11,7 @@ function base64_encode(file) {
 
 // We need the oidc api to generate a token for us
 const oidcResponse = await fetch(
-  'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token',
+  'https://dev.loginproxy.gov.bc.ca/auth/realms/your-realm-name/protocol/openid-connect/token',
   {
     method: 'POST',
     body: `grant_type=client_credentials&client_id=${client_id}&client_secret=${client_secret}`,
@@ -40,7 +40,7 @@ const templateContent = base64_encode('./template.txt');
 // Hello {d.firstName} {d.lastName}!
 
 const cdogsResponse = await fetch(
-  'https://cdogs-dev.apps.silver.devops.gov.bc.ca/api/v2/template/render',
+  'https://cdogs-dev.api.gov.bc.ca/api/v2/template/render',
   {
     method: 'POST',
     body: JSON.stringify({

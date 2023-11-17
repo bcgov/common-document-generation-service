@@ -30,7 +30,7 @@ This API is defined and described in OpenAPI 3.0 specification.
 
 When the API is running, you should be able to view the specification through ReDoc at <http://localhost:3000/api/v2/docs> (assuming you are running this microservice locally).
 
-The hosted CDOGS API can usually be found at <https://cdogs.nrs.gov.bc.ca/api/v2/docs>.
+The hosted CDOGS API can usually be found at <https://cdogs.api.gov.bc.ca/api/v2/docs>.
 
 For more details on using CDOGS and its underlying Carbone library, take a look at the [Usage guide](/app/USAGE.md).
 
@@ -62,8 +62,8 @@ The following variables alter CDOGS authentication behavior. By default, if `KC_
 | `clientSecret` | `KC_CLIENTSECRET` |  | Keycloak client secret for CDOGS |
 | `enabled` | `KC_ENABLED` |  | Whether to run CDOGS in unauthenticated or Keycloak protected mode |
 | `publicKey` | `KC_PUBLICKEY` | | If specified, verify all incoming JWT signatures off of the provided public key |
-| `realm` | `KC_REALM` | `jbd6rnxw` | Keycloak realm for CDOGS |
-| `serverUrl` | `KC_SERVERURL` | `https://dev.oidc.gov.bc.ca/auth` | Keycloak server url for CDOGS authentication |
+| `realm` | `KC_REALM` | | Keycloak realm for CDOGS |
+| `serverUrl` | `KC_SERVERURL` | | Keycloak server url for CDOGS authentication |
 
 ### Server Variables
 
@@ -107,7 +107,7 @@ For more dedicated deployments of CDOGS in a Docker environment, make sure to co
 
 ### Local Machine
 
-This section assumes you have a recent version of Node.js (12.x or higher) and LibreOffice™ (6.3.4.x or higher) installed. Make sure to have an understanding of what environment variables are passed into the application before proceeding.
+This section assumes you have a recent version of Node.js (16.x or higher) and LibreOffice™ (6.3.4.x or higher) installed. Make sure to have an understanding of what environment variables are passed into the application before proceeding.
 
 #### Configuration
 
