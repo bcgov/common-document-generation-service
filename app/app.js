@@ -9,7 +9,6 @@ const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
 const utils = require('./src/components/utils');
-const v1Router = require('./src/routes/v1');
 const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
@@ -73,18 +72,13 @@ app.use((_req, res, next) => {
 apiRouter.get('/', (_req, res) => {
   res.status(200).json({
     endpoints: [
-      '/api/v1',
       '/api/v2'
     ],
     versions: [
-      1,
       2
     ]
   });
 });
-
-// v1 Router
-apiRouter.use('/v1', v1Router);
 
 // v2 Router
 apiRouter.use('/v2', v2Router);
