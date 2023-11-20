@@ -13,9 +13,6 @@ const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 
-// API statistics disabled
-// const initializeApiTracker = require('./src/middleware/apiTracker');
-
 const apiRouter = express.Router();
 const state = {
   ready: false,
