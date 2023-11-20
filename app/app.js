@@ -4,24 +4,31 @@ const cors = require('cors');
 const express = require('express');
 const Problem = require('api-problem');
 
+const { name: appName, version: appVersion } = require('./package.json');
 const carboneCopyApi = require('./src/components/carboneCopyApi');
 const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
-const utils = require('./src/components/utils');
+const { getGitRevision, prettyStringify } = require('./src/components/utils');
 const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 
 const apiRouter = express.Router();
 const state = {
+  gitRev: getGitRevision(),
   ready: false,
   shutdown: false
 };
 
 const app = express();
 app.use(compression());
-app.use(cors());
+app.use(cors({
+  /** Tells browsers to cache preflight requests for Access-Control-Max-Age seconds */
+  maxAge: 600,
+  /** Set true to dynamically set Access-Control-Allow-Origin based on Origin */
+  origin: true
+}));
 app.use(express.json({
   limit: config.get('server.bodyLimit')
 }));
@@ -30,7 +37,7 @@ app.use(express.urlencoded({
 }));
 
 // Print out configuration settings in verbose startup
-log.verbose('Config', utils.prettyStringify(config));
+log.verbose('Config', prettyStringify(config));
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
@@ -65,15 +72,17 @@ app.use((_req, res, next) => {
   }
 });
 
-// CDOGS Base API Directory
+// Base API Directory
 apiRouter.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: [
-      '/api/v2'
-    ],
-    versions: [
-      2
-    ]
+    app: {
+      gitRev: state.gitRev,
+      name: appName,
+      nodeVersion: process.version,
+      version: appVersion
+    },
+    endpoints: ['/api/v2'],
+    versions: [2]
   });
 });
 
@@ -137,8 +146,8 @@ function shutdown() {
 function cleanup() {
   log.info('Service no longer accepting traffic');
   state.shutdown = true;
-  // Wait 10 seconds max before hard exiting
-  setTimeout(() => process.exit(), 10000);
+  // Wait 5 seconds max before hard exiting
+  setTimeout(() => process.exit(), 5000);
 }
 
 module.exports = app;
