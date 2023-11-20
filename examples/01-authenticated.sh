@@ -29,7 +29,6 @@ curl --request POST \
     "content": "$base64_encoded_template"
   },
   "options": {
-    "cacheReport": false,
     "convertTo": "pdf",
     "overwrite": true,
     "reportName": "{d.firstName}-{d.lastName}.pdf"

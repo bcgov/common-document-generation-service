@@ -1,5 +1,5 @@
 ---
-openapi: 3.0.3
+openapi: 3.0.2
 info:
   version: 2.0.0
   title: Common Document Generation Service API
@@ -51,73 +51,6 @@ paths:
       responses:
         "200":
           description: Indicates API is running
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /render/{uid}:
-    get:
-      summary: Check if generated file/report has been cached.
-      description: >-
-        This endpoint returns OK if a generated file can be retrieved from the cache.
-      operationId: getReport
-      parameters:
-        - in: path
-          name: uid
-          schema:
-            type: string
-          required: true
-          description: Hash for file, returned via X-Report-Hash headers when report generated
-        - in: query
-          name: download
-          schema:
-            type: boolean
-          required: false
-          description: Indicate if the response should return the binary file
-      tags:
-        - Render
-      responses:
-        "200":
-          description: Returns OK if file can be found in cache; also returns file if download=true
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-                description: Raw binary-encoded response
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    delete:
-      summary: Remove file from cache.
-      description: >-
-        This endpoint returns OK if a file has been removed from cache.
-      operationId: deleteReport
-      parameters:
-        - in: path
-          name: uid
-          schema:
-            type: string
-          required: true
-          description: Hash for file, returned via X-Report-Hash headers when report generated
-      tags:
-        - Render
-      responses:
-        "200":
-          description: Returns OK if file was found and removed/deleted
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "404":
-          $ref: "#/components/responses/NotFound"
         default:
           description: Unexpected error
           content:
@@ -330,11 +263,6 @@ paths:
                 type: string
               description: UUID for template cached on server.
               example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
-            X-Report-Hash:
-              schema:
-                type: string
-              description: UUID for generated file cached on server. (only applies if options.cacheReport = true)
-              example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         "400":
           $ref: "#/components/responses/BadRequest"
         "405":
@@ -402,11 +330,6 @@ paths:
               schema:
                 type: string
               description: UUID for template cached on server.
-              example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
-            X-Report-Hash:
-              schema:
-                type: string
-              description: UUID for generated file cached on server. (only applies if options.cacheReport = true)
               example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         "400":
           $ref: "#/components/responses/BadRequest"
@@ -560,11 +483,6 @@ components:
           type: object
           description: Object containing processing options
           properties:
-            cacheReport:
-              type: boolean
-              description: >-
-                If true, cache the generated report on server, return the hash/UUID for the file.
-              example: true
             convertTo:
               type: string
               description: >-

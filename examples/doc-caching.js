@@ -56,7 +56,6 @@ const cdogsRenderResponse = await fetch(
         lastName: 'Services',
       },
       options: {
-        cacheReport: false,
         convertTo: 'pdf',
       },
     }),

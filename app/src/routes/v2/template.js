@@ -63,7 +63,7 @@ templateRouter.get('/:uid', async (req, res) => {
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
   log.verbose('Get Template', { hash: hash, download: download });
-  return await getFromCache(hash, hashHeaderName, download, false, res);
+  return getFromCache(hash, hashHeaderName, download, false, res);
 });
 
 templateRouter.delete('/:uid', async (req, res) => {
@@ -71,7 +71,7 @@ templateRouter.delete('/:uid', async (req, res) => {
   const download = req.query.download !== undefined;
   const hashHeaderName = 'X-Template-Hash';
   log.verbose('Delete Template', { hash: hash, download: download });
-  return await getFromCache(hash, hashHeaderName, download, true, res);
+  return getFromCache(hash, hashHeaderName, download, true, res);
 });
 
 module.exports = templateRouter;

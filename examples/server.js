@@ -54,7 +54,6 @@ const cdogsResponse = await fetch(
         content: templateContent,
       },
       options: {
-        cacheReport: false,
         convertTo: 'pdf',
         overwrite: true,
         reportName: '{d.firstName}-{d.lastName}.pdf',
