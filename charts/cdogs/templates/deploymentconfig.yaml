@@ -59,7 +59,7 @@ spec:
           env:
             - name: NODE_ENV
               value: production
-            {{- if .Values.config.configMap.KC_ENABLED }}
+            {{- if or .Values.features.authentication .Values.config.configMap.KC_ENABLED }}
             - name: KC_CLIENTID
               valueFrom:
                 secretKeyRef:
