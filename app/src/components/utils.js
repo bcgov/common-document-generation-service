@@ -1,4 +1,7 @@
+const { existsSync, readFileSync } = require('fs');
+const { join } = require('path');
 const { v4: uuidv4 } = require('uuid');
+
 const log = require('./log')(module.filename);
 
 module.exports = {
@@ -45,6 +48,33 @@ module.exports = {
   getFileExtension: filename => {
     const re = /(?:\.([^.]+))?$/;
     return re.exec(filename)[1];
+  },
+
+  /**
+   * @function getGitRevision
+   * Gets the current git revision hash
+   * @see {@link https://stackoverflow.com/a/34518749}
+   * @returns {string} The git revision hash, or empty string
+   */
+  getGitRevision() {
+    try {
+      const gitDir = (() => {
+        let dir = '.git', i = 0;
+        while (!existsSync(join(__dirname, dir)) && i < 5) {
+          dir = '../' + dir;
+          i++;
+        }
+        return dir;
+      })();
+
+      const head = readFileSync(join(__dirname, `${gitDir}/HEAD`)).toString().trim();
+      return (head.indexOf(':') === -1)
+        ? head
+        : readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`)).toString().trim();
+    } catch (err) {
+      log.warn(err.message, { function: 'getGitRevision' });
+      return '';
+    }
   },
 
   /**

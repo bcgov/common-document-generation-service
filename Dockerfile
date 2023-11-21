@@ -23,6 +23,7 @@ RUN mkdir -p /.npm
 RUN chown -R 1001:0 /.npm
 
 # Install Application
+COPY .git ${APP_ROOT}/.git
 COPY app ${APP_ROOT}
 RUN chown -R 1001:0 ${APP_ROOT}
 USER 1001

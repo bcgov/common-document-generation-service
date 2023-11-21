@@ -2,7 +2,6 @@ const router = require('express').Router();
 
 const fileTypesRouter = require('./fileTypes');
 const healthRouter = require('./health');
-const renderRouter = require('./render');
 const templateRouter = require('./template');
 
 const { protect } = require('../../middleware/authorization');
@@ -42,9 +41,6 @@ router.get('/fileTypes', protect(), fileTypesRouter);
 
 /** Health Router */
 router.use('/health', protect(), healthRouter);
-
-/** Render Router */
-router.use('/render', protect(), renderRouter);
 
 /** Template Router */
 router.use('/template', protect(), templateRouter);

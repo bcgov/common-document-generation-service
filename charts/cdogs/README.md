@@ -1,6 +1,6 @@
 # common-document-generation-service
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.4.2](https://img.shields.io/badge/AppVersion-2.4.2-informational?style=flat-square)
+![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.4.2](https://img.shields.io/badge/AppVersion-2.4.2-informational?style=flat-square)
 
 A microservice for merging JSON data into xml-based templates (powered by Carbone.io)
 
@@ -35,6 +35,7 @@ Kubernetes: `>= 1.13.0`
 | config.enabled | bool | `false` |  |
 | config.releaseScoped | bool | `false` | This should be set to true if and only if you require configmaps and secrets to be release scoped. In the event you want all instances in the same namespace to share a similar configuration, this should be set to false |
 | failurePolicy | string | `"Retry"` |  |
+| features.authentication | bool | `false` | Specifies whether to run in authenticated mode |
 | fluentBit.config.aws.defaultRegion | string | `"ca-central-1"` | AWS Kinesis default region |
 | fluentBit.config.aws.kinesisStream | string | `"nress-prod-iit-logs"` | AWS Kinesis stream name |
 | fluentBit.config.aws.roleArn | string | `nil` | AWS Kinesis role ARN |

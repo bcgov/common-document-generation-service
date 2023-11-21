@@ -30,7 +30,6 @@ curl --request POST \
     "lastName": "Smith"
   },
   "options": {
-    "cacheReport": false,
     "convertTo": "pdf",
     "overwrite": true,
     "reportName": "{d.firstName}_{d.lastName}.pdf"

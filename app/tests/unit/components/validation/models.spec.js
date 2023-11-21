@@ -23,6 +23,16 @@ describe('carbone.data', () => {
   });
 });
 
+describe('template', () => {
+  it.each([undefined, null, 1, true, 'string'])('should return false given %j', (value) => {
+    expect(models.template(value)).toBeFalsy();
+  });
+
+  it('should return true given an object', () => {
+    expect(models.template({})).toBeTruthy();
+  });
+});
+
 // TODO: Refactor this to point to model contents
 describe.skip('models.docGen.contexts', () => {
   it('should return true for a valid contexts object (single)', () => {

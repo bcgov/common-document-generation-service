@@ -158,6 +158,10 @@ config:
     UPLOAD_FILE_COUNT: "1"
     UPLOAD_FILE_SIZE: 25MB
 
+features:
+  # -- Specifies whether to run in authenticated mode
+  authentication: false
+
 # Modify the following variables if you need to acquire secret values from a custom-named resource
 awsSecretOverride:
   # -- AWS Kinesis username - used by fluent-bit

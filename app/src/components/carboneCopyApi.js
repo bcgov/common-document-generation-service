@@ -6,7 +6,6 @@ const telejson = require('telejson');
 const log = require('./log')(module.filename);
 const carboneRender = require('./carboneRender');
 const FileCache = require('./fileCache');
-const { truthy } = require('./utils');
 
 const fileCache = new FileCache();
 
@@ -24,7 +23,16 @@ const carboneCopyApi = {
     }
   },
 
-  getFromCache: async (hash, hashHeaderName, download, remove, res) => {
+  /**
+   * @function getFromCache
+   * Attempts to fetch a specific file based off the sha-256 `hash` provided
+   * @param {string} hash A sha-256 hash
+   * @param {string} hashHeaderName The request header name for the hash
+   * @param {boolean} download Determines whether to provide the file as a payload
+   * @param {boolean} remove Determines whether to delete the file after the operation
+   * @param {object} res Express response object
+   */
+  getFromCache: (hash, hashHeaderName, download, remove, res) => {
     const file = fileCache.find(hash);
     if (!file.success) {
       return new Problem(file.errorType, { detail: file.errorMsg }).send(res);
@@ -33,14 +41,14 @@ const carboneCopyApi = {
     let cached = undefined;
     if (download) {
       try {
-        cached = await fileCache.read(hash);
+        cached = fileCache.read(hash);
       } catch (e) {
         return new Problem(500, { detail: e.message }).send(res);
       }
     }
 
     if (remove) {
-      const removed = await fileCache.remove(hash);
+      const removed = fileCache.remove(hash);
       if (!removed.success) {
         return new Problem(removed.errorType, { detail: removed.errorMsg }).send(res);
       }
@@ -105,12 +113,6 @@ const carboneCopyApi = {
       res.setHeader('X-Report-Name', output.reportName);
       res.setHeader('X-Template-Hash', template.hash);
 
-      if (truthy('cacheReport', options)) {
-        const rendered = await fileCache.write(output.report, output.reportName, 'binary');
-        if (rendered.success) {
-          res.setHeader('X-Report-Hash', rendered.hash);
-        }
-      }
       log.info('Template rendered', { function: 'renderTemplate' });
 
       // log metrics
