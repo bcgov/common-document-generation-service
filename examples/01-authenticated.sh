@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-# Retrieve a valid bearer token from oidc.
+# Retrieve a valid bearer token from keycloak.
 token=$(curl --request POST \
-   --url 'https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+   --url 'https://dev.loginproxy.gov.bc.ca/auth/realms/your-realm-name/protocol/openid-connect/token' \
    -H 'content-type: application/x-www-form-urlencoded' \
    --data grant_type=client_credentials \
    --data client_id="$CLIENT_ID" \
@@ -13,7 +13,7 @@ base64_encoded_template=$(base64 -i template.txt)
 
 # This sends data to CDOGS so that our template.txt can be rendered out to file test.pdf.
 curl --request POST \
-   --url 'https://cdogs-dev.apps.silver.devops.gov.bc.ca/api/v2/template/render' \
+   --url 'https://cdogs-dev.api.gov.bc.ca/api/v2/template/render' \
    -H "Authorization: Bearer $token" \
    -H 'content-type: application/json' \
    -o 'test.pdf' \
