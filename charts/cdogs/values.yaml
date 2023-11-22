@@ -183,7 +183,7 @@ fluentBit:
       # -- AWS Kinesis default region
       defaultRegion: ca-central-1
       # -- AWS Kinesis stream name
-      kinesisStream: nress-prod-iit-logs
+      kinesisStream: nr-apm-stack-documents
       # -- AWS Kinesis role ARN
       roleArn: ~
     # -- Fluentd logging hostname endpoint

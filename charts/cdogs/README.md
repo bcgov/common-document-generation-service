@@ -1,6 +1,6 @@
 # common-document-generation-service
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.4.2](https://img.shields.io/badge/AppVersion-2.4.2-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.4.2](https://img.shields.io/badge/AppVersion-2.4.2-informational?style=flat-square)
 
 A microservice for merging JSON data into xml-based templates (powered by Carbone.io)
 
@@ -37,7 +37,7 @@ Kubernetes: `>= 1.13.0`
 | failurePolicy | string | `"Retry"` |  |
 | features.authentication | bool | `false` | Specifies whether to run in authenticated mode |
 | fluentBit.config.aws.defaultRegion | string | `"ca-central-1"` | AWS Kinesis default region |
-| fluentBit.config.aws.kinesisStream | string | `"nress-prod-iit-logs"` | AWS Kinesis stream name |
+| fluentBit.config.aws.kinesisStream | string | `"nr-apm-stack-documents"` | AWS Kinesis stream name |
 | fluentBit.config.aws.roleArn | string | `nil` | AWS Kinesis role ARN |
 | fluentBit.config.logHostname | string | `"fluentd-csst.apps.silver.devops.gov.bc.ca"` | Fluentd logging hostname endpoint |
 | fluentBit.config.namespace | string | `nil` | The openshift/k8s namespace identifier |
