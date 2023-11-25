@@ -7,6 +7,7 @@
     "build": "echo Nothing to build",
     "serve": "nodemon ./bin/www",
     "start": "node ./bin/www",
+    "prune": "node ./cacheCleaner.js",
     "lint": "eslint . --no-fix --ignore-pattern 'node_modules' --ext .js",
     "lint:fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .js",
     "test": "jest --verbose --forceExit --detectOpenHandles",
