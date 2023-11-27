@@ -34,6 +34,9 @@ Kubernetes: `>= 1.13.0`
 | config.configMap | object | `{"CACHE_DIR":"/var/lib/file-cache/data","CACHE_SIZE":"2GB","CONVERTER_FACTORY_TIMEOUT":"60000","KC_PUBLICKEY":null,"KC_REALM":null,"KC_SERVERURL":null,"SERVER_BODYLIMIT":"100mb","SERVER_LOGLEVEL":"http","SERVER_PORT":"3000","START_CARBONE":"true","UPLOAD_FIELD_NAME":"template","UPLOAD_FILE_COUNT":"1","UPLOAD_FILE_SIZE":"25MB"}` | These values will be wholesale added to the configmap as is; refer to the cdogs documentation for what each of these values mean and whether you need them defined. Ensure that all values are represented explicitly as strings, as non-string values will not translate over as expected into container environment variables. For configuration keys named `*_ENABLED`, either leave them commented/undefined, or set them to string value "true". |
 | config.enabled | bool | `false` |  |
 | config.releaseScoped | bool | `false` | This should be set to true if and only if you require configmaps and secrets to be release scoped. In the event you want all instances in the same namespace to share a similar configuration, this should be set to false |
+| cronJob.enabled | bool | `true` | Specifies whether a cache cleaning cronjob should be created |
+| cronJob.schedule | string | `"0 0 * * 1,4"` | Every Monday & Thursday - https://crontab.guru/#0_0_*_*_1,4 |
+| cronJob.suspend | bool | `false` | In test environments, you might want to create the cronjob for consistency, but suspend it |
 | failurePolicy | string | `"Retry"` |  |
 | features.authentication | bool | `false` | Specifies whether to run in authenticated mode |
 | fluentBit.config.aws.defaultRegion | string | `"ca-central-1"` | AWS Kinesis default region |

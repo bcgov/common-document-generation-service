@@ -125,6 +125,14 @@ persistentVolumeClaim:
   # -- PVC Storage size (use M or G, not Mi or Gi)
   storageSize: 2G
 
+cronJob:
+  # -- Specifies whether a cache cleaning cronjob should be created
+  enabled: true
+  # -- Every Monday & Thursday - https://crontab.guru/#0_0_*_*_1,4
+  schedule: 0 0 * * 1,4
+  # -- In test environments, you might want to create the cronjob for consistency, but suspend it
+  suspend: false
+
 config:
   # Set to true if you want to let Helm manage and overwrite your configmaps.
   enabled: false

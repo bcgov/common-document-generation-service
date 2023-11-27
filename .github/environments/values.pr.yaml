@@ -5,5 +5,8 @@ features:
 persistentVolumeClaim:
   enabled: false
 
+cronJob:
+  enabled: false
+
 fluentBit:
   enabled: false
