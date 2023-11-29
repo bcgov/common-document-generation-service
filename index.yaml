@@ -3,6 +3,33 @@ entries:
   common-document-generation-service:
   - apiVersion: v2
     appVersion: 2.4.2
+    created: "2023-11-29T17:52:21.613845101Z"
+    description: A microservice for merging JSON data into xml-based templates (powered
+      by Carbone.io)
+    digest: 3d8a7c20f8f409e0c415e4aa2e069dccdb62dd043af08f2ed5a8bb3348c39b9c
+    home: https://github.com/bcgov/common-document-generation-service
+    keywords:
+    - nodejs
+    - javascript
+    - docker
+    - microservice
+    - document-generation
+    - templating
+    - cdogs
+    kubeVersion: '>= 1.13.0'
+    maintainers:
+    - email: NR.CommonServiceShowcase@gov.bc.ca
+      name: NR Common Service Showcase Team
+      url: https://bcgov.github.io/common-service-showcase/team.html
+    name: common-document-generation-service
+    sources:
+    - https://github.com/bcgov/common-document-generation-service
+    type: application
+    urls:
+    - https://github.com/bcgov/common-document-generation-service/releases/download/common-document-generation-service-0.0.3/common-document-generation-service-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 2.4.2
     created: "2023-11-21T19:38:32.305441322Z"
     description: A microservice for merging JSON data into xml-based templates (powered
       by Carbone.io)
@@ -55,4 +82,4 @@ entries:
     urls:
     - https://github.com/bcgov/common-document-generation-service/releases/download/common-document-generation-service-0.0.1/common-document-generation-service-0.0.1.tgz
     version: 0.0.1
-generated: "2023-11-21T19:38:32.305453154Z"
+generated: "2023-11-29T17:52:21.613861261Z"
