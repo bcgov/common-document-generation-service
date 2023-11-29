@@ -1,6 +1,6 @@
 # common-document-generation-service
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.4.2](https://img.shields.io/badge/AppVersion-2.4.2-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.4.2](https://img.shields.io/badge/AppVersion-2.4.2-informational?style=flat-square)
 
 A microservice for merging JSON data into xml-based templates (powered by Carbone.io)
 
@@ -34,10 +34,13 @@ Kubernetes: `>= 1.13.0`
 | config.configMap | object | `{"CACHE_DIR":"/var/lib/file-cache/data","CACHE_SIZE":"2GB","CONVERTER_FACTORY_TIMEOUT":"60000","KC_PUBLICKEY":null,"KC_REALM":null,"KC_SERVERURL":null,"SERVER_BODYLIMIT":"100mb","SERVER_LOGLEVEL":"http","SERVER_PORT":"3000","START_CARBONE":"true","UPLOAD_FIELD_NAME":"template","UPLOAD_FILE_COUNT":"1","UPLOAD_FILE_SIZE":"25MB"}` | These values will be wholesale added to the configmap as is; refer to the cdogs documentation for what each of these values mean and whether you need them defined. Ensure that all values are represented explicitly as strings, as non-string values will not translate over as expected into container environment variables. For configuration keys named `*_ENABLED`, either leave them commented/undefined, or set them to string value "true". |
 | config.enabled | bool | `false` |  |
 | config.releaseScoped | bool | `false` | This should be set to true if and only if you require configmaps and secrets to be release scoped. In the event you want all instances in the same namespace to share a similar configuration, this should be set to false |
+| cronJob.enabled | bool | `true` | Specifies whether a cache cleaning cronjob should be created |
+| cronJob.schedule | string | `"0 0 * * 1,4"` | Every Monday & Thursday - https://crontab.guru/#0_0_*_*_1,4 |
+| cronJob.suspend | bool | `false` | In test environments, you might want to create the cronjob for consistency, but suspend it |
 | failurePolicy | string | `"Retry"` |  |
 | features.authentication | bool | `false` | Specifies whether to run in authenticated mode |
 | fluentBit.config.aws.defaultRegion | string | `"ca-central-1"` | AWS Kinesis default region |
-| fluentBit.config.aws.kinesisStream | string | `"nress-prod-iit-logs"` | AWS Kinesis stream name |
+| fluentBit.config.aws.kinesisStream | string | `"nr-apm-stack-documents"` | AWS Kinesis stream name |
 | fluentBit.config.aws.roleArn | string | `nil` | AWS Kinesis role ARN |
 | fluentBit.config.logHostname | string | `"fluentd-csst.apps.silver.devops.gov.bc.ca"` | Fluentd logging hostname endpoint |
 | fluentBit.config.namespace | string | `nil` | The openshift/k8s namespace identifier |

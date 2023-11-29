@@ -9,23 +9,24 @@ const fileUploadsDir = config.get('carbone.cacheDir');
 const formFieldName = config.get('carbone.formFieldName');
 const maxFileSize = bytes.parse(config.get('carbone.uploadSize'));
 const maxFileCount = parseInt(config.get('carbone.uploadCount'));
+const osTempDir = fs.realpathSync(os.tmpdir());
 
 let storage = undefined;
 let uploader = undefined;
 
-// Upload directory checks
+// Cache directory check
 try {
   fs.ensureDirSync(fileUploadsDir);
 } catch (e) {
-  console.warn(`Unable to use directory "${fileUploadsDir}". Falling back to default OS temp directory`);
-  fs.realpathSync(os.tmpdir());
+  console.warn(`Unable to use cache directory "${fileUploadsDir}". Cache will fall back to default OS temp directory "${osTempDir}"`);
 }
 
 // Setup storage location
 if (!storage) {
   storage = multer.diskStorage({
     destination: (_req, _file, cb) => {
-      cb(null, fileUploadsDir);
+      // Always write transiently uploaded files to os temp scratch space
+      cb(null, osTempDir);
     }
   });
 }

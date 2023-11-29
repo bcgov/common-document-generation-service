@@ -1,0 +1,60 @@
+{{- if and .Values.cronJob.enabled .Values.persistentVolumeClaim.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cdogs.fullname" . }}
+  labels: {{ include "cdogs.labels" . | nindent 4 }}
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 3
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    metadata:
+      labels: {{ include "cdogs.labels" . | nindent 8 }}
+    spec:
+      backoffLimit: 6
+      activeDeadlineSeconds: 300
+      parallelism: 1
+      completions: 1
+      template:
+        metadata:
+          labels: {{ include "cdogs.labels" . | nindent 12 }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets: {{ toYaml . | nindent 8 }}
+          {{- end }}
+          {{- if .Values.serviceAccount.create }}
+          serviceAccountName: {{ include "cdogs.serviceAccountName" . }}
+          {{- end }}
+          {{- with .Values.podSecurityContext }}
+          securityContext: {{ toYaml . | nindent 8 }}
+          {{- end }}
+          containers:
+            - name: job
+              {{- with .Values.securityContext }}
+              securityContext: {{ toYaml . | nindent 12 }}
+              {{- end }}
+              image: "{{ .Values.image.repository }}/{{ .Chart.Name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command:
+                - node
+                - ./cacheCleaner.js
+              resources: {{ toYaml .Values.resources | nindent 16 }}
+              env:
+                - name: NODE_ENV
+                  value: production
+              envFrom:
+                - configMapRef:
+                    name: {{ include "cdogs.configname" . }}-config
+              volumeMounts:
+                - name: file-cache-data
+                  mountPath: /var/lib/file-cache/data
+          restartPolicy: Never
+          volumes:
+            - name: file-cache-data
+              persistentVolumeClaim:
+                claimName: {{ include "cdogs.configname" . }}-cache
+  schedule: {{ .Values.cronJob.schedule }}
+  suspend: {{ .Values.cronJob.suspend }}
+{{- end }}
