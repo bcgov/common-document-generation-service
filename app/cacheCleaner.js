@@ -51,65 +51,79 @@ if (!cacheSize) {
 
 // Check cache size and prune oldest files away as needed
 try {
-  const currCacheSize = dirSize(cacheDir);
-  const files = getSortedFiles(cacheDir);
-  const status = currCacheSize < cacheSizeLimit ? 'below' : 'above';
+  const items = getSortedPaths(cacheDir);
+  const currCacheSize = items
+    .map(p => p.size)
+    .reduce((i, size) => i + size, 0);
+  const isWithinLimit = currCacheSize < cacheSizeLimit;
+  const status = isWithinLimit ? 'below' : 'above';
 
   log.info(`Current cache size ${currCacheSize} ${status} threshold of ${cacheSizeLimit}`, {
     cacheLimit: cacheSizeLimit,
     cacheSize: currCacheSize
   });
 
-  // Prune files if necessary
-  let rmCount = 0;
-  for (const file of files) {
-    if (dirSize(cacheDir) < cacheSizeLimit) break;
-    rmSync(`${cacheDir}/${file}`, { recursive: true, force: true });
-    rmCount++;
+  // Prune if necessary
+  const pruneList = [];
+  if (!isWithinLimit) {
+    const difference = currCacheSize - cacheSizeLimit;
+    let i = 0, pruneSum = 0;
+
+    // Determine list to prune
+    while (pruneSum < difference) {
+      pruneSum += items[i].size;
+      pruneList.push(items[i].name);
+      i++;
+    }
+
+    for (const obj of pruneList) {
+      const path = join(cacheDir, obj);
+      rmSync(path, { recursive: true, force: true });
+      log.info('Object pruned', { object: obj });
+    }
   }
 
-  log.info(`${rmCount} objects were pruned from the cache - Exiting`, { removeCount: rmCount });
+  log.info(`${pruneList.length} objects were pruned from the cache - Exiting`, { pruneCount: pruneList.length });
   process.exit(0);
-} catch(err) {
-  log.error(err.message);
+} catch (err) {
+  log.error(err);
   process.exit(1);
 }
 
 /**
- * @function dirSize
- * Recursively calculates the size of directory `dir`
- * @param {string} dir The directory to calculate
- * @returns {number} The size of the directory in bytes
+ * @function pathSize
+ * Recursively calculates the size of `path`
+ * @param {string} path The path to calculate
+ * @returns {number} The size of the path in bytes
  */
-function dirSize(dir) {
-  const files = readdirSync(dir, { withFileTypes: true });
-  const paths = files.map(file => {
-    const path = join(dir, file.name);
+function pathSize(path) {
+  const dirStat = statSync(path);
 
-    if (file.isDirectory()) return dirSize(path);
-    if (file.isFile()) {
-      const { size } = statSync(path);
-      return size;
-    }
-    return 0;
-  });
-
-  return paths.flat(Infinity).reduce((i, size) => i + size, 0);
+  if (dirStat.isDirectory()) {
+    return readdirSync(path)
+      .flatMap(file => pathSize(join(path, file)))
+      .reduce((i, size) => i + size, 0);
+  }
+  else if (dirStat.isFile()) return dirStat.size;
+  else return 0;
 }
 
 /**
- * @function getSortedFiles
- * Acquires a list of files and directories ordered from oldest to newest modified
- * @param {string} dir The directory to inspect
- * @returns {Array<string>} The list of files and directories in directory `dir`
+ * @function getSortedPaths
+ * Acquires a list of paths ordered from oldest to newest modified
+ * @param {string} path The path to inspect
+ * @returns {Array<object>} The list of files and directories in `path`.
+ * Each object contains `name`, `size` and `time` attributes.
  */
-function getSortedFiles(dir) {
-  const files = readdirSync(dir);
-  return files
-    .map(fileName => ({
-      name: fileName,
-      time: statSync(`${dir}/${fileName}`).mtime.getTime(),
-    }))
-    .sort((a, b) => a.time - b.time)
-    .map(file => file.name);
+function getSortedPaths(path) {
+  return readdirSync(path)
+    .map(file => {
+      const fullDir = join(path, file);
+      return {
+        name: file,
+        size: pathSize(fullDir),
+        time: statSync(fullDir).mtime.getTime(),
+      };
+    })
+    .sort((a, b) => a.time - b.time);
 }
