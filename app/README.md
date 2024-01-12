@@ -44,7 +44,7 @@ The following variables alter the behavior of Carbone and its caching behavior.
 
 | Config Var | Env Var | Default | Notes |
 | --- | --- | --- | --- |
-| `cacheDir` | `CACHE_DIR` | `/tmp/carbone-files` | This is the root location to read/write files. Error will be thrown if directory does not exist and cannot be created. Will attempt to fall back to operating system temp file location. |
+| `cacheDir` | `CACHE_DIR` | `/var/lib/file-cache/data` | This is the root location to read/write files. Error will be thrown if directory does not exist and cannot be created. Will attempt to fall back to operating system temp file location. |
 | `cacheSize` | `CACHE_SIZE` | `2GB` | The maximum size of the `cacheDir` directory. Oldest timestamped files will be cycled out to make room for new files. Uses the [bytes](https://www.npmjs.com/package/bytes) library for parsing values. |
 | `converterFactoryTimeout` | `CONVERTER_FACTORY_TIMEOUT` | `60000` | Maximum amount of time (in milliseconds) that Carbone will use to convert files before timing out. |
 | `formFieldName` | `UPLOAD_FIELD_NAME` | `template` | Field name for multipart form data upload when uploading templates via /template api. |
