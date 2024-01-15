@@ -3,7 +3,7 @@ name: common-document-generation-service
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.0.5
+version: 0.0.6
 kubeVersion: ">= 1.13.0"
 description: A microservice for merging JSON data into xml-based templates (powered by Carbone.io)
 # A chart can be either an 'application' or a 'library' chart.
