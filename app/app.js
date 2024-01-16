@@ -1,8 +1,9 @@
+const Problem = require('api-problem');
 const compression = require('compression');
 const config = require('config');
 const cors = require('cors');
 const express = require('express');
-const Problem = require('api-problem');
+const helmet = require('helmet');
 
 const { name: appName, version: appVersion } = require('./package.json');
 const carboneCopyApi = require('./src/components/carboneCopyApi');
@@ -29,12 +30,9 @@ app.use(cors({
   /** Set true to dynamically set Access-Control-Allow-Origin based on Origin */
   origin: true
 }));
-app.use(express.json({
-  limit: config.get('server.bodyLimit')
-}));
-app.use(express.urlencoded({
-  extended: false
-}));
+app.use(express.json({ limit: config.get('server.bodyLimit') }));
+app.use(express.urlencoded({ extended: false }));
+app.use(helmet());
 
 // Print out configuration settings in verbose startup
 log.verbose('Config', prettyStringify(config));

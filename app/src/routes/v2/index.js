@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const helmet = require('helmet');
 
 const fileTypesRouter = require('./fileTypes');
 const healthRouter = require('./health');
@@ -8,6 +9,14 @@ const { protect } = require('../../middleware/authorization');
 const { getDocs, getJsonSpec, getYamlSpec } = require('../../middleware/openapi');
 
 const version = 'v2';
+const docsHelmet = helmet({
+  contentSecurityPolicy: {
+    directives: {
+      'img-src': ['data:', 'https://cdn.redoc.ly'],
+      'script-src': ['blob:', 'https://cdn.redoc.ly']
+    }
+  }
+});
 
 // Base Responder
 router.get('/', (_req, res) => {
@@ -28,13 +37,13 @@ router.get('/', (_req, res) => {
 });
 
 /** OpenAPI JSON Spec */
-router.get('/api-spec.json', getJsonSpec(version));
+router.get('/api-spec.json', docsHelmet, getJsonSpec(version));
 
 /** OpenAPI YAML Spec */
-router.get('/api-spec.yaml', getYamlSpec(version));
+router.get('/api-spec.yaml', docsHelmet, getYamlSpec(version));
 
 /** OpenAPI Docs */
-router.get('/docs', getDocs(version));
+router.get('/docs', docsHelmet, getDocs(version));
 
 /** File Types Router */
 router.get('/fileTypes', protect(), fileTypesRouter);
