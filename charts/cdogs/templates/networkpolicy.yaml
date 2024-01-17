@@ -12,8 +12,6 @@ spec:
         - namespaceSelector:
             matchLabels:
               network.openshift.io/policy-group: ingress
-        - podSelector:
-            matchLabels: {{ include "cdogs.selectorLabels" . | nindent 14 }}
       ports:
         - port: {{ default "8080" .Values.config.configMap.SERVER_PORT | atoi }}
           protocol: TCP
