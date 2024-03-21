@@ -1,6 +1,6 @@
 # common-document-generation-service
 
-![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.5.0](https://img.shields.io/badge/AppVersion-2.5.0-informational?style=flat-square)
+![Version: 0.0.7](https://img.shields.io/badge/Version-0.0.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.5.0](https://img.shields.io/badge/AppVersion-2.5.0-informational?style=flat-square)
 
 A microservice for merging JSON data into xml-based templates (powered by Carbone.io)
 
@@ -48,7 +48,7 @@ Kubernetes: `>= 1.13.0`
 | fluentBit.enabled | bool | `false` | Specifies whether the fluent-bit logging sidecar should be enabled |
 | fluentBit.image.name | string | `"fluent-bit"` | Default image name |
 | fluentBit.image.repository | string | `"docker.io/fluent"` | Default image repository |
-| fluentBit.image.tag | string | `"2.1.10"` | Default image tag |
+| fluentBit.image.tag | string | `"2.2.2"` | Default image tag |
 | fluentBit.resources.limits.cpu | string | `"100m"` | Limit Peak CPU (in millicores ex. 1000m) |
 | fluentBit.resources.limits.memory | string | `"64Mi"` | Limit Peak Memory (in gigabytes Gi or megabytes Mi ex. 2Gi) |
 | fluentBit.resources.requests.cpu | string | `"10m"` | Requested CPU (in millicores ex. 500m) |
