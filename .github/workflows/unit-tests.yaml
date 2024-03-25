@@ -24,17 +24,17 @@ jobs:
           - '20.x'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Check CodeClimate Secrets
         id: check-secrets
         run: |
           echo "HAS_CC_SECRETS=${{ secrets.CC_TEST_REPORTER_ID != '' }}" >> $GITHUB_OUTPUT
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-app
         env:
           cache-name: cache-node-modules
@@ -54,7 +54,7 @@ jobs:
           CI: true
       - name: Save Coverage Results
         if: matrix.node-version == '20.x'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
@@ -78,11 +78,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Restore Coverage Results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Publish code coverage
-        uses: paambaati/codeclimate-action@v3.2.0
+        uses: paambaati/codeclimate-action@v5
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:

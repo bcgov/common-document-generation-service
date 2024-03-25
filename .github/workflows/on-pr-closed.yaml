@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 12
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Login to OpenShift Cluster
       uses: redhat-actions/oc-login@v1
       with:
@@ -41,12 +41,12 @@ jobs:
         helm uninstall --namespace ${{ env.NAMESPACE_PREFIX }}-dev pr-${{ github.event.number }} --timeout 10m --wait
         oc delete --namespace ${{ env.NAMESPACE_PREFIX }}-dev cm,secret --selector app.kubernetes.io/instance=pr-${{ github.event.number }}
     - name: Remove Release Comment on PR
-      uses: marocchino/sticky-pull-request-comment@v2
+      uses: marocchino/sticky-pull-request-comment@v2.9.0
       with:
         header: release
         delete: true
     - name: Remove Github Deployment Environment
-      uses: strumwolf/delete-deployment-environment@v2
+      uses: strumwolf/delete-deployment-environment@v3
       with:
         environment: pr
         onlyRemoveDeployments: true
