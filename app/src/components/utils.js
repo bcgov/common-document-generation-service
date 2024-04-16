@@ -1,3 +1,4 @@
+const config = require('config');
 const { existsSync, readFileSync } = require('fs');
 const { join } = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -40,6 +41,31 @@ module.exports = {
   },
 
   /**
+   * @function getConfigBoolean
+   * Gets the value of a boolean node-config key.
+   * Keys that don't exist in the config are automatically converted to `false`,
+   * thus avoiding the need to either call `config.has()` first, or wrap `config.get()`
+   * inside a try-catch block every time.
+   * @param {string} key the configuration value to look up. Must be either true, false, or not exist in the config.
+   * @returns {boolean} `true` if key exists in config and is true, `false` otherwise
+   */
+  getConfigBoolean(key) {
+    try {
+      const getConfig = config.get(key);
+
+      // isTruthy() can't handle undefined / null, so we have to do that here
+      // @see {@link https://github.com/node-config/node-config/wiki/Common-Usage#using-config-values}
+      if (getConfig === undefined || getConfig === null) return false;
+      else {
+        return module.exports.isTruthy(getConfig);
+      }
+    }
+    catch (e) {
+      return false;
+    }
+  },
+
+  /**
    * @function getFileExtension
    * From a string representing a filename, get the extension if there is one
    * @param {filename} string A filename in a string
@@ -75,6 +101,20 @@ module.exports = {
       log.warn(err.message, { function: 'getGitRevision' });
       return '';
     }
+  },
+
+  /**
+   * @function isTruthy
+   * Returns true if the element name in the object contains a truthy value
+   * @param {object} value The object to evaluate
+   * @returns {boolean} True if truthy, false if not, and undefined if undefined
+   */
+  isTruthy(value) {
+    if (value === undefined) return value;
+
+    const isStr = typeof value === 'string' || value instanceof String;
+    const trueStrings = ['true', 't', 'yes', 'y', '1'];
+    return value === true || value === 1 || isStr && trueStrings.includes(value.toLowerCase());
   },
 
   /**

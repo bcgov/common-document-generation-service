@@ -34,6 +34,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileTypes"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         default:
           description: Unexpected error
           content:
@@ -51,6 +53,8 @@ paths:
       responses:
         "200":
           description: Indicates API is running
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         default:
           description: Unexpected error
           content:
@@ -92,6 +96,8 @@ paths:
               example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "405":
           description: Template already cached
           content:
@@ -165,6 +171,8 @@ paths:
                 description: Raw binary-encoded response
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFound"
         default:
@@ -265,6 +273,8 @@ paths:
               example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
         "422":
@@ -333,6 +343,8 @@ paths:
               example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
         "422":
@@ -512,6 +524,17 @@ components:
                 - $ref: "#/components/schemas/InlineTemplateObject"
                 - type: object
                   description: An object containing the document template to merge into
+    UnauthorizedError:
+      allOf:
+        - $ref: "#/components/schemas/Problem"
+        - type: object
+          properties:
+            status:
+              example: 401
+            title:
+              example: Unauthorized
+            type:
+              example: "https://httpstatuses.com/401"
     ValidationError:
       allOf:
         - $ref: "#/components/schemas/Problem"
@@ -571,6 +594,10 @@ components:
             $ref: "#/components/schemas/NotFound"
     UnauthorizedError:
       description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UnauthorizedError"
     UnprocessableEntity:
       description: >-
         The server was unable to process the contained instructions. Generally
