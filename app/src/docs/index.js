@@ -2,6 +2,7 @@ const config = require('config');
 const fs = require('fs');
 const path = require('path');
 const { load } = require('js-yaml');
+const { getConfigBoolean } = require('../components/utils');
 
 module.exports = {
   /**
@@ -44,7 +45,7 @@ module.exports = {
     const spec = load(rawSpec);
     spec.servers[0].url = `/api/${version}`;
 
-    if (config.has('keycloak.enabled')) {
+    if (getConfigBoolean('keycloak.enabled')) {
       // Dynamically update OIDC endpoint url
       spec.components.securitySchemes.OpenID.openIdConnectUrl = `${config.get('keycloak.serverUrl')}/realms/${config.get('keycloak.realm')}/.well-known/openid-configuration`;
     } else {

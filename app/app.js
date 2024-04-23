@@ -7,10 +7,9 @@ const helmet = require('helmet');
 
 const { name: appName, version: appVersion } = require('./package.json');
 const carboneCopyApi = require('./src/components/carboneCopyApi');
-const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
-const { getGitRevision, prettyStringify } = require('./src/components/utils');
+const { getConfigBoolean, getGitRevision, prettyStringify } = require('./src/components/utils');
 const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
@@ -52,9 +51,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Use Keycloak OIDC Middleware
-if (config.has('keycloak.enabled')) {
+if (getConfigBoolean('keycloak.enabled')) {
   log.info('Running in authenticated mode');
-  app.use(keycloak.middleware());
 } else {
   log.info('Running in public mode');
 }
