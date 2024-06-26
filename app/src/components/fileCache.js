@@ -107,11 +107,12 @@ class FileCache {
     }
     if (!name) {
       result.errorType = 400;
-      result.errorMsg = 'Cannot move file; name parameter is required.';
+      result.errorMsg = 'Cannot move file; file name parameter is required.';
       return result;
     }
 
     try {
+      // get a hash of the file from contents
       result.hash = await this._getHash(source);
     } catch (e) {
       result.errorType = 500;
@@ -120,6 +121,7 @@ class FileCache {
     }
 
     const hashPath = this._getHashPath(result.hash);
+    // if file exists at temp file path
     if (fs.existsSync(hashPath)) {
       if (options.overwrite) {
         fs.removeSync(hashPath);
@@ -158,7 +160,7 @@ class FileCache {
     return result;
   }
 
-  async write(content, name, contentEncodingType = 'base64', options = { overwrite: false }) {
+  async write(content, fileType, contentEncodingType = 'base64', options = { overwrite: false }) {
     let result = { success: false, errorType: null, errorMsg: null, hash: null };
 
     if (!content) {
@@ -166,20 +168,22 @@ class FileCache {
       result.errorMsg = 'Cannot write file; content parameter is required.';
       return result;
     }
-    if (!name) {
+    if (!fileType) {
       result.errorType = 400;
-      result.errorMsg = 'Cannot write file; name parameter is required.';
+      result.errorMsg = 'Cannot write file; fileType parameter is required.';
       return result;
     }
     const tmpFile = this._getTempFilePath();
-    fs.outputFileSync(tmpFile, content, { encoding: contentEncodingType });
+    // save template to temp directory
+    await fs.outputFileSync(tmpFile, content, { encoding: contentEncodingType });
 
-    // name may only be an extension, if that is the case, let's generate a name
-    let destFilename = path.extname(name) === '' ? path.format({
+    // move temp file to file cache
+    let destFilename = path.format({
       name: uuidv4(),
-      ext: (name.startsWith('.') ? name : `.${name}`)
-    }) : name;
+      ext: fileType.replace(/\./g, '')
+    });
     result = await this.move(tmpFile, destFilename, options);
+    log.info('Template cached', { function: 'fileCache.write' });
     if (!result.success) {
       result.errorMsg = `Error writing content to cache. ${result.errorMsg}`;
     }
