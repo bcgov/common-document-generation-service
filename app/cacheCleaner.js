@@ -5,7 +5,7 @@ const { join } = require('path');
 
 const log = require('./src/components/log')(module.filename);
 
-const RATIO = 0.8; // Best practice is to keep the cache no more than 80% full
+const RATIO = 0.7; // Best practice is to keep the cache no more than 70% full
 
 const osTempDir = realpathSync(tmpdir());
 const cacheDir = (() => {

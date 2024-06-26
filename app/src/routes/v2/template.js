@@ -10,7 +10,9 @@ const log = require('../../components/log')(module.filename);
 
 const fileCache = new FileCache();
 
-/** Returns the rendered report from cache */
+/**
+ *  Upload a template to cache
+ */
 templateRouter.post('/', upload, async (req, res) => {
   log.verbose('Template upload');
 
@@ -28,6 +30,9 @@ templateRouter.post('/', upload, async (req, res) => {
   }
 });
 
+/**
+ * Render a document from a template provided in JSON body
+ */
 templateRouter.post('/render', middleware.validateTemplate, async (req, res) => {
   log.verbose('Template upload and render');
 
@@ -52,12 +57,18 @@ templateRouter.post('/render', middleware.validateTemplate, async (req, res) => 
   return await findAndRender(content.hash, req, res);
 });
 
+/**
+ * Render a document from a cached template
+ */
 templateRouter.post('/:uid/render', middleware.validateCarbone, async (req, res) => {
   const hash = req.params.uid;
   log.verbose('Template render', { hash: hash });
   return await findAndRender(hash, req, res);
 });
 
+/**
+ * get a template from cache
+ */
 templateRouter.get('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
@@ -66,6 +77,9 @@ templateRouter.get('/:uid', async (req, res) => {
   return getFromCache(hash, hashHeaderName, download, false, res);
 });
 
+/**
+ * delete a template from cache
+ */
 templateRouter.delete('/:uid', async (req, res) => {
   const hash = req.params.uid;
   const download = req.query.download !== undefined;
