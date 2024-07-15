@@ -1,4 +1,4 @@
-FROM docker.io/bcgovimages/alpine-node-libreoffice:20.11.1
+FROM docker.io/bcgovimages/alpine-node-libreoffice:20.15.1
 
 ARG APP_ROOT=/opt/app-root/src
 ENV APP_PORT=8080 \
