@@ -63,14 +63,16 @@ class FileCache {
       if (!fs.existsSync(hashPath)) {
         result.errorType = 404;
         result.errorMsg = `Hash '${hash}' not found.`;
+        log.error(`Hash '${hash}' not found.`, { function: 'fileCache.find', result });
         return result;
       }
       result.hash = hash;
 
       const files = fs.readdirSync(hashPath);
-      if (!files || files.length !== 1) {
+      if (!files || files.length === 0) {
         result.errorType = 404;
         result.errorMsg = 'Hash found; could not read file from cache.';
+        log.error('Hash found. could not read file from cache', { function: 'fileCache.find', result });
         return result;
       } else {
         result.name = files[0];
@@ -121,9 +123,10 @@ class FileCache {
     }
 
     const hashPath = this._getHashPath(result.hash);
-    // if file exists at temp file path
+    // if template exists
     if (fs.existsSync(hashPath)) {
       if (options.overwrite) {
+        // remove template
         fs.removeSync(hashPath);
       } else {
         // Remove temporary file from cache
