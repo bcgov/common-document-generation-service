@@ -14,12 +14,12 @@ const carboneCopyApi = {
     carboneRender.carboneSet();
   },
 
-  findAndRender: (hash, req, res) => {
+  findAndRender: async (hash, req, res) => {
     const template = fileCache.find(hash);
     if (!template.success) {
       new Problem(template.errorType, { detail: template.errorMsg }).send(res);
     } else {
-      return carboneCopyApi.renderTemplate(template, req, res);
+      return await carboneCopyApi.renderTemplate(template, req, res);
     }
   },
 
