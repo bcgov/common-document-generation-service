@@ -207,7 +207,7 @@ fluentBit:
     # -- Default image repository
     repository: docker.io/fluent
     # -- Default image tag
-    tag: "2.2.2"
+    tag: "3.1.9"
 
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
