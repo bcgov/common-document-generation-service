@@ -35,13 +35,19 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Login to OpenShift Cluster
-      uses: redhat-actions/oc-login@v1
+    - name: Install CLI tools from OpenShift Mirror
+      uses: redhat-actions/openshift-tools-installer@v1
       with:
-        openshift_server_url: ${{ inputs.openshift_server }}
-        openshift_token: ${{ inputs.openshift_token }}
-        insecure_skip_tls_verify: true
-        namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        oc: "4"
+
+    - name: Login to OpenShift and select project
+      shell: bash
+      run: |
+        # OC Login
+        OC_TEMP_TOKEN=$(curl -k -X POST ${{ inputs.openshift_server }}/api/v1/namespaces/${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}/serviceaccounts/pipeline/token --header "Authorization: Bearer ${{ inputs.openshift_token }}" -d '{"spec": {"expirationSeconds": 600}}' -H 'Content-Type: application/json; charset=utf-8' | jq -r '.status.token' )
+        oc login --token=$OC_TEMP_TOKEN --server=${{ inputs.openshift_server }}
+        # move to project context
+        oc project ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
 
     - name: Helm Deploy
       shell: bash

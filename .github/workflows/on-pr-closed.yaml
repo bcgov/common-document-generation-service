@@ -28,13 +28,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Login to OpenShift Cluster
-      uses: redhat-actions/oc-login@v1
+    - name: Install CLI tools from OpenShift Mirror
+      uses: redhat-actions/openshift-tools-installer@v1
       with:
-        openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-        openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-        insecure_skip_tls_verify: true
-        namespace: ${{ env.NAMESPACE_PREFIX }}-dev
+        oc: "4"
+    - name: Login to OpenShift and select project
+      shell: bash
+      run: |
+        # OC Login
+        OC_TEMP_TOKEN=$(curl -k -X POST ${{ secrets.OPENSHIFT_SERVER }}/api/v1/namespaces/${{ env.NAMESPACE_PREFIX }}-dev/serviceaccounts/pipeline/token --header "Authorization: Bearer ${{ secrets.OPENSHIFT_TOKEN }}" -d '{"spec": {"expirationSeconds": 600}}' -H 'Content-Type: application/json; charset=utf-8' | jq -r '.status.token' )
+        oc login --token=$OC_TEMP_TOKEN --server=${{ secrets.OPENSHIFT_SERVER }}
+        # move to project context
+        oc project ${{ env.NAMESPACE_PREFIX }}-dev
     - name: Remove PR Deployment
       shell: bash
       run: |
