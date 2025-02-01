@@ -1,0 +1,90 @@
+{
+    "isaDate": "20191127",
+    "notes": "This is a long bit of text that is eventually broken up by some newlines and/or newlines/carriageReturns. \n So that means that the json can have slash-n, slash-r in it and the template will treat that as line returns in a plain text representation, or in the case of DOCX and ODT will replace it with the appropriate document-type XML line break tag. Here's a slash-n: \n Now here's a slash-r slash-n \r\n And another set of line breaks here\n\n\n See the Carbone documentation here https://carbone.io/documentation.html#formatters and look for convCRLF() \r\n ",
+    "admins": [
+      {
+        "party": "X",
+        "name": "John Smith",
+        "phone": "555-123-4567",
+        "fax": "555-098-6543",
+        "email": "fakeemail@email.com"
+      },
+      {
+        "party": "Y",
+        "name": "Anna Johnson",
+        "phone": "555-333-4444",
+        "fax": "555-111-2222",
+        "email": "anotheremail@email.com"
+      }
+    ],
+    "otherParties": [
+      {
+        "name": "Lucas O'Neil"
+      },
+      {
+        "name": "Matthew Hall"
+      },
+      {
+        "name": "Jeremy"
+      },
+      {
+        "name": "Jason"
+      },
+      {
+        "name": "Bill"
+      },
+      {
+        "name": "Ted"
+      },
+      {
+        "name": "Excellent Adventure"
+      }
+    ],
+    "offices": [
+      {
+        "office": "Victoria",
+        "applications": [
+          {
+            "name": "Mines",
+            "contact": "Jane Smith"
+          },
+          {
+            "name": "Water",
+            "contact": "Bob Bobby"
+          },
+          {
+            "name": "Forests",
+            "contact": "Alan"
+          },
+          {
+            "name": "Roads",
+            "contact": "Harvey"
+          }
+        ]
+      },
+      {
+        "office": "Kamloops",
+        "applications": [
+          {
+            "name": "Licencing",
+            "contact": "Jane Smith"
+          },
+          {
+            "name": "Rejections",
+            "contact": "Bob Bobby"
+          }
+        ]
+      },
+      {
+        "office": "Vancouver",
+        "applications": [
+          {
+            "name": "Secret Application"
+          },
+          {
+            "name": "Mountains"
+          }
+        ]
+      }
+    ]
+  }
