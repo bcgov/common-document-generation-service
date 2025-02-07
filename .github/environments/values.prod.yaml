@@ -23,5 +23,13 @@ config:
     UPLOAD_FILE_COUNT: "1"
     UPLOAD_FILE_SIZE: 25MB
 
+persistentVolumeClaim:
+  # -- Specifies whether a persistent volume claim should be created
+  enabled: true
+  # -- Default storage class type
+  storageClassName: netapp-file-standard
+  # -- PVC Storage size (use M or G, not Mi or Gi)
+  storageSize: 5G
+
 fluentBit:
   enabled: true
