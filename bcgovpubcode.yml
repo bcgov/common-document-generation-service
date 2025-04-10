@@ -1,7 +1,7 @@
 ---
 data_management_roles:
   data_custodian: Fraser Marshall
-  product_owner: Sharolyn Hurley
+  product_owner: Shabari Khaniyan Kunnumel
 product_external_dependencies:
   identity_authorization:
     - Custom-Keycloak

@@ -31,8 +31,6 @@ jobs:
           image_name: ${{ env.APP_NAME }}
           github_username: ${{ github.repository_owner }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy-dev:
     name: Deploy to Dev

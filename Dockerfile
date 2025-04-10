@@ -1,9 +1,21 @@
-FROM docker.io/bcgovimages/alpine-node-libreoffice:20.15.1
+FROM docker.io/node:20.19.0-alpine
 
 ARG APP_ROOT=/opt/app-root/src
-ENV APP_PORT=8080 \
-    NO_UPDATE_NOTIFIER=true
+ENV NO_UPDATE_NOTIFIER=true \
+  PATH="/usr/lib/libreoffice/program:${PATH}" \
+  PYTHONUNBUFFERED=1
 WORKDIR ${APP_ROOT}
+
+# Install LibreOffice & Common Fonts
+RUN apk --no-cache add bash libreoffice util-linux \
+  font-droid-nonlatin font-droid ttf-dejavu ttf-freefont ttf-liberation && \
+  rm -rf /var/cache/apk/*
+
+# Install Microsoft Core Fonts
+RUN apk --no-cache add msttcorefonts-installer fontconfig && \
+  update-ms-fonts && \
+  fc-cache -f && \
+  rm -rf /var/cache/apk/*
 
 # Install Zip
 RUN apk --no-cache add zip && \

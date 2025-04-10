@@ -6,7 +6,7 @@ replicaCount: 2
 
 image:
   # -- Default image repository
-  repository: docker.io/bcgovimages
+  repository: ghcr.io/bcgov
   # -- Default image pull policy
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
