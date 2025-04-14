@@ -20,10 +20,6 @@ Logging
 - [morgan](https://www.npmjs.com/package/morgan) - HTTP request logger
 - [npmlog](https://www.npmjs.com/package/npmlog) - General log framework
 
-Docker Image
-
-- [bcgovimages/alpine-node-libreoffice](https://hub.docker.com/r/bcgovimages/alpine-node-libreoffice) - a base image with Node.js LTS and LibreOffice™ installed.  LibreOffice™ is used for the file conversions.
-
 ## Design and Usage
 
 The `/template/render` endpoint request body is composed of 3 main parts.

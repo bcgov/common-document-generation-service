@@ -4,9 +4,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/maintainability)](https://codeclimate.com/github/bcgov/common-document-generation-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b360d0b4c9ad56149499/test_coverage)](https://codeclimate.com/github/bcgov/common-document-generation-service/test_coverage)
 
-[![version](https://img.shields.io/docker/v/bcgovimages/common-document-generation-service.svg?sort=semver)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
-[![pulls](https://img.shields.io/docker/pulls/bcgovimages/common-document-generation-service.svg)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
-[![size](https://img.shields.io/docker/image-size/bcgovimages/common-document-generation-service.svg)](https://hub.docker.com/r/bcgovimages/common-document-generation-service)
 
 CDOGS - A common hosted service (API) for generating documents from templates, data documents, and assets
 
@@ -88,19 +85,19 @@ This section assumes you have a recent version of Docker available to work with 
 Get CDOGS image (change latest tag to specific version if needed):
 
 ```sh
-docker pull bcgovimages/common-document-generation-service:latest
+docker pull ghcr.io/bcgov/common-document-generation-service:latest
 ```
 
 Run CDOGS in unauthenticated mode
 
 ```sh
-docker run -it --rm -p 3000:3000 bcgovimages/common-document-generation-service:latest
+docker run -it --rm -p 3000:3000 bcgov/common-document-generation-service:latest
 ```
 
 Run CDOGS in Keycloak protected mode (replace environment values as necessary)
 
 ```sh
-docker run -it --rm -p 3000:3000 -e KC_CLIENTID=<id> -e KC_CLIENTSECRET=<secret> -e KC_ENABLED=true -e KC_PUBLICKEY=<publickey> -e KC_REALM=<realm> -e KC_SERVERURL=<url> bcgovimages/common-document-generation-service:latest
+docker run -it --rm -p 3000:3000 -e KC_CLIENTID=<id> -e KC_CLIENTSECRET=<secret> -e KC_ENABLED=true -e KC_PUBLICKEY=<publickey> -e KC_REALM=<realm> -e KC_SERVERURL=<url> bcgov/common-document-generation-service:latest
 ```
 
 For more dedicated deployments of CDOGS in a Docker environment, make sure to consider using persistent volumes for the cache directories.

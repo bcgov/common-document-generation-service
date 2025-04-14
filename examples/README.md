@@ -31,7 +31,7 @@ where authentication is required, there are some example bash scripts.
 # CDOGS with Docker
 
 ```sh
-> docker pull bcgovimages/common-document-generation-service:latest
+> docker pull ghcr.io/bcgov/common-document-generation-service:latest
 ```
 
 ## CDOGS without auth
@@ -39,7 +39,7 @@ where authentication is required, there are some example bash scripts.
 ### Quickstart
 
 ```sh
-> docker run -it --rm -p 3000:3000 bcgovimages/common-document-generation-service:latest
+> docker run -it --rm -p 3000:3000 bcgov/common-document-generation-service:latest
 ```
 
 ### Creating a volume to persist the document cache
@@ -49,10 +49,10 @@ where authentication is required, there are some example bash scripts.
 > docker volume inspect carbone-cache
 # Start the CDOGS container with the new volume to persist the document cache.
 # /tmp/carbone-files is the default for CACHE_DIR
-> docker run -d -p 3000:3000 --name CDOGS -v carbone-cache:/tmp/carbone-files bcgovimages/common-document-generation-service:latest
+> docker run -d -p 3000:3000 --name CDOGS -v carbone-cache:/tmp/carbone-files bcgov/common-document-generation-service:latest
 ```
 
 ## CDOGS with auth
 ```sh
-> docker run -it --rm -p 3000:3000 -e KC_CLIENTID=<id> -e KC_CLIENTSECRET=<secret> -e KC_ENABLED=true -e KC_PUBLICKEY=<publickey> -e KC_REALM=<realm> -e KC_SERVERURL=<url> bcgovimages/common-document-generation-service:latest
+> docker run -it --rm -p 3000:3000 -e KC_CLIENTID=<id> -e KC_CLIENTSECRET=<secret> -e KC_ENABLED=true -e KC_PUBLICKEY=<publickey> -e KC_REALM=<realm> -e KC_SERVERURL=<url> bcgov/common-document-generation-service:latest
 ```
