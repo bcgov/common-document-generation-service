@@ -30,6 +30,11 @@ RUN wget https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/se
     rm -rf ./BcSansFont_Print && \
     fc-cache -f
 
+# enable PDF/UA compliance in LibreOffice registry
+RUN sed -i \
+  's|<prop oor:name="PDFUACompliance" oor:type="xs:boolean" oor:nillable="false"><value>false</value></prop>|<prop oor:name="PDFUACompliance" oor:type="xs:boolean" oor:nillable="false"><value>true</value></prop>|' \
+  /usr/lib/libreoffice/share/registry/main.xcd
+
 # NPM Permission Fix
 RUN mkdir -p /.npm
 RUN chown -R 1001:0 /.npm
