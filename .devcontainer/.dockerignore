@@ -20,3 +20,6 @@ cdogs_local/local.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+render/*
+template/*

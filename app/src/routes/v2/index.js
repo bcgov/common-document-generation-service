@@ -6,16 +6,20 @@ const healthRouter = require('./health');
 const templateRouter = require('./template');
 
 const { authenticate } = require('../../middleware/authorization');
-const { getDocs, getJsonSpec, getYamlSpec } = require('../../middleware/openapi');
+const {
+  getDocs,
+  getJsonSpec,
+  getYamlSpec,
+} = require('../../middleware/openapi');
 
 const version = 'v2';
 const docsHelmet = helmet({
   contentSecurityPolicy: {
     directives: {
       'img-src': ['data:', 'https://cdn.redoc.ly'],
-      'script-src': ['blob:', 'https://cdn.redoc.ly']
-    }
-  }
+      'script-src': ['blob:', 'https://cdn.redoc.ly'],
+    },
+  },
 });
 
 // Base Responder
@@ -31,8 +35,8 @@ router.get('/', (_req, res) => {
       { name: '/template', operations: ['POST'] },
       { name: '/template/render', operations: ['POST'] },
       { name: '/template/{id}', operations: ['GET', 'DELETE'] },
-      { name: '/template/{id}/render', operations: ['POST'] }
-    ]
+      { name: '/template/{id}/render', operations: ['POST'] },
+    ],
   });
 });
 

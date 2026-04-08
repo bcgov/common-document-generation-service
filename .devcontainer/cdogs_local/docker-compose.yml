@@ -1,6 +1,6 @@
 services:
   carbone:
-    image: carbone/carbone-ee:full-fonts
+    image: carbone/carbone-ee:full
     ports:
       - "4000:4000"
     secrets:
