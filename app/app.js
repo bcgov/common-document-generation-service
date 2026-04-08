@@ -9,7 +9,11 @@ const { name: appName, version: appVersion } = require('./package.json');
 const carboneCopyApi = require('./src/components/carboneCopyApi');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
-const { getConfigBoolean, getGitRevision, prettyStringify } = require('./src/components/utils');
+const {
+  getConfigBoolean,
+  getGitRevision,
+  prettyStringify,
+} = require('./src/components/utils');
 const v2Router = require('./src/routes/v2');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
@@ -18,17 +22,19 @@ const apiRouter = express.Router();
 const state = {
   gitRev: getGitRevision(),
   ready: false,
-  shutdown: false
+  shutdown: false,
 };
 
 const app = express();
 app.use(compression());
-app.use(cors({
-  /** Tells browsers to cache preflight requests for Access-Control-Max-Age seconds */
-  maxAge: 600,
-  /** Set true to dynamically set Access-Control-Allow-Origin based on Origin */
-  origin: true
-}));
+app.use(
+  cors({
+    /** Tells browsers to cache preflight requests for Access-Control-Max-Age seconds */
+    maxAge: 600,
+    /** Set true to dynamically set Access-Control-Allow-Origin based on Origin */
+    origin: true,
+  }),
+);
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
@@ -75,10 +81,10 @@ apiRouter.get('/', (_req, res) => {
       gitRev: state.gitRev,
       name: appName,
       nodeVersion: process.version,
-      version: appVersion
+      version: appVersion,
     },
     endpoints: ['/api/v2'],
-    versions: [2]
+    versions: [2],
   });
 });
 
@@ -99,7 +105,7 @@ app.use((err, _req, res, _next) => {
     err.send(res);
   } else {
     new Problem(500, {
-      details: (err.message) ? err.message : err
+      details: err.message ? err.message : err,
     }).send(res);
   }
 });
@@ -110,7 +116,7 @@ app.use((_req, res) => {
 });
 
 // Prevent unhandled promise errors from crashing application
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   if (err && err.stack) {
     log.error(err);
   }

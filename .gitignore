@@ -27,3 +27,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+carbone-license.txt

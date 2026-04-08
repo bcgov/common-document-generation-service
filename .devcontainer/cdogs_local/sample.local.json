@@ -1,0 +1,16 @@
+{
+  "server": {
+    "bodyLimit": "100mb",
+    "logLevel": "http",
+    "port": "3000"
+  },
+  "carbone": {
+    "cacheDir": "/var/lib/file-cache/data",
+    "cacheSize": "2GB",
+    "converterFactoryTimeout": "60000",
+    "formFieldName": "template",
+    "startCarbone": "true",
+    "uploadCount": "1",
+    "uploadSize": "25MB"
+  }
+}

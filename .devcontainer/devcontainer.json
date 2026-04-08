@@ -1,0 +1,58 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+  "name": "common-document-generation-service",
+
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  // Use this environment variable if you need to bind mount your local source code into a new container.
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [
+    4000, // Carbone Enterprise Edition
+    3000 // CDOGS
+  ],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "chmod +x ./.devcontainer/*.sh && bash ./.devcontainer/post-install.sh",
+
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint", // ESLint to catch problems early
+        "esbenp.prettier-vscode", // Prettier to format files on save
+        "k6.k6" // k6 for load testing
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+
+  "containerEnv": {
+    "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/cdogs_local"
+  },
+  "portsAttributes": {
+    "4000": {
+      "label": "Carbone Enterprise Edition",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "CDOGS",
+      "onAutoForward": "notify"
+    }
+  },
+  "mounts": ["source=npm-cache,target=/root/.npm,type=volume"]
+}
