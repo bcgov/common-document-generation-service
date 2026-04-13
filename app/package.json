@@ -75,7 +75,7 @@
       "_": false
     },
     "parserOptions": {
-      "ecmaVersion": 9
+      "ecmaVersion": 2020
     },
     "rules": {
       "eol-last": [

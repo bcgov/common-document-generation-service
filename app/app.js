@@ -15,6 +15,7 @@ const {
   prettyStringify,
 } = require('./src/components/utils');
 const v2Router = require('./src/routes/v2');
+const v3Router = require('./src/routes/v3');
 
 const { authorizedParty } = require('./src/middleware/authorizedParty');
 
@@ -83,13 +84,16 @@ apiRouter.get('/', (_req, res) => {
       nodeVersion: process.version,
       version: appVersion,
     },
-    endpoints: ['/api/v2'],
-    versions: [2],
+    endpoints: ['/api/v2', '/api/v3'],
+    versions: [2, 3],
   });
 });
 
 // v2 Router
 apiRouter.use('/v2', v2Router);
+
+// v3 Router
+apiRouter.use('/v3', v3Router);
 
 // Root level Router
 app.use(/(\/api)?/, apiRouter);
