@@ -112,6 +112,45 @@ templateRouter.post('/render', async (req, res) => {
 });
 
 /**
+ * Render a document from a cached template
+ */
+templateRouter.post('/:uid/render', async (req, res) => {
+  const hash = req.params.uid;
+  log.verbose('Template render', { hash: hash });
+
+  try {
+    const renderResult = await carbone.renderPromise(hash, {
+      data: req.body.data,
+      ...req.body.options,
+    });
+    const result = {
+      report: renderResult.content,
+      reportName: renderResult.filename,
+      success: true,
+    };
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=${result.reportName}`,
+    );
+    res.setHeader('Content-Transfer-Encoding', 'binary');
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Length', result.report.length);
+    res.setHeader('X-Report-Name', result.reportName);
+    return res.send(result.report);
+  } catch (err) {
+    log.error(err);
+    let statusCode = 400;
+    switch (err.message) {
+      case 'File not found': {
+        statusCode = 404;
+        break;
+      }
+    }
+    return new Problem(statusCode, { detail: err.message }).send(res);
+  }
+});
+
+/**
  * get a template from cache
  */
 templateRouter.get('/:uid', async (req, res) => {

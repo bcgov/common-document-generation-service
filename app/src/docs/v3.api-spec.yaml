@@ -208,6 +208,153 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /template/{uid}/render:
+    post:
+      summary: Generate a document from existing Template
+      description: >-
+        This endpoint accepts a document template id and a set (or multiple sets)
+        of substitution variables and merges them into the document.
+      operationId: renderReportFromTemplate
+      tags:
+        - Template
+      parameters:
+        - in: path
+          name: uid
+          schema:
+            type: string
+          required: true
+          description: Hash for template, returned via X-Template-Hash headers when template uploaded
+      requestBody:
+        description: Fields required to generate a document
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateObject'
+      responses:
+        '200':
+          description: Returns the supplied document with variables merged in
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Length:
+              schema:
+                type: integer
+              description: >-
+                Length of content. This header is not always returned as it
+                depends on the Content-Type (i.e. text/plain, text/html will not
+                return anything)
+              example: 1234
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+            X-Report-Name:
+              schema:
+                type: string
+              description: name of the generated file.
+              example: file.pdf
+            X-Template-Hash:
+              schema:
+                type: string
+              description: UUID for template cached on server.
+              example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /template/render:
+    post:
+      summary: Generate document from inline Template
+      description: >-
+        This endpoint accepts a document template and a set (or multiple sets)
+        of substitution variables and merges them into the document.
+      operationId: uploadTemplateAndRenderReport
+      tags:
+        - Template
+      requestBody:
+        description: Fields required to generate a document
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRenderObject'
+      responses:
+        '200':
+          description: Returns the supplied document with variables merged in
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Length:
+              schema:
+                type: integer
+              description: >-
+                Length of content. This header is not always returned as it
+                depends on the Content-Type (i.e. text/plain, text/html will not
+                return anything)
+              example: 1234
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+            X-Report-Name:
+              schema:
+                type: string
+              description: name of the generated file.
+              example: file.pdf
+            X-Template-Hash:
+              schema:
+                type: string
+              description: UUID for template cached on server.
+              example: 742d642a4704eb1babd8122ce0f03f209354279ae8292bb3961d13e21578b855
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   securitySchemes:

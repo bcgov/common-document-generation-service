@@ -1,10 +1,21 @@
-FROM node:20.18.3-bookworm
+FROM node:20-bookworm
 
 ENV NO_UPDATE_NOTIFIER=true \
     PATH="/usr/lib/libreoffice/program:${PATH}" \
     PYTHONUNBUFFERED=1
 
-# Install system utilities + LibreOffice + common fonts
+RUN apt-get update || true && \
+    apt-get install -y --no-install-recommends debian-archive-keyring && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install LibreOffice
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y libreoffice \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
+    && apt-get clean
+
+# Install system utilities + common fonts
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
         vim \
@@ -15,7 +26,6 @@ RUN apt-get update && \
         ca-certificates \
         unzip \
         fontconfig \
-        libreoffice \
         fonts-dejavu \
         fonts-liberation \
         cabextract \
