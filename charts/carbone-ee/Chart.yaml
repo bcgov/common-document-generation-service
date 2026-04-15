@@ -1,0 +1,22 @@
+apiVersion: v2
+name: carbone-ee
+version: 0.0.1
+kubeVersion: '>= 1.13.0'
+description: A Helm chart for Carbone, a document generation service.
+type: application
+keywords:
+  - carbone
+  - document-generation
+  - templating
+home: https://github.com/carboneio/carbone
+sources:
+  - https://github.com/carboneio/carbone
+  - https://github.com/bcgov/common-document-generation-service
+dependencies: []
+maintainers:
+  - name: NR Common Service Showcase Team
+    email: NR.CommonServicesShowcase@gov.bc.ca
+    url: https://bcgov.github.io/common-service-showcase/team.html
+appVersion: '5.4.5'
+deprecated: false
+annotations: {}

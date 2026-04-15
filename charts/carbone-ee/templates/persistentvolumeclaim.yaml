@@ -1,0 +1,23 @@
+{{- $pvcName := printf "%s-%s" (include "carbone.configname" .) "pvc" }}
+{{- $pvc := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace $pvcName ) }}
+
+{{- if and (not $pvc) (and .Values.persistentVolumeClaim.enabled) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  {{- if not .Values.config.releaseScoped }}
+  annotations:
+    "helm.sh/resource-policy": keep
+  {{- else }}
+  labels: {{ include "carbone.labels" . | nindent 4 }}
+  {{- end }}
+  name: {{ include "carbone.configname" . }}-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: {{ .Values.persistentVolumeClaim.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storageSize }}
+{{- end }}

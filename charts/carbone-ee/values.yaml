@@ -1,0 +1,108 @@
+replicaCount: 2
+
+image:
+  # -- Default image repository
+  repository: docker.io
+  # -- Default image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: full
+
+# -- Specify docker-registry secret names as an array
+imagePullSecrets: []
+# -- String to partially override fullname
+nameOverride: ~
+# -- String to fully override fullname
+fullnameOverride: ~
+
+# DeploymentConfig pre-hook failure behavior
+failurePolicy: Retry
+
+# -- Annotations for cdogs pods
+podAnnotations: {}
+
+# -- Privilege and access control settings
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Privilege and access control settings
+securityContext: {}
+
+autoscaling:
+  # -- Specifies whether the Horizontal Pod Autoscaler should be created
+  enabled: false
+
+  # -- behavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively).
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 30
+  minReplicas: 2
+  maxReplicas: 16
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+networkPolicy:
+  # -- Specifies whether a network policy should be created
+  enabled: true
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 4000
+  # -- Service port name
+  portName: http
+
+route:
+  # -- Specifies whether a route should be created
+  enabled: true
+  # -- Annotations to add to the route
+  annotations:
+    haproxy.router.openshift.io/timeout: 60s
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  # path: /
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  wildcardPolicy: None
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    # -- Limit Peak CPU (in millicores ex. 1000m)
+    cpu: 1000m
+    # -- Limit Peak Memory (in gigabytes Gi or megabytes Mi ex. 2Gi)
+    memory: 2048Mi
+  requests:
+    # -- Requested CPU (in millicores ex. 500m)
+    cpu: 50m
+    # -- Requested Memory (in gigabytes Gi or megabytes Mi ex. 500Mi)
+    memory: 256Mi
+
+persistentVolumeClaim:
+  # -- Specifies whether a persistent volume claim should be created
+  enabled: true
+  # -- Default storage class type
+  storageClassName: netapp-file-standard
+  # -- PVC Storage size (use M or G, not Mi or Gi)
+  storageSize: 10G
+
+carboneSecretOverride:
+  license: ~
