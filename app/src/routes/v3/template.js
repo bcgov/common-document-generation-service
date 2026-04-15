@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 const config = require('config');
-const carbone = require('carbone-sdk')(config.get('carbone.apiKey'));
+const carbone = require('carbone-sdk')(process.env.CARBONE_API_KEY || config.get('carbone.apiKey'));
 const templateRouter = require('express').Router();
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');

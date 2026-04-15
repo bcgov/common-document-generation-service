@@ -31,5 +31,9 @@ persistentVolumeClaim:
   # -- PVC Storage size (use M or G, not Mi or Gi)
   storageSize: 5G
 
+carbone:
+  storageClassName: netapp-file-standard
+  storageSize: 10Gi
+
 fluentBit:
   enabled: true

@@ -49,7 +49,22 @@ runs:
         # move to project context
         oc project ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
 
-    - name: Helm Deploy
+    - name: Helm Deploy (Carbone EE)
+      shell: bash
+      run: >-
+        helm upgrade --install --atomic ${{ inputs.job_name }} carbone-ee
+        --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        --repo https://bcgov.github.io/common-document-generation-service
+        --values ./.github/environments/values.${{ inputs.environment }}.yaml
+        --set image.repository=docker.io/carbone
+        --set image.tag=full-5.4.5
+        --set route.host=carbone-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca
+        --set carboneSecretOverride.license=${{ secrets.CARBONE_EE_LICENSE }}
+        --set networkPolicy.allowedInstance=${{ inputs.job_name }}
+        --timeout 10m
+        --wait
+
+    - name: Helm Deploy (CDOGS)
       shell: bash
       run: >-
         helm upgrade --install --atomic ${{ inputs.job_name }} ${{ inputs.app_name }}
@@ -61,6 +76,8 @@ runs:
         --set route.host=${{ inputs.acronym }}-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca
         --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }}
         --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
+        --set carboneSecretOverride.apiKey=${{ secrets.CARBONE_API_KEY }}
+        --set config.configMap.CARBONE_URL="http://carbone-ee-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca"
         --timeout 10m
         --wait
 

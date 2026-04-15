@@ -15,6 +15,13 @@ spec:
       ports:
         - port: {{ default "4000" .Values.config.configMap.SERVER_PORT | atoi }}
           protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ .Values.networkPolicy.allowedInstance | quote }}
+      ports:
+        - port: {{ default "4000" .Values.config.configMap.SERVER_PORT | atoi }}
+          protocol: TCP
   podSelector:
     matchLabels: {{- include "carbone.selectorLabels" . | nindent 6 }}
 {{- end }}
