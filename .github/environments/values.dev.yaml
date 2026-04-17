@@ -31,7 +31,9 @@ persistentVolumeClaim:
   # -- PVC Storage size (use M or G, not Mi or Gi)
   storageSize: 5G
 
+# enterprise carbone configuration
 carbone:
+  enabled: true
   storageClassName: netapp-file-standard
   storageSize: 10Gi
 
