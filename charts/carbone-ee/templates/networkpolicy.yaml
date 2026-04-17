@@ -13,14 +13,14 @@ spec:
             matchLabels:
               network.openshift.io/policy-group: ingress
       ports:
-        - port: {{ default "4000" .Values.config.configMap.SERVER_PORT | atoi }}
+        - port: {{ default "4000" .Values.service.port | atoi }}
           protocol: TCP
     - from:
         - podSelector:
             matchLabels:
               app.kubernetes.io/instance: {{ .Values.networkPolicy.allowedInstance | quote }}
       ports:
-        - port: {{ default "4000" .Values.config.configMap.SERVER_PORT | atoi }}
+        - port: {{ default "4000" .Values.service.port | atoi }}
           protocol: TCP
   podSelector:
     matchLabels: {{- include "carbone.selectorLabels" . | nindent 6 }}

@@ -108,3 +108,7 @@ persistentVolumeClaim:
 
 carboneSecretOverride:
   license: ~
+
+enabled: false
+releaseScoped: false
+
