@@ -1,6 +1,6 @@
 apiVersion: v2
 name: carbone-ee
-version: 0.0.1
+version: 0.0.9
 kubeVersion: '>= 1.13.0'
 description: A Helm chart for Carbone, a document generation service.
 type: application
