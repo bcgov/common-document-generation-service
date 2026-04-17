@@ -59,10 +59,10 @@ runs:
         --set image.repository=docker.io/carbone
         --set image.tag=full-5.4.5
         --set route.host=carbone-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca
-        --set carboneSecretOverride.license=${{ secrets.CARBONE_EE_LICENSE }}
         --set networkPolicy.allowedInstance=${{ inputs.job_name }}
         --timeout 10m
         --wait
+      # --set carboneSecretOverride.license=${{ secrets.CARBONE_EE_LICENSE }}
 
     - name: Helm Deploy (CDOGS)
       shell: bash
@@ -76,10 +76,10 @@ runs:
         --set route.host=${{ inputs.acronym }}-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca
         --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }}
         --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
-        --set carboneSecretOverride.apiKey=${{ secrets.CARBONE_API_KEY }}
-        --set config.configMap.CARBONE_URL="http://carbone-ee-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca"
         --timeout 10m
         --wait
+      # --set carboneSecretOverride.apiKey=${{ secrets.CARBONE_API_KEY }}
+      # --set config.configMap.CARBONE_URL="http://carbone-ee-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca"
 
     - name: Wait on Deployment
       shell: bash
