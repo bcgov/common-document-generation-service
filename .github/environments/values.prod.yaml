@@ -32,8 +32,9 @@ persistentVolumeClaim:
   storageSize: 5G
 
 carbone:
-  storageClassName: netapp-file-standard
-  storageSize: 10Gi
+  enabled: true
+  persistentVolumeClaim:
+    storageSize: 10G
 
 fluentBit:
   enabled: true

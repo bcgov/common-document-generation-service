@@ -10,3 +10,6 @@ cronJob:
 
 fluentBit:
   enabled: false
+
+carbone:
+  enabled: true
