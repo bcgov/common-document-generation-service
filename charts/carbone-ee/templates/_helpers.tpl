@@ -27,7 +27,7 @@ If release name contains chart name it will be used as a full name.
 Define the config pattern of the chart based on options.
 */}}
 {{- define "carbone.configname" -}}
-{{- if .Values.config.releaseScoped }}
+{{- if .Values.releaseScoped }}
 {{- include "carbone.fullname" . }}
 {{- else }}
 {{- include "carbone.name" . }}

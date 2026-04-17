@@ -63,7 +63,7 @@ service:
   # -- Service type
   type: ClusterIP
   # -- Service port
-  port: 4000
+  port: '4000'
   # -- Service port name
   portName: http
 
@@ -75,8 +75,8 @@ route:
     haproxy.router.openshift.io/timeout: 60s
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  host: chart-example.local
-  # path: /
+  host: ~
+  path: /
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
@@ -108,3 +108,7 @@ persistentVolumeClaim:
 
 carboneSecretOverride:
   license: ~
+
+enabled: false
+releaseScoped: false
+

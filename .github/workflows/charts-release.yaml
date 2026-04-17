@@ -3,9 +3,10 @@ name: Release Charts
 on:
   push:
     paths:
-      - 'charts/**'
+      - "charts/**"
     branches:
       - master
+      - v3
 
 jobs:
   release:

@@ -165,7 +165,7 @@ config:
     UPLOAD_FILE_SIZE: 25MB
 
     # Carbone configuration
-    CARBONE_URL: carbone-ee-master.apps.silver.devops.gov.bc.ca # Update this to match the actual Carbone service URL
+    CARBONE_URL: ~
 
 features:
   # -- Specifies whether to run in authenticated mode
