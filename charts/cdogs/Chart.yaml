@@ -24,7 +24,12 @@ keywords:
 home: https://github.com/bcgov/common-document-generation-service
 sources:
   - https://github.com/bcgov/common-document-generation-service
-dependencies: []
+dependencies:
+  - name: carbone-ee
+    version: 0.0.2
+    repository: "file://../carbone-ee"
+    condition: carbone.enabled
+    alias: carbone
 maintainers:
   - name: NR Common Service Showcase Team
     email: NR.CommonServiceShowcase@gov.bc.ca
@@ -33,6 +38,6 @@ maintainers:
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "2.5.0"
+appVersion: "2.5.1"
 deprecated: false
 annotations: {}

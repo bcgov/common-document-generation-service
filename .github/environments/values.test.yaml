@@ -32,6 +32,7 @@ persistentVolumeClaim:
   storageSize: 5G
 
 carbone:
+  enabled: true
   storageClassName: netapp-file-standard
   storageSize: 10Gi
 
