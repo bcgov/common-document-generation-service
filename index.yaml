@@ -3,6 +3,29 @@ entries:
   carbone-ee:
   - apiVersion: v2
     appVersion: 5.4.5
+    created: "2026-04-20T19:36:37.228090569Z"
+    description: A Helm chart for Carbone, a document generation service.
+    digest: d0480de12b268f7a8f352068d92738ca8266beced9f52fa6887436b0e83705db
+    home: https://github.com/carboneio/carbone
+    keywords:
+    - carbone
+    - document-generation
+    - templating
+    kubeVersion: '>= 1.13.0'
+    maintainers:
+    - email: NR.CommonServiceShowcase@gov.bc.ca
+      name: NR Common Service Showcase Team
+      url: https://bcgov.github.io/common-service-showcase/team.html
+    name: carbone-ee
+    sources:
+    - https://github.com/carboneio/carbone
+    - https://github.com/bcgov/common-document-generation-service
+    type: application
+    urls:
+    - https://github.com/bcgov/common-document-generation-service/releases/download/carbone-ee-0.1.2/carbone-ee-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 5.4.5
     created: "2026-04-17T22:32:35.790187036Z"
     description: A Helm chart for Carbone, a document generation service.
     digest: a63fec869abee4934055651111b5fc8bb2c71953262863090c03cd76e1f1ce95
@@ -186,6 +209,39 @@ entries:
     - https://github.com/bcgov/common-document-generation-service/releases/download/carbone-ee-0.0.3/carbone-ee-0.0.3.tgz
     version: 0.0.3
   common-document-generation-service:
+  - apiVersion: v2
+    appVersion: 2.5.0
+    created: "2026-04-20T19:36:37.403449293Z"
+    dependencies:
+    - alias: carbone
+      condition: carbone.enabled
+      name: carbone-ee
+      repository: file://../carbone-ee
+      version: 0.1.2
+    description: A microservice for merging JSON data into xml-based templates (powered
+      by Carbone.io)
+    digest: 4e6ce1165c6525345e94a08c275aa65a7f6e06253ac7df5d53535a110a682459
+    home: https://github.com/bcgov/common-document-generation-service
+    keywords:
+    - nodejs
+    - javascript
+    - docker
+    - microservice
+    - document-generation
+    - templating
+    - cdogs
+    kubeVersion: '>= 1.13.0'
+    maintainers:
+    - email: NR.CommonServiceShowcase@gov.bc.ca
+      name: NR Common Service Showcase Team
+      url: https://bcgov.github.io/common-service-showcase/team.html
+    name: common-document-generation-service
+    sources:
+    - https://github.com/bcgov/common-document-generation-service
+    type: application
+    urls:
+    - https://github.com/bcgov/common-document-generation-service/releases/download/common-document-generation-service-0.1.9/common-document-generation-service-0.1.9.tgz
+    version: 0.1.9
   - apiVersion: v2
     appVersion: 2.5.0
     created: "2026-04-17T22:32:35.942413693Z"
@@ -693,4 +749,4 @@ entries:
     urls:
     - https://github.com/bcgov/common-document-generation-service/releases/download/common-document-generation-service-0.0.1/common-document-generation-service-0.0.1.tgz
     version: 0.0.1
-generated: "2026-04-17T22:32:35.942521692Z"
+generated: "2026-04-20T19:36:37.403585257Z"
