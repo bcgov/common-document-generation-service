@@ -114,4 +114,7 @@ function carboneSet() {
 module.exports = {
   carboneSet,
   render,
+  engine: carbone,
+  addFormatters,
+  resetFormatters,
 };
