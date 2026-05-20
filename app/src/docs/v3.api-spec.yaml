@@ -486,12 +486,6 @@ components:
             firstName: Jane
             lastName: Smith
             title: CEO
-        formatters:
-          type: string
-          description: >-
-            A string that can be transformed into an object. See https://www.npmjs.com/package/telejson for transformations, and https://carbone.io/documentation.html#formatters for more on formatters.
-          example: >-
-            {"myFormatter":"_function_myFormatter|function(data) { return data.slice(1); }","myOtherFormatter":"_function_myOtherFormatter|function(data) {return data.slice(2);}"}
         options:
           type: object
           description: Object containing processing options
