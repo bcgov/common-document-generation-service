@@ -1,14 +1,17 @@
 const Problem = require('api-problem');
 const config = require('config');
 const templateRouter = require('express').Router();
-const path = require('path');
-const mime = require('mime-types');
 
 const FileCache = require('../../components/fileCache');
 const { upload } = require('../../components/upload');
 const { truthy } = require('../../components/utils');
 const { middleware } = require('../../components/validation');
 const carboneRenderService = require('../../components/carboneRenderService');
+const {
+  processTemplateOptions,
+  setRenderResponseHeaders,
+  handleRenderError,
+} = require('../shared/templateHelpers');
 const log = require('../../components/log')(module.filename);
 
 const fileCache = new FileCache();
@@ -20,8 +23,6 @@ const carbone = require('carbone-sdk')(
 carbone.setApiVersion(5);
 carbone.setOptions({
   carboneUrl: config.get('carbone.url'),
-  licenseKey:
-    process.env.CARBONE_LICENSE_KEY || config.get('carbone.licenseKey'),
 });
 log.info('initialized carbone v3 sdk engine for routes', {
   function: 'v3/template',
@@ -79,49 +80,24 @@ templateRouter.post(
       { overwrite: truthy('overwrite', options) },
     );
     const content = await fileCache.find(hash.hash);
-    // some defaults if options not set...
-    if (!options.convertTo || !options.convertTo.trim().length) {
-      // set convert to template type (no conversion)
-      options.convertTo = content.ext;
-    }
-    if (!options.reportName || !options.reportName.trim().length) {
-      // no report name, set to UUID
-      options.reportName = `${path.parse(content.name).name}.${options.convertTo}`;
-    }
-
-    // ensure the reportName has the same extension as the convertTo...
-    if (options.convertTo !== path.extname(options.reportName).slice(1)) {
-      options.reportName = `${path.parse(options.reportName).name}.${options.convertTo}`;
-    }
+    // Process and normalize options
+    const normalizedOptions = processTemplateOptions(options, content.ext);
 
     try {
       const output = await carboneRenderService.render(
         carbone,
         content.path,
         req.body.data,
-        options,
+        normalizedOptions,
         true,
       );
       if (output.success) {
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename=${output.reportName}`,
-        );
-        res.setHeader('Content-Transfer-Encoding', 'binary');
-        res.setHeader(
-          'Content-Type',
-          mime.contentType(path.extname(output.reportName)),
-        );
-        res.setHeader('Content-Length', output.report.length);
-        res.setHeader('X-Report-Name', output.reportName);
+        setRenderResponseHeaders(res, output.reportName, output.report);
         return res.send(output.report);
       } else {
-        const errOutput = { detail: output.errorMsg };
-        if (output.errorType === 422) {
-          errOutput.detail = 'Error in supplied template';
-          errOutput.errors = [{ message: output.errorMsg }];
-        }
-        return new Problem(output.errorType, errOutput).send(res);
+        return new Problem(output.errorType, handleRenderError(output)).send(
+          res,
+        );
       }
     } catch (err) {
       log.error(err);
@@ -148,49 +124,24 @@ templateRouter.post(
     }
 
     const options = req.body.options || {};
-    // some defaults if options not set...
-    if (!options.convertTo || !options.convertTo.trim().length) {
-      // set convert to template type (no conversion)
-      options.convertTo = template.ext;
-    }
-    if (!options.reportName || !options.reportName.trim().length) {
-      // no report name, set to UUID
-      options.reportName = `${path.parse(template.name).name}.${options.convertTo}`;
-    }
-
-    // ensure the reportName has the same extension as the convertTo...
-    if (options.convertTo !== path.extname(options.reportName).slice(1)) {
-      options.reportName = `${path.parse(options.reportName).name}.${options.convertTo}`;
-    }
+    // Process and normalize options
+    const normalizedOptions = processTemplateOptions(options, template.ext);
 
     try {
       const output = await carboneRenderService.render(
         carbone,
         template.path,
         req.body.data,
-        options,
+        normalizedOptions,
         true,
       );
       if (output.success) {
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename=${output.reportName}`,
-        );
-        res.setHeader('Content-Transfer-Encoding', 'binary');
-        res.setHeader(
-          'Content-Type',
-          mime.contentType(path.extname(output.reportName)),
-        );
-        res.setHeader('Content-Length', output.report.length);
-        res.setHeader('X-Report-Name', output.reportName);
+        setRenderResponseHeaders(res, output.reportName, output.report);
         return res.send(output.report);
       } else {
-        const errOutput = { detail: output.errorMsg };
-        if (output.errorType === 422) {
-          errOutput.detail = 'Error in supplied template';
-          errOutput.errors = [{ message: output.errorMsg }];
-        }
-        return new Problem(output.errorType, errOutput).send(res);
+        return new Problem(output.errorType, handleRenderError(output)).send(
+          res,
+        );
       }
     } catch (err) {
       log.error(err);

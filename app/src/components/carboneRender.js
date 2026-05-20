@@ -2,10 +2,10 @@ const carbone = require('carbone');
 const config = require('config');
 const fs = require('fs-extra');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 const log = require('./log')(module.filename);
 const utils = require('./utils');
+const { processTemplateOptions } = require('../routes/shared/templateHelpers');
 
 // Initialize carbone formatters and add a marker to indicate defaults...
 // Carbone is a singleton and we cannot set formatters for each render call
@@ -61,23 +61,15 @@ async function render(template, data = {}, options = {}, formatters = {}) {
   }
 
   // some defaults if options not set...
-  if (!options.convertTo || !options.convertTo.trim().length) {
-    // set convert to template type (no conversion)
-    options.convertTo = path.extname(template).slice(1);
-  }
-  if (!options.reportName || !options.reportName.trim().length) {
-    // no report name, set to UUID
-    options.reportName = `${uuidv4()}.${options.convertTo}`;
-  }
-
-  // ensure the reportName has the same extension as the convertTo...
-  if (options.convertTo !== path.extname(options.reportName).slice(1)) {
-    options.reportName = `${path.parse(options.reportName).name}.${options.convertTo}`;
-  }
+  const normalizedOptions = processTemplateOptions(
+    options,
+    path.extname(template).slice(1),
+    true,
+  );
 
   const reset = addFormatters(formatters);
   try {
-    const renderResult = await asyncRender(template, data, options);
+    const renderResult = await asyncRender(template, data, normalizedOptions);
     result.report = renderResult.report;
     result.reportName = renderResult.reportName;
     result.success = true;

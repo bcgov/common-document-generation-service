@@ -1,10 +1,10 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 const log = require('./log')(module.filename);
 const utils = require('./utils');
 const { addFormatters, resetFormatters } = require('./carboneRender');
+const { processTemplateOptions } = require('../routes/shared/templateHelpers');
 
 /**
  * Wraps callback-based carbone API (V2) into a promise
@@ -79,25 +79,18 @@ async function render(
   }
 
   if (!fs.existsSync(template)) {
+    log.error('Template file not found', { template: template });
     result.errorType = 404;
     result.errorMsg = 'Template not found.';
     return result;
   }
 
   // Set defaults if options not set...
-  if (!options.convertTo || !options.convertTo.trim().length) {
-    // set convert to template type (no conversion)
-    options.convertTo = path.extname(template).slice(1);
-  }
-  if (!options.reportName || !options.reportName.trim().length) {
-    // no report name, set to UUID
-    options.reportName = `${uuidv4()}.${options.convertTo}`;
-  }
-
-  // ensure the reportName has the same extension as the convertTo
-  if (options.convertTo !== path.extname(options.reportName).slice(1)) {
-    options.reportName = `${path.parse(options.reportName).name}.${options.convertTo}`;
-  }
+  const normalizedOptions = processTemplateOptions(
+    options,
+    path.extname(template).slice(1),
+    true,
+  );
 
   try {
     let renderResult;
@@ -108,14 +101,14 @@ async function render(
         carboneEngine,
         template,
         data,
-        options,
+        normalizedOptions,
       );
     } else {
       renderResult = await renderCallback(
         carboneEngine,
         template,
         data,
-        options,
+        normalizedOptions,
         formatters,
       );
     }

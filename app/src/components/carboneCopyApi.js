@@ -7,6 +7,11 @@ const log = require('./log')(module.filename);
 const carboneRender = require('./carboneRender');
 const carboneRenderService = require('./carboneRenderService');
 const FileCache = require('./fileCache');
+const {
+  processTemplateOptions,
+  setRenderResponseHeaders,
+  handleRenderError,
+} = require('../routes/shared/templateHelpers');
 
 const fileCache = new FileCache();
 
@@ -83,18 +88,11 @@ const carboneCopyApi = {
       }).send(res);
     }
 
-    options.convertTo = options.convertTo || template.ext;
-    if (options.convertTo.startsWith('.')) {
-      options.convertTo = options.convertTo.slice(1);
-    }
-
-    options.reportName =
-      options.reportName ||
-      `${path.parse(template.name).name}.${options.convertTo}`;
-    // ensure the reportName has the same extension as the convertTo...
-    if (options.convertTo !== path.extname(options.reportName).slice(1)) {
-      options.reportName = `${path.parse(options.reportName).name}.${options.convertTo}`;
-    }
+    const normalizedOptions = processTemplateOptions(
+      options,
+      template.ext,
+      path.parse(template.name).name,
+    );
 
     if (typeof data !== 'object' || data === null) {
       try {
@@ -117,21 +115,11 @@ const carboneCopyApi = {
     const output = await carboneRenderService.render(
       template.path,
       data,
-      options,
+      normalizedOptions,
       formatters,
     );
     if (output.success) {
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename=${output.reportName}`,
-      );
-      res.setHeader('Content-Transfer-Encoding', 'binary');
-      res.setHeader(
-        'Content-Type',
-        mime.contentType(path.extname(output.reportName)),
-      );
-      res.setHeader('Content-Length', output.report.length);
-      res.setHeader('X-Report-Name', output.reportName);
+      setRenderResponseHeaders(res, output.reportName, output.report);
       res.setHeader('X-Template-Hash', template.hash);
 
       log.info('Template rendered', { function: 'renderTemplate' });
@@ -139,18 +127,12 @@ const carboneCopyApi = {
       // log metrics
       log.verbose('Template rendered', {
         function: 'renderTemplate',
-        metrics: { data: data, options: options, template: template },
+        metrics: { data: data, options: normalizedOptions, template: template },
       });
 
       return res.send(output.report);
     } else {
-      const errOutput = { detail: output.errorMsg };
-      if (output.errorType === 422) {
-        // Format template syntax errors to be the same as our validation errors
-        errOutput.detail = 'Error in supplied template';
-        errOutput.errors = [{ message: output.errorMsg }];
-      }
-      return new Problem(output.errorType, errOutput).send(res);
+      return new Problem(output.errorType, handleRenderError(output)).send(res);
     }
   },
 };
