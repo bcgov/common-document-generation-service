@@ -113,9 +113,11 @@ const carboneCopyApi = {
     } catch (e) {}
 
     const output = await carboneRenderService.render(
+      carboneRender.engine,
       template.path,
       data,
       normalizedOptions,
+      false,
       formatters,
     );
     if (output.success) {
