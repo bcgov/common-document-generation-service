@@ -92,7 +92,7 @@ route:
     haproxy.router.openshift.io/timeout: 60s
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  host: chart-example.local
+  host: ~
   # path: /
   tls:
     insecureEdgeTerminationPolicy: Redirect
@@ -165,7 +165,7 @@ config:
     UPLOAD_FILE_SIZE: 25MB
 
     # Carbone configuration
-    CARBONE_URL: carbone-ee-master.apps.silver.devops.gov.bc.ca # Update this to match the actual Carbone service URL
+    CARBONE_URL: ~
 
 features:
   # -- Specifies whether to run in authenticated mode
@@ -183,8 +183,8 @@ keycloakSecretOverride:
   # -- Keycloak password
   password: ~
 
-carboneSecretOverride:
-  # -- Carbone API key
+carbone:
+  enabled: false
   apiKey: ~
 
 fluentBit:

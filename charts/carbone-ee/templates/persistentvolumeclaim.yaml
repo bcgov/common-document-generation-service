@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  {{- if not .Values.config.releaseScoped }}
+  {{- if not .Values.releaseScoped }}
   annotations:
     "helm.sh/resource-policy": keep
   {{- else }}

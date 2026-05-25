@@ -1,12 +1,17 @@
+enabled: false
+# found in secret already in openshift
+license: ~
+
+releaseScoped: false
+
 replicaCount: 2
 
 image:
-  # -- Default image repository
-  repository: docker.io
+  repository: docker.io/carbone
+  tag: full-5.4.5
+
   # -- Default image pull policy
   pullPolicy: IfNotPresent
-  # -- Overrides the image tag whose default is the chart appVersion.
-  tag: full
 
 # -- Specify docker-registry secret names as an array
 imagePullSecrets: []
@@ -49,7 +54,7 @@ autoscaling:
           value: 2
           periodSeconds: 30
   minReplicas: 2
-  maxReplicas: 16
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
@@ -63,7 +68,7 @@ service:
   # -- Service type
   type: ClusterIP
   # -- Service port
-  port: 4000
+  port: '4000'
   # -- Service port name
   portName: http
 
@@ -75,7 +80,7 @@ route:
     haproxy.router.openshift.io/timeout: 60s
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  host: chart-example.local
+  host: ~
   # path: /
   tls:
     insecureEdgeTerminationPolicy: Redirect
@@ -105,6 +110,3 @@ persistentVolumeClaim:
   storageClassName: netapp-file-standard
   # -- PVC Storage size (use M or G, not Mi or Gi)
   storageSize: 10G
-
-carboneSecretOverride:
-  license: ~
