@@ -21,7 +21,7 @@ concurrency:
 jobs:
   build:
     name: Build & Push
-    if: "! github.event.pull_request.head.repo.fork"
+    # if: "! github.event.pull_request.head.repo.fork"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
