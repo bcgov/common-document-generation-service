@@ -21,38 +21,32 @@ jobs:
     name: Remove PR build from dev namespace
     if: "! github.event.pull_request.head.repo.fork"
     environment:
-      name: pr
+      name: dev
       url: https://${{ env.ACRONYM }}-dev-pr-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Install CLI tools from OpenShift Mirror
-      uses: redhat-actions/openshift-tools-installer@v1
-      with:
-        oc: "4"
-    - name: Login to OpenShift and select project
-      shell: bash
-      run: |
-        # OC Login
-        OC_TEMP_TOKEN=$(curl -k -X POST ${{ secrets.OPENSHIFT_SERVER }}/api/v1/namespaces/${{ env.NAMESPACE_PREFIX }}-dev/serviceaccounts/pipeline/token --header "Authorization: Bearer ${{ secrets.OPENSHIFT_TOKEN }}" -d '{"spec": {"expirationSeconds": 600}}' -H 'Content-Type: application/json; charset=utf-8' | jq -r '.status.token' )
-        oc login --token=$OC_TEMP_TOKEN --server=${{ secrets.OPENSHIFT_SERVER }}
-        # move to project context
-        oc project ${{ env.NAMESPACE_PREFIX }}-dev
-    - name: Remove PR Deployment
-      shell: bash
-      run: |
-        helm uninstall --namespace ${{ env.NAMESPACE_PREFIX }}-dev pr-${{ github.event.number }} --timeout 10m --wait
-        oc delete --namespace ${{ env.NAMESPACE_PREFIX }}-dev cm,secret --selector app.kubernetes.io/instance=pr-${{ github.event.number }}
-    - name: Remove Release Comment on PR
-      uses: marocchino/sticky-pull-request-comment@v2.9.0
-      with:
-        header: release
-        delete: true
-    - name: Remove Github Deployment Environment
-      uses: strumwolf/delete-deployment-environment@v3
-      with:
-        environment: pr
-        onlyRemoveDeployments: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
+      - name: Login to OpenShift and select project
+        shell: bash
+        run: |
+          # OC Login
+          OC_TEMP_TOKEN=$(curl -k -X POST ${{ secrets.OPENSHIFT_SERVER }}/api/v1/namespaces/${{ env.NAMESPACE_PREFIX }}-dev/serviceaccounts/pipeline/token --header "Authorization: Bearer ${{ secrets.OPENSHIFT_TOKEN }}" -d '{"spec": {"expirationSeconds": 600}}' -H 'Content-Type: application/json; charset=utf-8' | jq -r '.status.token' )
+          oc login --token=$OC_TEMP_TOKEN --server=${{ secrets.OPENSHIFT_SERVER }}
+          # move to project context
+          oc project ${{ env.NAMESPACE_PREFIX }}-dev
+      - name: Remove PR Deployment
+        shell: bash
+        run: |
+          helm uninstall --namespace ${{ env.NAMESPACE_PREFIX }}-dev pr-${{ github.event.number }} --timeout 10m --wait
+          oc delete --namespace ${{ env.NAMESPACE_PREFIX }}-dev cm,secret --selector app.kubernetes.io/instance=pr-${{ github.event.number }}
+      - name: Remove Release Comment on PR
+        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        with:
+          header: release
+          delete: true

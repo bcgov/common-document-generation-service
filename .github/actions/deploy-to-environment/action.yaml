@@ -16,6 +16,9 @@ inputs:
   job_name:
     description: Job/Instance name
     required: true
+  route_name:
+    description: Public route suffix after the app prefix
+    required: false
   namespace_prefix:
     description: Openshift Namespace common prefix
     required: true
@@ -28,6 +31,12 @@ inputs:
   openshift_token:
     description: Openshift Service Account Token
     required: true
+  chart_path:
+    description: Local Helm chart path (e.g. .)
+    required: false
+  chart_repo:
+    description: Helm repo URL
+    required: false
 
 runs:
   using: composite
@@ -52,19 +61,41 @@ runs:
     - name: Helm Deploy
       shell: bash
       run: >-
-        helm upgrade --install --atomic ${{ inputs.job_name }} ${{ inputs.app_name }}
-        --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
-        --repo https://bcgov.github.io/common-document-generation-service
-        --values ./.github/environments/values.${{ inputs.environment }}.yaml
-        --set image.repository=ghcr.io/${{ github.repository_owner }}
-        --set image.tag=sha-$(git rev-parse --short HEAD)
-        --set route.host=${{ inputs.acronym }}-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca
-        --set config.configMap.CARBONE_URL="http://carbone-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca"
-        --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }}
-        --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
-        --set carbone.route.host=carbone-${{ inputs.namespace_environment }}-${{ inputs.job_name }}.apps.silver.devops.gov.bc.ca
-        --timeout 10m
-        --wait
+        ROUTE_NAME="${{ inputs.route_name }}";
+        if [ -z "$ROUTE_NAME" ]; then
+          ROUTE_NAME="${{ inputs.namespace_environment }}-${{ inputs.job_name }}";
+        fi;
+        if [ -n "${{ inputs.chart_path }}" ]; then
+          echo "Using local chart: ${{ inputs.chart_path }}"
+          helm dependency build ${{ inputs.chart_path }}
+          helm upgrade --install --atomic ${{ inputs.job_name }} ${{ inputs.chart_path }} \
+            --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
+            --values ./.github/environments/values.${{ inputs.environment }}.yaml \
+            --set image.repository=ghcr.io/${{ github.repository_owner }} \
+            --set image.tag=sha-$(git rev-parse --short HEAD) \
+            --set route.host=${{ inputs.acronym }}-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
+            --set config.configMap.CARBONE_URL="http://carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca" \
+            --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }} \
+            --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
+            --set carbone.route.host=carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
+            --timeout 10m \
+            --wait
+        else
+          echo "Using repo chart: ${{ inputs.app_name }} from ${{ inputs.chart_repo }}"
+          helm upgrade --install --atomic ${{ inputs.job_name }} ${{ inputs.app_name }} \
+            --repo ${{ inputs.chart_repo }} \
+            --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
+            --values ./.github/environments/values.${{ inputs.environment }}.yaml \
+            --set image.repository=ghcr.io/${{ github.repository_owner }} \
+            --set image.tag=sha-$(git rev-parse --short HEAD) \
+            --set route.host=${{ inputs.acronym }}-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
+            --set config.configMap.CARBONE_URL="http://carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca" \
+            --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }} \
+            --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
+            --set carbone.route.host=carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
+            --timeout 10m \
+            --wait
+        fi
 
     - name: Wait on Deployment
       shell: bash

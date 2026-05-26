@@ -38,7 +38,7 @@ jobs:
   deploy-pr-dev:
     name: Deploy Pull Request to Dev
     environment:
-      name: pr
+      name: dev
       url: https://${{ env.ACRONYM }}-dev-pr-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     needs: build
@@ -54,10 +54,13 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: pr
           job_name: pr-${{ github.event.number }}
+          route_name: dev-pr-${{ github.event.number }}
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: dev
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          chart_path: charts/cdogs
+          chart_repo: ""
       - name: Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2.9.0
         if: success()

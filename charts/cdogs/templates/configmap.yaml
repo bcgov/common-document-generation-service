@@ -23,7 +23,7 @@ metadata:
   {{- else }}
   labels: {{ include "cdogs.labels" . | nindent 4 }}
   {{- end }}
-  name: {{ include "cdogs.configname" . }}-fluent-bit
+  name: {{ include "cdogs.configname" . }}-{{ .Release.Name }}-fluent-bit
 data:
   fluent-bit.conf: |
     [SERVICE]
