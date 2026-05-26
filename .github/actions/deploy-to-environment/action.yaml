@@ -49,7 +49,7 @@ runs:
         # move to project context
         oc project ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
 
-    - name: Helm Deploy (CDOGS)
+    - name: Helm Deploy
       shell: bash
       run: >-
         helm upgrade --install --atomic ${{ inputs.job_name }} ${{ inputs.app_name }}

@@ -9,7 +9,7 @@ metadata:
   {{- else }}
   labels: {{ include "cdogs.labels" . | nindent 4 }}
   {{- end }}
-  name: {{ include "cdogs.configname" . }}-config
+  name: {{ include "cdogs.configname" . }}-{{ .Release.Name }}-config
 data: {{ toYaml .Values.config.configMap | nindent 2 }}
 {{- end }}
 {{- if .Values.fluentBit.enabled }}
@@ -223,7 +223,7 @@ data:
       ---- metrics logs
 
       -- if log contains a 'metrics' field
-      if record["metrics"] ~= nill then
+      if record["metrics"] ~= nil then
         new_record["metrics"] = record["metrics"]
         new_record["event"]["type"] = eventTypesArray[record["level"]]
       end
