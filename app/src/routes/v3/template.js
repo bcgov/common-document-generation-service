@@ -111,6 +111,7 @@ templateRouter.post(
  */
 templateRouter.post(
   '/:uid/render',
+  middleware.validateHash,
   middleware.validateCarbone,
   async (req, res) => {
     const hash = req.params.uid;
@@ -153,7 +154,7 @@ templateRouter.post(
 /**
  * get a template from cache
  */
-templateRouter.get('/:uid', async (req, res) => {
+templateRouter.get('/:uid', middleware.validateHash, async (req, res) => {
   const hash = req.params.uid;
 
   const file = fileCache.find(hash);
@@ -170,7 +171,7 @@ templateRouter.get('/:uid', async (req, res) => {
 /**
  * delete a template from cache
  */
-templateRouter.delete('/:uid', async (req, res) => {
+templateRouter.delete('/:uid', middleware.validateHash, async (req, res) => {
   const hash = req.params.uid;
 
   const removed = fileCache.remove(hash);

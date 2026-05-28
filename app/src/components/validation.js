@@ -185,7 +185,7 @@ const modelValidation = {
           errors.push({
             value: obj.formatters,
             message:
-              'Formatters could not be parsed into formatters object. See \'https://www.npmjs.com/package/telejson\'.',
+              "Formatters could not be parsed into formatters object. See 'https://www.npmjs.com/package/telejson'.",
           });
         }
       }
@@ -261,7 +261,7 @@ const modelValidation = {
             errors.push({
               values: [obj.template.fileType, outputFileType],
               message:
-                'Unsupported file type conversion. A dictionary of supported input and output file types can be found at API endpoint \'/fileTypes\'',
+                "Unsupported file type conversion. A dictionary of supported input and output file types can be found at API endpoint '/fileTypes'",
             });
           }
         }
@@ -308,6 +308,19 @@ const middleware = {
       }).send(res);
     }
     next();
+  },
+
+  validateHash(req, res, next) {
+    let errors = [];
+    const normalizedHash = String(req.params.uid);
+    if (!/^[a-fA-F0-9]{64}$/.test(normalizedHash)) {
+      errors.push({
+        value: req.params.uid,
+        message:
+          'Invalid template hash. Must be a 64 character hexadecimal string.',
+      });
+    }
+    middleware._handleValidationErrors(res, next, errors);
   },
 
   validateCarbone(req, res, next) {
