@@ -2,10 +2,6 @@
 features:
   authentication: true
 
-config:
-  enabled: true
-  releaseScoped: true
-
 persistentVolumeClaim:
   enabled: false
 
