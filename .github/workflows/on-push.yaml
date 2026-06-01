@@ -11,7 +11,7 @@ on:
       - master
     tags:
       - v*.*.*
-
+ß
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -36,7 +36,7 @@ jobs:
     name: Deploy to Dev
     environment:
       name: dev
-      url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca
+      url: https://${{ env.ACRONYM }}-dev-master.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 12
@@ -62,7 +62,7 @@ jobs:
     name: Deploy to Test
     environment:
       name: test
-      url: https://${{ env.ACRONYM }}-test.apps.silver.devops.gov.bc.ca
+      url: https://${{ env.ACRONYM }}-test-master.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     needs:
       - build
@@ -90,12 +90,12 @@ jobs:
     name: Deploy to Prod
     environment:
       name: prod
-      url: https://${{ env.ACRONYM }}-prod.apps.silver.devops.gov.bc.ca
+      url: https://${{ env.ACRONYM }}-prod-master.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     needs:
       - build
       - deploy-dev
-      - deploy-test
+      - deploy-testß
     timeout-minutes: 12
     steps:
       - name: Checkout
