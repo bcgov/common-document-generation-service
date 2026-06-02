@@ -95,7 +95,7 @@ jobs:
     needs:
       - build
       - deploy-dev
-      - deploy-testß
+      - deploy-test
     timeout-minutes: 12
     steps:
       - name: Checkout
