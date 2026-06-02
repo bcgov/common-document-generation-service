@@ -9,7 +9,7 @@ metadata:
   {{- else }}
   labels: {{ include "cdogs.labels" . | nindent 4 }}
   {{- end }}
-  name: {{ include "cdogs.configname" . }}-{{ .Release.Name }}-config
+  name: {{ include "cdogs.configname" . }}-config
 data: {{ toYaml .Values.config.configMap | nindent 2 }}
 {{- end }}
 {{- if .Values.fluentBit.enabled }}
@@ -23,7 +23,7 @@ metadata:
   {{- else }}
   labels: {{ include "cdogs.labels" . | nindent 4 }}
   {{- end }}
-  name: {{ include "cdogs.configname" . }}-{{ .Release.Name }}-fluent-bit
+  name: {{ include "cdogs.configname" . }}-fluent-bit
 data:
   fluent-bit.conf: |
     [SERVICE]
