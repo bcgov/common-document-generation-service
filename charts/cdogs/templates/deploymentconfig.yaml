@@ -80,6 +80,11 @@ spec:
                 secretKeyRef:
                   key: apiKey
                   name: {{ include "cdogs.configname" . }}-carbone
+            - name: CARBONE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: url
+                  name: {{ include "cdogs.configname" . }}-carbone
           envFrom:
             - configMapRef:
                 name: {{ include "cdogs.configname" . }}-config

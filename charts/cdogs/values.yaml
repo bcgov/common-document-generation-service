@@ -186,6 +186,7 @@ keycloakSecretOverride:
 carbone:
   enabled: false
   apiKey: ~
+  url: ~
 
 fluentBit:
   # -- Specifies whether the fluent-bit logging sidecar should be enabled

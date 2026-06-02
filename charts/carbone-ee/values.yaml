@@ -7,7 +7,7 @@ releaseScoped: false
 replicaCount: 2
 
 image:
-  repository: docker.io/carbone
+  repository: artifacts.developer.gov.bc.ca/docker-remote/curlimages/curl/carbone-ee
   tag: full-5.4.5
 
   # -- Default image pull policy
