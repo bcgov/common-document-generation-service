@@ -13,4 +13,4 @@ fluentBit:
 
 carbone:
   enabled: true
-  releaseScoped: true
+  releaseScoped: false
