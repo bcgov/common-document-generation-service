@@ -50,3 +50,9 @@ jobs:
         with:
           header: release
           delete: true
+      - name: Remove Github Deployment Environment
+        uses: strumwolf/delete-deployment-environment@v3
+        with:
+          environment: pr
+          onlyRemoveDeployments: true
+          token: ${{ secrets.GITHUB_TOKEN }}
