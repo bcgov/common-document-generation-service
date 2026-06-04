@@ -51,7 +51,7 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: dev
           job_name: dev
-          route_name: dev
+          route_name: dev-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: dev
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
@@ -79,7 +79,7 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: test
           job_name: test
-          route_name: test
+          route_name: test-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: test
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
@@ -108,7 +108,7 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: prod
           job_name: prod
-          route_name: prod
+          route_name: prod-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: prod
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
