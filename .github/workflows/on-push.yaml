@@ -50,7 +50,7 @@ jobs:
           acronym: ${{ env.ACRONYM }}
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: dev
-          job_name: dev
+          job_name: master
           route_name: dev-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: dev
@@ -78,7 +78,7 @@ jobs:
           acronym: ${{ env.ACRONYM }}
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: test
-          job_name: test
+          job_name: master
           route_name: test-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: test
@@ -107,7 +107,7 @@ jobs:
           acronym: ${{ env.ACRONYM }}
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: prod
-          job_name: prod
+          job_name: master
           route_name: prod-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: prod
