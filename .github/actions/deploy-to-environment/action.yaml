@@ -77,8 +77,6 @@ runs:
             --set config.configMap.CARBONE_URL="http://carbone-${{ inputs.job_name }}:4000/" \
             --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }} \
             --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
-            --set carbone.route.host=carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
-            --set carbone.route.enabled=false \
             --timeout 10m \
             --wait
         else
@@ -93,8 +91,6 @@ runs:
             --set config.configMap.CARBONE_URL="http://carbone-${{ inputs.job_name }}:4000/" \
             --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }} \
             --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
-            --set carbone.route.host=carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
-            --set carbone.route.enabled=false \
             --timeout 10m \
             --wait
         fi
