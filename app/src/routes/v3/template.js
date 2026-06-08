@@ -16,13 +16,18 @@ const log = require('../../components/log')(module.filename);
 
 const fileCache = new FileCache();
 
+const withTrailingSlash = (url) => {
+  if (!url) return url;
+  return url.endsWith('/') ? url : `${url}/`;
+};
+
 // initialize carbone-sdk (v3) engine
 const carbone = require('carbone-sdk')(
   process.env.CARBONE_API_KEY || config.get('carbone.apiKey'),
 );
 carbone.setApiVersion(5);
 carbone.setOptions({
-  carboneUrl: config.get('carbone.url'),
+  carboneUrl: withTrailingSlash(config.get('carbone.url')),
 });
 log.info('initialized carbone v3 sdk engine for routes', {
   function: 'v3/template',

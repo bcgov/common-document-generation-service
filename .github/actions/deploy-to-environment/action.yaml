@@ -74,7 +74,7 @@ runs:
             --set image.repository=ghcr.io/${{ github.repository_owner }} \
             --set image.tag=sha-$(git rev-parse --short HEAD) \
             --set route.host=${{ inputs.acronym }}-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
-            --set config.configMap.CARBONE_URL="https://carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca" \
+            --set config.configMap.CARBONE_URL="https://carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca/" \
             --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }} \
             --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
             --set carbone.route.host=carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
@@ -89,7 +89,7 @@ runs:
             --set image.repository=ghcr.io/${{ github.repository_owner }} \
             --set image.tag=sha-$(git rev-parse --short HEAD) \
             --set route.host=${{ inputs.acronym }}-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
-            --set config.configMap.CARBONE_URL="https://carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca" \
+            --set config.configMap.CARBONE_URL="https://carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca/" \
             --set fluentBit.config.aws.roleArn=${{ inputs.aws_role_arn }} \
             --set fluentBit.config.namespace=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} \
             --set carbone.route.host=carbone-$ROUTE_NAME.apps.silver.devops.gov.bc.ca \
