@@ -3,13 +3,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  {{- if not .Values.config.releaseScoped }}
+  {{- if and (not .Values.config.releaseScoped) (not .Values.config.configMapReleaseScoped) }}
   annotations:
     "helm.sh/resource-policy": keep
   {{- else }}
   labels: {{ include "cdogs.labels" . | nindent 4 }}
   {{- end }}
-  name: {{ include "cdogs.configname" . }}-config
+  name: {{ include "cdogs.configmapname" . }}-config
 data: {{ toYaml .Values.config.configMap | nindent 2 }}
 {{- end }}
 {{- if .Values.fluentBit.enabled }}
@@ -17,13 +17,13 @@ data: {{ toYaml .Values.config.configMap | nindent 2 }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  {{- if not .Values.config.releaseScoped }}
+  {{- if and (not .Values.config.releaseScoped) (not .Values.config.configMapReleaseScoped) }}
   annotations:
     "helm.sh/resource-policy": keep
   {{- else }}
   labels: {{ include "cdogs.labels" . | nindent 4 }}
   {{- end }}
-  name: {{ include "cdogs.configname" . }}-fluent-bit
+  name: {{ include "cdogs.configmapname" . }}-fluent-bit
 data:
   fluent-bit.conf: |
     [SERVICE]

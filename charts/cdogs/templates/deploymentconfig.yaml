@@ -82,7 +82,7 @@ spec:
                   name: {{ include "cdogs.configname" . }}-carbone
           envFrom:
             - configMapRef:
-                name: {{ include "cdogs.configname" . }}-config
+                name: {{ include "cdogs.configmapname" . }}-config
           volumeMounts:
             - name: file-cache-data
               mountPath: /var/lib/file-cache/data
@@ -157,7 +157,7 @@ spec:
           emptyDir: {}
         - name: fluent-bit-config
           configMap:
-            name: {{ include "cdogs.configname" . }}-fluent-bit
+            name: {{ include "cdogs.configmapname" . }}-fluent-bit
         {{- end }}
   test: false
   triggers:

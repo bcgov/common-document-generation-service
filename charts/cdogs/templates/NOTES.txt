@@ -1,4 +1,4 @@
-{{- $configMapName := printf "%s-%s" (include "cdogs.configname" .) "config" }}
+{{- $configMapName := printf "%s-%s" (include "cdogs.configmapname" .) "config" }}
 {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace $configMapName ) }}
 {{- $awsSecretName := printf "%s-%s" (include "cdogs.configname" .) "aws" }}
 {{- $awsSecret := (lookup "v1" "Secret" .Release.Namespace $awsSecretName ) }}

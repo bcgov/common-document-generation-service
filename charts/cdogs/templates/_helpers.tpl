@@ -35,6 +35,17 @@ Define the config pattern of the chart based on options.
 {{- end }}
 
 {{/*
+Define the configmap naming pattern of the chart.
+*/}}
+{{- define "cdogs.configmapname" -}}
+{{- if .Values.config.configMapReleaseScoped }}
+{{- include "cdogs.fullname" . }}
+{{- else }}
+{{- include "cdogs.configname" . }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "cdogs.chart" -}}

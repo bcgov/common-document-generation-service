@@ -46,7 +46,7 @@ spec:
                   value: production
               envFrom:
                 - configMapRef:
-                    name: {{ include "cdogs.configname" . }}-config
+                    name: {{ include "cdogs.configmapname" . }}-config
               volumeMounts:
                 - name: file-cache-data
                   mountPath: /var/lib/file-cache/data
