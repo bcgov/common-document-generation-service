@@ -1,7 +1,8 @@
+
 const Problem = require('api-problem');
 
 const fileTypesRouter = require('express').Router();
-const { fileTypes } = require('../../components/constants');
+const { fileTypes } = require('../../components/carboneRender');
 
 /** Returns the dictionary of input/output file types */
 fileTypesRouter.get('/fileTypes', (_req, res, next) => {
