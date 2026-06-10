@@ -90,7 +90,7 @@ resources:
 
 persistentVolumeClaim:
   # -- Specifies whether a persistent volume claim should be created
-  enabled: true
+  enabled: false
   # -- Default storage class type
   storageClassName: netapp-file-standard
   # -- PVC Storage size (use M or G, not Mi or Gi)

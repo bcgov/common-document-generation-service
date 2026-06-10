@@ -6,9 +6,6 @@ services:
     secrets:
       - source: carbone-license
         target: /app/config/prod.carbone-license
-    volumes:
-      - ./template:/app/template
-      - ./render:/app/render
 
 secrets:
   carbone-license:
