@@ -20,7 +20,6 @@
     "formFieldName": "UPLOAD_FIELD_NAME",
     "startCarbone": "START_CARBONE",
     "uploadCount": "UPLOAD_FILE_COUNT",
-    "uploadSize": "UPLOAD_FILE_SIZE",
-    "url": "CARBONE_URL"
+    "uploadSize": "UPLOAD_FILE_SIZE"
   }
 }

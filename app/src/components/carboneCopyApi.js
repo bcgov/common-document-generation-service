@@ -5,13 +5,7 @@ const telejson = require('telejson');
 
 const log = require('./log')(module.filename);
 const carboneRender = require('./carboneRender');
-const carboneRenderService = require('./carboneRenderService');
 const FileCache = require('./fileCache');
-const {
-  processTemplateOptions,
-  setRenderResponseHeaders,
-  handleRenderError,
-} = require('../routes/shared/templateHelpers');
 
 const fileCache = new FileCache();
 
@@ -56,9 +50,7 @@ const carboneCopyApi = {
     if (remove) {
       const removed = fileCache.remove(hash);
       if (!removed.success) {
-        return new Problem(removed.errorType, {
-          detail: removed.errorMsg,
-        }).send(res);
+        return new Problem(removed.errorType, { detail: removed.errorMsg }).send(res);
       }
     }
 
@@ -83,60 +75,60 @@ const carboneCopyApi = {
     try {
       options = req.body.options;
     } catch (e) {
-      return new Problem(400, {
-        detail: 'options not provided or formatted incorrectly',
-      }).send(res);
+      return new Problem(400, { detail: 'options not provided or formatted incorrectly' }).send(res);
     }
 
-    const normalizedOptions = processTemplateOptions(
-      options,
-      template.ext,
-      path.parse(template.name).name,
-    );
+    options.convertTo = options.convertTo || template.ext;
+    if (options.convertTo.startsWith('.')) {
+      options.convertTo = options.convertTo.slice(1);
+    }
+
+    options.reportName = options.reportName || `${path.parse(template.name).name}.${options.convertTo}`;
+    // ensure the reportName has the same extension as the convertTo...
+    if (options.convertTo !== path.extname(options.reportName).slice(1)) {
+      options.reportName = `${path.parse(options.reportName).name}.${options.convertTo}`;
+    }
 
     if (typeof data !== 'object' || data === null) {
       try {
         data = req.body.data;
       } catch (e) {
-        return new Problem(400, {
-          detail: 'data not provided or formatted incorrectly',
-        }).send(res);
+        return new Problem(400, { detail: 'data not provided or formatted incorrectly' }).send(res);
       }
     }
-
-    formatters = {};
 
     try {
       formatters = telejson.parse(req.body.formatters);
       // TODO: Consider adding warning message to log
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (e) {
+    }
 
-    const output = await carboneRenderService.render(
-      carboneRender.engine,
-      template.path,
-      data,
-      normalizedOptions,
-      false,
-      formatters,
-    );
+    const output = await carboneRender.render(template.path, data, options, formatters);
     if (output.success) {
-      setRenderResponseHeaders(res, output.reportName, output.report);
+      res.setHeader('Content-Disposition', `attachment; filename=${output.reportName}`);
+      res.setHeader('Content-Transfer-Encoding', 'binary');
+      res.setHeader('Content-Type', mime.contentType(path.extname(output.reportName)));
+      res.setHeader('Content-Length', output.report.length);
+      res.setHeader('X-Report-Name', output.reportName);
       res.setHeader('X-Template-Hash', template.hash);
 
       log.info('Template rendered', { function: 'renderTemplate' });
 
       // log metrics
-      log.verbose('Template rendered', {
-        function: 'renderTemplate',
-        metrics: { data: data, options: normalizedOptions, template: template },
-      });
+      log.verbose('Template rendered', { function: 'renderTemplate', metrics: { data: data, options: options, template: template } });
 
       return res.send(output.report);
     } else {
-      return new Problem(output.errorType, handleRenderError(output)).send(res);
+      const errOutput = { detail: output.errorMsg };
+      if (output.errorType === 422) {
+        // Format template syntax errors to be the same as our validation errors
+        errOutput.detail = 'Error in supplied template';
+        errOutput.errors = [{ message: output.errorMsg }];
+      }
+      return new Problem(output.errorType, errOutput).send(res);
     }
-  },
+  }
 };
 
 module.exports = carboneCopyApi;
