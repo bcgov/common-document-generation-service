@@ -75,11 +75,6 @@ spec:
             - name: SERVER_LOGFILE
               value: /var/log/app.log
             {{- end }}
-            - name: CARBONE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: apiKey
-                  name: {{ include "cdogs.configname" . }}-carbone
           envFrom:
             - configMapRef:
                 name: {{ include "cdogs.configmapname" . }}-config

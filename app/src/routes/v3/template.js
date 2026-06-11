@@ -22,9 +22,7 @@ const withTrailingSlash = (url) => {
 };
 
 // initialize carbone-sdk (v3) engine
-const carbone = require('carbone-sdk')(
-  process.env.CARBONE_API_KEY || config.get('carbone.apiKey'),
-);
+const carbone = require('carbone-sdk')();
 carbone.setApiVersion(5);
 carbone.setOptions({
   carboneUrl: withTrailingSlash(config.get('carbone.url')),

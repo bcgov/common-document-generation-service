@@ -12,7 +12,6 @@
     "startCarbone": "true",
     "uploadCount": "1",
     "uploadSize": "25MB",
-    "apiKey": "carbone-api-key",
     "url": "http://localhost:4000/"
   }
 }

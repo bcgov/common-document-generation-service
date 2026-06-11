@@ -185,13 +185,9 @@ keycloakSecretOverride:
   username: ~
   # -- Keycloak password
   password: ~
-carboneSecretOverride:
-  # -- Carbone API key override when creating release-managed secret
-  apiKey: ~
 
 carbone:
   enabled: false
-  apiKey: ~
   url: ~
 
 fluentBit:
