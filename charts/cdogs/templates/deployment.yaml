@@ -21,7 +21,7 @@ spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.serviceAccount.create }}
+      {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ include "cdogs.serviceAccountName" . }}
       {{- end }}
       {{- with .Values.podSecurityContext }}
@@ -40,7 +40,7 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: {{ .Values.route.path }}
+              path: {{ .Values.route.path | default "/" }}
               port: {{ .Values.service.port }}
               scheme: HTTP
             initialDelaySeconds: 10
@@ -48,7 +48,7 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: {{ .Values.route.path }}
+              path: {{ .Values.route.path | default "/" }}
               port: {{ .Values.service.port }}
               scheme: HTTP
             initialDelaySeconds: 10
