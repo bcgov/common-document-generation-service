@@ -125,5 +125,8 @@
       "!src/middleware/*.*",
       "!src/docs/*.*"
     ]
+  },
+  "overrides": {
+    "body-parser": "1.20.3"
   }
 }
